@@ -1,4 +1,4 @@
-use crate::components::{RouteLink, RouteLinkProps};
+use crate::components::*;
 use crate::routes::*;
 use leptos::*;
 use leptos_meta::*;
@@ -33,7 +33,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                 <Routes>
                     <Route path="/" view=|cx| view! { cx, <RouteHome/> }/>
                     <Route path="/about" view=|cx| view! { cx, <RouteHome/> }/>
-                    <Route path="/color-picker" view=|cx| view! { cx, <RouteHome/> }/>
+                    <Route path="/color-picker" view=|cx| view! { cx, <RouteColorPicker/> }/>
                     <Route path="/base-converter" view=|cx| view! { cx, <RouteHome/> }/>
                     <Route path="/time-zones" view=|cx| view! { cx, <RouteHome/> }/>
                 </Routes>

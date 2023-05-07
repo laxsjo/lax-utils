@@ -21,3 +21,10 @@ pub fn RouteOther(cx: Scope) -> impl IntoView {
         <MultiplyWidget label={"hi".to_owned()}/>
     }
 }
+
+#[component]
+pub fn RouteColorPicker(cx: Scope) -> impl IntoView {
+    view! { cx,
+        <h1>"Color Picker"</h1>
+    }
+}
