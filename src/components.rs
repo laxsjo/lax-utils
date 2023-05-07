@@ -3,7 +3,6 @@ use leptos_router::*;
 
 #[component]
 pub fn RouteLink(cx: Scope, route_name: &'static str, children: Children) -> impl IntoView {
-    let route = use_route(cx);
     let location = use_location(cx);
     let route_path = "/".to_string() + route_name;
 
