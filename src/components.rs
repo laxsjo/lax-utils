@@ -14,3 +14,8 @@ pub fn RouteLink(cx: Scope, route_name: &'static str, children: Children) -> imp
         <a href=route_path class:active={is_open}>{children(cx)}</a>
     }
 }
+
+#[component]
+pub fn ColorPicker(cx: Scope) -> impl IntoView {
+    view! {cx, <div/>}
+}

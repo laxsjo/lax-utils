@@ -1,3 +1,4 @@
+use crate::components::*;
 use crate::*;
 use leptos::*;
 
@@ -26,5 +27,6 @@ pub fn RouteOther(cx: Scope) -> impl IntoView {
 pub fn RouteColorPicker(cx: Scope) -> impl IntoView {
     view! { cx,
         <h1>"Color Picker"</h1>
+        <ColorPicker/>
     }
 }
