@@ -1,4 +1,5 @@
 pub mod app;
+pub mod components;
 use cfg_if::cfg_if;
 use leptos::*;
 

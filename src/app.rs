@@ -1,3 +1,4 @@
+use crate::components::{RouteLink, RouteLinkProps};
 use crate::{MultiplyWidget, MultiplyWidgetProps};
 use leptos::*;
 use leptos_meta::*;
@@ -20,13 +21,13 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         // content for this welcome page
         <Router>
-            <aside>
-                <ul>
-                    <li><a href="/">"Homepage"</a></li>
-                    <li><a href="/color-picker">"Color Picker"</a></li>
-                    <li><a href="/base-converter">"Base Converter"</a></li>
-                    <li><a href="/time-zones">"Time Zone Converter"</a></li>
-                </ul>
+            <aside class="side-nav">
+                <nav>
+                    <li><RouteLink route_name="">"Homepage"</RouteLink></li>
+                    <li><RouteLink route_name="color-picker">"Color Picker"</RouteLink></li>
+                    <li><RouteLink route_name="base-converter">"Base Converter"</RouteLink></li>
+                    <li><RouteLink route_name="time-zones">"Time Zone Converter"</RouteLink></li>
+                </nav>
             </aside>
             <main>
                 <Routes>
@@ -37,6 +38,9 @@ pub fn App(cx: Scope) -> impl IntoView {
                     <Route path="/time-zones" view=|cx| view! { cx, <HomePage/> }/>
                 </Routes>
             </main>
+            <footer>
+                <A href="/about">"About"</A>
+            </footer>
         </Router>
     }
 }
