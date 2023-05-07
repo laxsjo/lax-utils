@@ -1,3 +1,4 @@
+use crate::{MultiplyWidget, MultiplyWidgetProps};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -19,9 +20,16 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         // content for this welcome page
         <Router>
+            <aside>
+                <ul>
+                    <li><a href="/">"Homepage"</a></li>
+                    <li><a href="/other">"Other"</a></li>
+                </ul>
+            </aside>
             <main>
                 <Routes>
                     <Route path="" view=|cx| view! { cx, <HomePage/> }/>
+                    <Route path="other" view=|cx| view! { cx, <OtherPage/> }/>
                 </Routes>
             </main>
         </Router>
@@ -38,5 +46,13 @@ fn HomePage(cx: Scope) -> impl IntoView {
     view! { cx,
         <h1>"Welcome to Leptos!"</h1>
         <button on:click=on_click>"Click Me: " {count}</button>
+    }
+}
+
+#[component]
+fn OtherPage(cx: Scope) -> impl IntoView {
+    view! { cx,
+        <h1>"Welcome to the other page"</h1>
+        <MultiplyWidget label={"hi".to_owned()}/>
     }
 }

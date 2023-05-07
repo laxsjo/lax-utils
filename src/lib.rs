@@ -1,5 +1,6 @@
 pub mod app;
 use cfg_if::cfg_if;
+use leptos::*;
 
 cfg_if! {
 if #[cfg(feature = "hydrate")] {
@@ -7,8 +8,7 @@ if #[cfg(feature = "hydrate")] {
   use wasm_bindgen::prelude::wasm_bindgen;
 
     #[wasm_bindgen]
-    pub fn hydrate() {
-      use app::*;
+    pub fn hydrate() {use app::*;
       use leptos::*;
 
       // initializes logging using the `log` crate
@@ -20,4 +20,27 @@ if #[cfg(feature = "hydrate")] {
       });
     }
 }
+}
+
+#[component]
+pub fn MultiplyWidget(cx: Scope, label: String) -> impl IntoView {
+    let (value_str, set_value_str) = create_signal(cx, "0".to_owned());
+
+    let computed_value = move || {
+        let Ok(value) = value_str().parse::<i32>() else {
+            return "invalid input".to_owned();
+        };
+        (value * 2 + 1).to_string()
+    };
+
+    view! { cx,
+        <input type="number"
+            on:input=move |ev| {
+                set_value_str(event_target_value(&ev));
+            }
+            prop:value=value_str
+        />
+
+        <p>{value_str} " * 2 + 1 = " {computed_value} " (" {label} ")"</p>
+    }
 }
