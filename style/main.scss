@@ -73,6 +73,8 @@ body {
 
 			&:active {
 				background-color: var(--secondary-active-bg);
+				box-shadow: 0 0 0.2em var(--shadow);
+
 				transition: none;
 			}
 		}

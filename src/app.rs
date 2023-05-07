@@ -23,7 +23,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Router>
             <aside class="side-nav">
                 <nav>
-                    <li><RouteLink route_name="">"Homepage"</RouteLink></li>
+                    <li><RouteLink route_name="">"Home"</RouteLink></li>
                     <li><RouteLink route_name="color-picker">"Color Picker"</RouteLink></li>
                     <li><RouteLink route_name="base-converter">"Base Converter"</RouteLink></li>
                     <li><RouteLink route_name="time-zones">"Time Zone Converter"</RouteLink></li>
