@@ -23,13 +23,18 @@ pub fn App(cx: Scope) -> impl IntoView {
             <aside>
                 <ul>
                     <li><a href="/">"Homepage"</a></li>
-                    <li><a href="/other">"Other"</a></li>
+                    <li><a href="/color-picker">"Color Picker"</a></li>
+                    <li><a href="/base-converter">"Base Converter"</a></li>
+                    <li><a href="/time-zones">"Time Zone Converter"</a></li>
                 </ul>
             </aside>
             <main>
                 <Routes>
-                    <Route path="" view=|cx| view! { cx, <HomePage/> }/>
-                    <Route path="other" view=|cx| view! { cx, <OtherPage/> }/>
+                    <Route path="/" view=|cx| view! { cx, <HomePage/> }/>
+                    <Route path="/about" view=|cx| view! { cx, <HomePage/> }/>
+                    <Route path="/color-picker" view=|cx| view! { cx, <HomePage/> }/>
+                    <Route path="/base-converter" view=|cx| view! { cx, <HomePage/> }/>
+                    <Route path="/time-zones" view=|cx| view! { cx, <HomePage/> }/>
                 </Routes>
             </main>
         </Router>
