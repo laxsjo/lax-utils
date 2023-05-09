@@ -1,4 +1,5 @@
 @use "theme.scss";
+@use "components.scss";
 
 body {
 	display: grid;
@@ -83,6 +84,9 @@ body {
 
 main {
 	grid-area: main;
+	place-self: center;
+
+	width: max(10rem, 50%);
 }
 
 footer {

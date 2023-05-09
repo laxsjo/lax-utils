@@ -25,11 +25,11 @@ impl ColorSpace {
             },
             ColorSpace::Hsl => ColorSpaceInfo {
                 labels: ("H", "S", "L"),
-                units: (None, Some("%"), Some("%")),
+                units: (Some("°"), Some("%"), Some("%")),
             },
             ColorSpace::Hsv => ColorSpaceInfo {
                 labels: ("H", "S", "V"),
-                units: (None, Some("%"), Some("%")),
+                units: (Some("°"), Some("%"), Some("%")),
             },
         }
     }
