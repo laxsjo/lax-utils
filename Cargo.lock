@@ -1221,6 +1221,7 @@ dependencies = [
  "log",
  "simple_logger",
  "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
