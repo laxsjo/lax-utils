@@ -11,6 +11,8 @@
 	height: 20rem;
 
 	& &__color {
+		touch-action: none;
+
 		position: relative;
 
 		width: 100%;

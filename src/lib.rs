@@ -2,8 +2,10 @@ pub mod app;
 pub mod color_picker;
 pub mod components;
 pub mod routes;
+
 use cfg_if::cfg_if;
 use leptos::*;
+use wasm_bindgen::prelude::*;
 
 cfg_if! {
 if #[cfg(feature = "hydrate")] {
@@ -46,4 +48,17 @@ pub fn MultiplyWidget(cx: Scope, label: String) -> impl IntoView {
 
         <p>{value_str} " * 2 + 1 = " {computed_value} " (" {label} ")"</p>
     }
+}
+
+/// umm I should really document this...
+/// The listener function should take any web-sys event type. (**I don't think
+/// it's type checked in any way tough! D:**)
+pub fn wrap_closure_as_event_listener<
+    E: Into<web_sys::Event> + wasm_bindgen::convert::FromWasmAbi + 'static,
+>(
+    f: impl Fn(E) + 'static,
+) -> JsValue {
+    let handler = Box::new(f) as Box<dyn FnMut(E)>;
+
+    Closure::wrap(handler).into_js_value() // TODO: does this leak memory?
 }
