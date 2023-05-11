@@ -1,4 +1,6 @@
+use gloo_events::*;
 use leptos::{ev::*, html::*, *};
+use leptos_meta::*;
 use leptos_router::*;
 use wasm_bindgen::prelude::*;
 
@@ -145,12 +147,16 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             // style=custom_properties
         >
             <div class="color-picker__map">
-                <SatValueSelector
+                <SatValueSurface
                     sat=sat
                     set_sat=set_sat
                     value=value
                     set_value=set_value
                     hue=hue
+                />
+                <HueSlider
+                    hue=hue
+                    set_hue=set_hue
                 />
                 // <div
                 //     class="color-picker__hue"
@@ -165,18 +171,17 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn SatValueSelector(
+pub fn SatValueSurface(
     cx: Scope,
-    sat: ReadSignal<f64>,
+    #[prop(into)] sat: Signal<f64>,
     set_sat: WriteSignal<f64>,
-    value: ReadSignal<f64>,
+    #[prop(into)] value: Signal<f64>,
     set_value: WriteSignal<f64>,
     #[prop(into)] hue: Signal<f64>,
 ) -> impl IntoView {
     let (dragging, set_dragging) = create_signal(cx, false);
 
     let custom_properties = move || {
-        log!("hi");
         format!(
             "--cursor-x: {}; --cursor-y: {}; --current-hue: {};",
             sat(),
@@ -238,6 +243,7 @@ pub fn SatValueSelector(
     window_event_listener("pointermove", on_pointer_move);
 
     window_event_listener("pointerup", move |_| {
+        // log!("up!");
         set_dragging(false);
         // window().remove_event_listener_with_callback(
         //     "pointermove",
@@ -247,12 +253,90 @@ pub fn SatValueSelector(
 
     view! {cx,
         <div
-            class="sat-value-selector"
+            class="sat-value-surface"
             style=custom_properties
             on:pointerdown=on_pointer_down
             _ref=surface_ref
         >
-            <div class="sat-value-selector__cursor"/>
+            <div class="sat-value-surface__cursor"/>
+        </div>
+    }
+}
+
+#[component]
+pub fn HueSlider(
+    cx: Scope,
+    #[prop(into)] hue: Signal<f64>,
+    set_hue: WriteSignal<f64>,
+) -> impl IntoView {
+    let (dragging, set_dragging) = create_signal(cx, false);
+
+    let custom_properties = move || format!("--hue: {}", hue());
+
+    let surface_ref = create_node_ref::<Div>(cx);
+
+    let on_pointer_down = move |_: PointerEvent| {
+        // log!("down");
+        set_dragging(true);
+    };
+
+    let on_pointer_move = move |ev: Event| {
+        // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
+        const PRIMARY_BUTTON: u16 = 1;
+
+        // log!("moved {:?}", cx.id());
+
+        if (!dragging()) {
+            return;
+        }
+
+        let Some(ev) = ev.dyn_ref::<PointerEvent>() else {
+            log!("incorrect event type");
+
+            return;
+        };
+
+        if (ev.buttons() & PRIMARY_BUTTON) == 0 {
+            return;
+        }
+
+        let Some(surface_element) = surface_ref.get() else {
+            log!{"Couldn't find element '.hue-slider'!"};
+            return;
+        };
+
+        let bounds = surface_element.get_bounding_client_rect();
+        let element_x = bounds.left();
+
+        let width = surface_element.offset_width() as f64;
+        let global_x = ev.client_x() as f64;
+        let x = ((global_x - element_x) / width).clamp(0., 1.);
+
+        set_hue(x);
+    };
+
+    let on_pointer_up = move |_| {
+        // log!("up");
+        set_dragging(false);
+    };
+
+    // let listener = EventListener::new(&window(), "pointermove", move |ev| {
+    //     on_pointer_move(ev);
+    // });
+    // listener.forget();
+
+    // TODO: These event listeners are not destroyed on element cleanup.
+    window_event_listener("pointerup", on_pointer_up);
+    window_event_listener("pointermove", on_pointer_move);
+
+    view! {cx,
+        <div
+            class="hue-slider"
+            on:pointerdown=on_pointer_down
+            _ref=surface_ref
+            style=custom_properties
+        >
+            <div class="hue-slider__cursor"/>
         </div>
     }
 }
