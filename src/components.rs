@@ -21,6 +21,7 @@ pub fn RouteLink(cx: Scope, route_name: &'static str, children: Children) -> imp
 #[component]
 pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let (col_dragging, set_col_dragging) = create_signal(cx, false);
+    let (hue_dragging, set_hue_dragging) = create_signal(cx, false);
 
     #[allow(unused)]
     let (col_pos_x, set_col_pos_x) = create_signal(cx, 0.);
@@ -47,16 +48,8 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     #[allow(unused)]
     let hue_surface_ref = create_node_ref::<Div>(cx);
 
-    let on_pointer_move_color = move |ev: Event| {
-        // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
+    let on_pointer_move_color = move |ev: &PointerEvent| {
         const PRIMARY_BUTTON: u16 = 1;
-        let ev = ev
-            .dyn_ref::<PointerEvent>()
-            .expect("event wasn't a pointer event");
-
-        if (!col_dragging()) {
-            return;
-        }
 
         let Some(surface_element) = color_surface_ref.get() else {
             log!{"Couldn't find element '.color-picker__color'!"};
@@ -81,18 +74,50 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
         set_col_pos_x(x);
         set_col_pos_y(y);
+    };
 
-        // log!(
-        //     "move {}, {} ({}, {}) => {}, {} ({}, {})",
-        //     global_x,
-        //     global_y,
-        //     element_x,
-        //     element_y,
-        //     x,
-        //     y,
-        //     width,
-        //     height
-        // );
+    let on_pointer_move_hue = move |ev: &PointerEvent| {
+        const PRIMARY_BUTTON: u16 = 1;
+
+        let Some(surface_element) = hue_surface_ref.get() else {
+            log!{"Couldn't find element '.color-picker__hue'!"};
+            return;
+        };
+
+        // log!("{}", ev.buttons());
+        if (ev.buttons() & PRIMARY_BUTTON) == 0 {
+            return;
+        }
+
+        let bounds = surface_element.get_bounding_client_rect();
+        let element_x = bounds.left();
+
+        let width = surface_element.offset_width() as f64;
+        let global_x = ev.client_x() as f64;
+        let x = ((global_x - element_x) / width).clamp(0., 1.);
+
+        set_hue_pos(x);
+    };
+
+    let on_pointer_move = move |ev: Event| {
+        // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
+        const PRIMARY_BUTTON: u16 = 1;
+        let ev = ev
+            .dyn_ref::<PointerEvent>()
+            .expect("event wasn't a pointer event");
+
+        if (!col_dragging() && !hue_dragging()) {
+            return;
+        }
+
+        if col_dragging() {
+            on_pointer_move_color(ev);
+        }
+        if (hue_dragging()) {
+            on_pointer_move_hue(ev);
+        }
+
+        log!("uhmm, why are we here...");
     };
     // let on_pointer_move_color_closure = wrap_closure_as_event_listener(on_pointer_move_color);
 
@@ -104,12 +129,17 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         // );
     };
 
-    window_event_listener("pointermove", on_pointer_move_color);
+    let on_pointer_down_hue = move |_| {
+        set_hue_dragging(true);
+    };
+
+    window_event_listener("pointermove", on_pointer_move);
 
     // document()
     // window().add_event_listener_with_callback("pointer_up", move |ev| {});
     window_event_listener("pointerup", move |ev| {
         set_col_dragging(false);
+        set_hue_dragging(false);
         // window().remove_event_listener_with_callback(
         //     "pointermove",
         //     &on_pointer_move_color_closure.unchecked_ref(),
@@ -136,6 +166,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 </div>
                 <div
                     class="color-picker__hue"
+                    on:pointerdown=on_pointer_down_hue
                     _ref=hue_surface_ref
                 >
                     <div class="color-picker__hue__cursor"/>

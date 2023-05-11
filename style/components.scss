@@ -39,6 +39,7 @@
 			z-index: 3;
 			cursor: pointer;
 
+			box-sizing: border-box;
 			position: absolute;
 			top: calc(var(--color-cursor-y) * 100% - 0.5rem);
 			left: calc(var(--color-cursor-x) * 100% - 0.5rem);
@@ -66,6 +67,8 @@
 	}
 
 	& &__hue {
+		touch-action: none;
+
 		position: relative;
 
 		margin-top: 0.6rem;
