@@ -4,6 +4,8 @@ use leptos_meta::*;
 use leptos_router::*;
 use wasm_bindgen::prelude::*;
 
+use crate::color_picker::*;
+
 #[component]
 pub fn RouteLink(cx: Scope, route_name: &'static str, children: Children) -> impl IntoView {
     let location = use_location(cx);
@@ -20,126 +22,35 @@ pub fn RouteLink(cx: Scope, route_name: &'static str, children: Children) -> imp
 
 #[component]
 pub fn ColorPicker(cx: Scope) -> impl IntoView {
-    // let (col_dragging, set_col_dragging) = create_signal(cx, false);
-    // let (hue_dragging, set_hue_dragging) = create_signal(cx, false);
+    let (hue_float, set_hue_float) = create_signal(cx, 0.);
+    let (sat_float, set_sat_float) = create_signal(cx, 0.);
+    let (value_float, set_value_float) = create_signal(cx, 0.);
 
-    // #[allow(unused)]
-    // let (col_pos_x, set_col_pos_x) = create_signal(cx, 0.);
-    // #[allow(unused)]
-    // let (col_pos_y, set_col_pos_y) = create_signal(cx, 0.);
+    // let test: Box<dyn Color>;
 
-    // #[allow(unused)]
-    // let (hue_pos, set_hue_pos) = create_signal(cx, 0.);
+    let (color_rgb, set_color_rgb) = create_signal(
+        cx,
+        Rgb {
+            r: 255,
+            g: 255,
+            b: 255,
+        },
+    );
 
-    // #[allow(unused)]
-    // let (hue, set_hue) = create_signal(cx, 20);
+    let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
 
-    // let custom_properties = move || {
-    //     format!(
-    //         "--color-cursor-x: {}; --color-cursor-y: {}; --hue-cursor: {}; --current-hue: {};",
-    //         col_pos_x(),
-    //         col_pos_y(),
-    //         hue_pos(),
-    //         hue()
-    //     )
-    // };
+    let component_1_ref = create_node_ref::<Input>(cx);
+    let component_2_ref = create_node_ref::<Input>(cx);
+    let component_3_ref = create_node_ref::<Input>(cx);
+    let float_component_1_ref = create_node_ref::<Input>(cx);
+    let float_component_2_ref = create_node_ref::<Input>(cx);
+    let float_component_3_ref = create_node_ref::<Input>(cx);
 
-    // let color_surface_ref = create_node_ref::<Div>(cx);
-    // #[allow(unused)]
-    // let hue_surface_ref = create_node_ref::<Div>(cx);
+    let update_with_inputs = move || {
+        // let component_1
+    };
 
-    // let on_pointer_move_color = move |ev: &PointerEvent| {
-    //     // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
-    //     const PRIMARY_BUTTON: u16 = 1;
-
-    //     let Some(surface_element) = color_surface_ref.get() else {
-    //         log!{"Couldn't find element '.color-picker__color'!"};
-    //         return;
-    //     };
-
-    //     // log!("{}", ev.buttons());
-    //     if (ev.buttons() & PRIMARY_BUTTON) == 0 {
-    //         return;
-    //     }
-
-    //     let bounds = surface_element.get_bounding_client_rect();
-    //     let element_x = bounds.left();
-    //     let element_y = bounds.top();
-
-    //     let width = surface_element.offset_width() as f64;
-    //     let height = surface_element.offset_height() as f64;
-    //     let global_x = ev.client_x() as f64;
-    //     let global_y = ev.client_y() as f64;
-    //     let x = ((global_x - element_x) / width).clamp(0., 1.);
-    //     let y = ((global_y - element_y) / height).clamp(0., 1.);
-
-    //     set_col_pos_x(x);
-    //     set_col_pos_y(y);
-    // };
-
-    // let on_pointer_move_hue = move |ev: &PointerEvent| {
-    //     // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
-    //     const PRIMARY_BUTTON: u16 = 1;
-
-    //     let Some(surface_element) = hue_surface_ref.get() else {
-    //         log!{"Couldn't find element '.color-picker__hue'!"};
-    //         return;
-    //     };
-
-    //     if (ev.buttons() & PRIMARY_BUTTON) == 0 {
-    //         return;
-    //     }
-
-    //     let bounds = surface_element.get_bounding_client_rect();
-    //     let element_x = bounds.left();
-
-    //     let width = surface_element.offset_width() as f64;
-    //     let global_x = ev.client_x() as f64;
-    //     let x = ((global_x - element_x) / width).clamp(0., 1.);
-
-    //     set_hue_pos(x);
-    // };
-
-    // let on_pointer_move = move |ev: Event| {
-    //     let ev = ev
-    //         .dyn_ref::<PointerEvent>()
-    //         .expect("event wasn't a pointer event");
-
-    //     if col_dragging() {
-    //         on_pointer_move_color(ev);
-    //     }
-    //     if hue_dragging() {
-    //         on_pointer_move_hue(ev);
-    //     }
-    // };
-    // // let on_pointer_move_color_closure = wrap_closure_as_event_listener(on_pointer_move_color);
-
-    // let on_pointer_down_color = move |_: PointerEvent| {
-    //     set_col_dragging(true);
-    //     // window().add_event_listener_with_callback(
-    //     //     "pointermove",
-    //     //     on_pointer_move_color_closure.unchecked_ref(),
-    //     // );
-    // };
-
-    // let on_pointer_down_hue = move |_| {
-    //     set_hue_dragging(true);
-    // };
-
-    // window_event_listener("pointermove", on_pointer_move);
-
-    // window_event_listener("pointerup", move |_| {
-    //     set_col_dragging(false);
-    //     set_hue_dragging(false);
-    //     // window().remove_event_listener_with_callback(
-    //     //     "pointermove",
-    //     //     &on_pointer_move_color_closure.unchecked_ref(),
-    //     // );
-    // });
-
-    let (hue, set_hue) = create_signal(cx, 0.);
-    let (sat, set_sat) = create_signal(cx, 0.);
-    let (value, set_value) = create_signal(cx, 0.);
+    let on_input = move |_| {};
 
     view! { cx,
         <div
@@ -148,15 +59,15 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         >
             <div class="color-picker__map">
                 <SatValueSurface
-                    sat=sat
-                    set_sat=set_sat
-                    value=value
-                    set_value=set_value
-                    hue=hue
+                    sat=sat_float
+                    set_sat=set_sat_float
+                    value=value_float
+                    set_value=set_value_float
+                    hue=hue_float
                 />
                 <HueSlider
-                    hue=hue
-                    set_hue=set_hue
+                    hue=hue_float
+                    set_hue=set_hue_float
                 />
                 // <div
                 //     class="color-picker__hue"
@@ -165,6 +76,54 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 // >
                 //     <div class="color-picker__hue__cursor"/>
                 // </div>
+                <div class="controls">
+                    <div class="integers">
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="100"
+                            on:input=on_input
+                            _ref=component_1_ref
+                        />
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="100"
+                            on:input=on_input
+                            _ref=component_1_ref
+                        />
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="100"
+                            on:input=on_input
+                            _ref=component_3_ref
+                        />
+                    </div>
+                    <div class="floats">
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="1.0"
+                            on:input=on_input
+                            _ref=float_component_1_ref
+                        />
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="1.0"
+                            on:input=on_input
+                            _ref=float_component_2_ref
+                        />
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="1.0"
+                            on:input=on_input
+                            _ref=float_component_3_ref
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     }
@@ -286,7 +245,7 @@ pub fn HueSlider(
 
         // log!("moved {:?}", cx.id());
 
-        if (!dragging()) {
+        if !dragging() {
             return;
         }
 
