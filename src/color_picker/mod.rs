@@ -88,6 +88,7 @@ impl ColorSpace {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
 pub struct DynamicColor {
     components: (u16, u16, u16),
     color_space: ColorSpace,
@@ -105,28 +106,32 @@ impl DynamicColor {
         self.components
     }
 
-    pub fn set_components(&mut self, components: (u16, u16, u16)) {
+    pub fn set_components(mut self, components: (u16, u16, u16)) -> Self {
         self.components = self.color_space.clamp_color_components(components);
+        self
     }
 
     pub fn color_space(&self) -> ColorSpace {
         self.color_space
     }
 
-    pub fn set_color_space(&mut self, color_space: ColorSpace) {
+    pub fn set_color_space(mut self, color_space: ColorSpace) -> Self {
         let rgb = self.color_space.rgb_from_color_components(self.components);
 
         self.components = color_space.color_components_from_rgb(rgb);
 
         self.color_space = color_space;
+
+        self
     }
 
     pub fn as_floats(&self) -> (f64, f64, f64) {
         self.color_space.components_to_floats(self.components)
     }
 
-    pub fn set_floats(&mut self, floats: (f64, f64, f64)) {
-        self.components = self.color_space.floats_to_components(floats)
+    pub fn set_floats(mut self, floats: (f64, f64, f64)) -> Self {
+        self.components = self.color_space.floats_to_components(floats);
+        self
     }
 }
 
@@ -251,25 +256,6 @@ impl Color for Rgb {
     }
     fn from_rgb(rgb: Rgb) -> Self {
         rgb
-    }
-
-    fn clamp_components(components: (u16, u16, u16)) -> (u16, u16, u16) {
-        (
-            components.0.clamp(0, 255),
-            components.1.clamp(0, 255),
-            components.2.clamp(0, 255),
-        )
-    }
-
-    fn components_to_floats(components: (u16, u16, u16)) -> (f64, f64, f64)
-    where
-        Self: Sized,
-    {
-        (
-            components.0 as f64 / 360.,
-            components.1 as f64 / 100.,
-            components.2 as f64 / 100.,
-        )
     }
 }
 
