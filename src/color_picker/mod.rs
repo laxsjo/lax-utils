@@ -12,7 +12,7 @@ pub struct ColorSpaceInfo {
 pub enum ColorSpace {
     Rgb,
     Hsl,
-    // Hsv,
+    Hsv,
     // TODO: Figure out what color spaces to add
 }
 
@@ -27,10 +27,10 @@ impl ColorSpace {
                 labels: ("H", "S", "L"),
                 units: (Some("°"), Some("%"), Some("%")),
             },
-            // ColorSpace::Hsv => ColorSpaceInfo {
-            //     labels: ("H", "S", "V"),
-            //     units: (Some("°"), Some("%"), Some("%")),
-            // },
+            ColorSpace::Hsv => ColorSpaceInfo {
+                labels: ("H", "S", "V"),
+                units: (Some("°"), Some("%"), Some("%")),
+            },
         }
     }
 
@@ -38,6 +38,7 @@ impl ColorSpace {
         match self {
             ColorSpace::Rgb => Rgb::COMPONENT_MAXES,
             ColorSpace::Hsl => Hsl::COMPONENT_MAXES,
+            ColorSpace::Hsv => Hsv::COMPONENT_MAXES,
         }
     }
 
@@ -45,6 +46,7 @@ impl ColorSpace {
         let clamp = match self {
             ColorSpace::Rgb => Rgb::clamp_components,
             ColorSpace::Hsl => Hsl::clamp_components,
+            ColorSpace::Hsv => Hsv::clamp_components,
         };
 
         clamp(components)
@@ -54,6 +56,7 @@ impl ColorSpace {
         let convert = match self {
             ColorSpace::Rgb => Rgb::components_to_floats,
             ColorSpace::Hsl => Hsl::components_to_floats,
+            ColorSpace::Hsv => Hsv::components_to_floats,
         };
 
         convert(components)
@@ -63,6 +66,7 @@ impl ColorSpace {
         let convert = match self {
             ColorSpace::Rgb => Rgb::floats_to_components,
             ColorSpace::Hsl => Hsl::floats_to_components,
+            ColorSpace::Hsv => Hsv::floats_to_components,
         };
 
         convert(components)
@@ -72,12 +76,14 @@ impl ColorSpace {
         match self {
             ColorSpace::Rgb => Rgb::from_rgb(rgb).as_components(),
             ColorSpace::Hsl => Hsl::from_rgb(rgb).as_components(),
+            ColorSpace::Hsv => Hsv::from_rgb(rgb).as_components(),
         }
     }
     fn rgb_from_color_components(&self, components: (u16, u16, u16)) -> Rgb {
         match self {
             ColorSpace::Rgb => Rgb::from_components(components).as_rgb(),
             ColorSpace::Hsl => Hsl::from_components(components).as_rgb(),
+            ColorSpace::Hsv => Hsv::from_components(components).as_rgb(),
         }
     }
 }
@@ -88,6 +94,13 @@ pub struct DynamicColor {
 }
 
 impl DynamicColor {
+    pub fn new(components: (u16, u16, u16), color_space: ColorSpace) -> Self {
+        Self {
+            components: color_space.clamp_color_components(components),
+            color_space,
+        }
+    }
+
     pub fn components(&self) -> (u16, u16, u16) {
         self.components
     }
@@ -126,7 +139,7 @@ pub trait Color {
         Self: Sized;
 
     fn as_floats(&self) -> (f64, f64, f64);
-    fn from_floats(float_color: (f64, f64, f64)) -> Self
+    fn from_floats(floats: (f64, f64, f64)) -> Self
     where
         Self: Sized;
 
@@ -183,16 +196,16 @@ pub trait Color {
         )
     }
 
-    fn floats_to_components(components: (f64, f64, f64)) -> (u16, u16, u16)
+    fn floats_to_components(floats: (f64, f64, f64)) -> (u16, u16, u16)
     where
         Self: Sized,
     {
         let maxes = Self::COMPONENT_MAXES;
 
         (
-            ((components.0 * maxes.0 as f64) as u16).clamp(0, maxes.0 + 1),
-            ((components.1 * maxes.1 as f64) as u16).clamp(0, maxes.1 + 1),
-            ((components.2 * maxes.2 as f64) as u16).clamp(0, maxes.2 + 1),
+            ((floats.0 * maxes.0 as f64) as u16).clamp(0, maxes.0 + 1),
+            ((floats.1 * maxes.1 as f64) as u16).clamp(0, maxes.1 + 1),
+            ((floats.2 * maxes.2 as f64) as u16).clamp(0, maxes.2 + 1),
         )
     }
 }
@@ -225,11 +238,11 @@ impl Color for Rgb {
             self.b as f64 / 255.,
         )
     }
-    fn from_floats(float_color: (f64, f64, f64)) -> Self {
+    fn from_floats(floats: (f64, f64, f64)) -> Self {
         Self {
-            r: (float_color.0 * 255.) as u8,
-            g: (float_color.1 * 255.) as u8,
-            b: (float_color.2 * 255.) as u8,
+            r: (floats.0 * 255.) as u8,
+            g: (floats.1 * 255.) as u8,
+            b: (floats.2 * 255.) as u8,
         }
     }
 
@@ -254,8 +267,8 @@ impl Color for Rgb {
     {
         (
             components.0 as f64 / 360.,
-            components.0 as f64 / 100.,
-            components.0 as f64 / 100.,
+            components.1 as f64 / 100.,
+            components.2 as f64 / 100.,
         )
     }
 }
@@ -288,11 +301,11 @@ impl Color for Hsl {
             self.l as f64 / 100.,
         )
     }
-    fn from_floats(float_color: (f64, f64, f64)) -> Self {
+    fn from_floats(floats: (f64, f64, f64)) -> Self {
         Self {
-            h: (float_color.0.clamp(0., 1.) * 360.) as u16,
-            s: (float_color.0.clamp(0., 1.) * 100.) as u16,
-            l: (float_color.0.clamp(0., 1.) * 100.) as u16,
+            h: (floats.0.clamp(0., 1.) * 360.) as u16,
+            s: (floats.1.clamp(0., 1.) * 100.) as u16,
+            l: (floats.2.clamp(0., 1.) * 100.) as u16,
         }
     }
 
@@ -369,5 +382,100 @@ impl Color for Hsl {
         } / 6.;
 
         Self::from_floats((h, s, l))
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct Hsv {
+    pub h: u16,
+    pub s: u16,
+    pub v: u16,
+}
+
+impl Color for Hsv {
+    const COMPONENT_MAXES: (u16, u16, u16) = (360, 100, 100);
+
+    fn as_components(&self) -> (u16, u16, u16) {
+        (self.h, self.s, self.v)
+    }
+    fn from_components(components: (u16, u16, u16)) -> Self {
+        let components = Self::clamp_components(components);
+
+        Self {
+            h: components.0,
+            s: components.1,
+            v: components.2,
+        }
+    }
+
+    fn as_floats(&self) -> (f64, f64, f64) {
+        Self::components_to_floats(self.as_components())
+    }
+    fn from_floats(floats: (f64, f64, f64)) -> Self {
+        let components = Self::floats_to_components(floats);
+
+        Self::from_components(components)
+    }
+
+    /// Source: https://www.codespeedy.com/hsv-to-rgb-in-cpp/
+    fn as_rgb(&self) -> Rgb {
+        let (h_int, s_int, v_int) = self.as_components();
+        let (h, _, v) = (h_int as f64, s_int as f64, v_int as f64);
+
+        if s_int == 0 {
+            let adjusted_value = (v / 100. * 255.) as u16;
+            return Rgb::from_components((adjusted_value, adjusted_value, adjusted_value));
+        }
+
+        let (_, s_float, v_float) = self.as_floats();
+
+        // I have no idea what any of the intermediary variables mean...
+        let c = s_float * v_float;
+        let x = c * (1. - ((h / 60. % 2.) - 1.).abs());
+        let m = v_float - c;
+
+        // These aren't really the final r, g, and b float components. See below.
+        let (r, g, b) = match h_int {
+            0..=59 => (c, x, 0.),
+            60..=119 => (x, c, 0.),
+            120..=179 => (0., c, x),
+            180..=239 => (0., x, c),
+            240..=300 => (x, 0., c),
+            _ => (c, 0., x),
+        };
+
+        Rgb::from_floats((r + m, g + m, b + m))
+    }
+
+    /// Source: https://www.rapidtables.com/convert/color/rgb-to-hsv.html
+    fn from_rgb(rgb: Rgb) -> Self
+    where
+        Self: Sized,
+    {
+        let (r, g, b) = rgb.as_floats();
+
+        let max = r.max(g.max(b));
+        let min = r.min(g.min(b));
+
+        let delta = max - min;
+
+        let h_degrees = 60.
+            * if delta == 0. {
+                0.
+            } else if max == r {
+                (g - b) / delta % 6.
+            } else if max == g {
+                (b - r) / delta + 2.
+            } else {
+                // blue is max
+                (r - g) / delta + 4.
+            };
+        let h = h_degrees / 360.;
+
+        let s = if max == 0. { 0. } else { delta / max };
+
+        let v = max;
+
+        Self::from_floats((h, s, v))
     }
 }
