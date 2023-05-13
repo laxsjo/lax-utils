@@ -24,15 +24,21 @@ pub fn RouteLink(cx: Scope, route_name: &'static str, children: Children) -> imp
 pub fn ColorPicker(cx: Scope) -> impl IntoView {
     const DECIMAL_PRECISION: usize = 2;
 
+    let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
+
     let (color, set_color) =
-        create_signal(cx, DynamicColor::from_color(Hsv::from_floats((1., 1., 1.))));
+        create_signal(cx, DynamicColor::from_floats((1., 1., 1.), color_space()));
 
     let (color_hsv, set_color_hsv) = create_signal(cx, color().to_color::<Hsv>());
 
-    let set_color_sync_hsv_color = move |color| {
+    let set_color_sync_hsv_color = move |color: DynamicColor| {
         set_color(color);
         set_color_hsv(color.to_color::<Hsv>());
     };
+
+    create_effect(cx, move |_| {
+        set_color(color().set_color_space(color_space()));
+    });
 
     let component_1_ref = create_node_ref::<Input>(cx);
     let component_2_ref = create_node_ref::<Input>(cx);

@@ -62,14 +62,14 @@ impl ColorSpace {
         convert(components)
     }
 
-    fn floats_to_components(&self, components: (f64, f64, f64)) -> (f64, f64, f64) {
+    fn floats_to_components(&self, floats: (f64, f64, f64)) -> (f64, f64, f64) {
         let convert = match self {
             ColorSpace::Rgb => Rgb::floats_to_components,
             ColorSpace::Hsl => Hsl::floats_to_components,
             ColorSpace::Hsv => Hsv::floats_to_components,
         };
 
-        convert(components)
+        convert(floats)
     }
 
     fn color_components_from_rgb(&self, rgb: Rgb) -> (f64, f64, f64) {
@@ -98,6 +98,13 @@ impl DynamicColor {
     pub fn new(components: (f64, f64, f64), color_space: ColorSpace) -> Self {
         Self {
             components: color_space.clamp_color_components(components),
+            color_space,
+        }
+    }
+
+    pub fn from_floats(floats: (f64, f64, f64), color_space: ColorSpace) -> Self {
+        Self {
+            components: color_space.floats_to_components(floats),
             color_space,
         }
     }
