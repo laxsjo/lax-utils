@@ -62,7 +62,7 @@
 
 	border-radius: 0.8rem;
 
-	background-color: hsl(var(--current-hue), 100%, 50%);
+	background-color: hsl(calc(var(--current-hue) * 360), 100%, 50%);
 
 	* {
 		user-select: none;

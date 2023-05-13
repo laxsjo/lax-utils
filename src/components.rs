@@ -24,7 +24,8 @@ pub fn RouteLink(cx: Scope, route_name: &'static str, children: Children) -> imp
 pub fn ColorPicker(cx: Scope) -> impl IntoView {
     const DECIMAL_PRECISION: usize = 2;
 
-    let (color, set_color) = create_signal(cx, DynamicColor::new((255, 255, 255), ColorSpace::Rgb));
+    let (color, set_color) =
+        create_signal(cx, DynamicColor::from_color(Hsv::from_floats((1., 1., 1.))));
 
     let component_1_ref = create_node_ref::<Input>(cx);
     let component_2_ref = create_node_ref::<Input>(cx);
@@ -142,30 +143,31 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         set_color(color().set_floats(floats));
     };
 
-    let (hue_float, set_hue_float) = create_signal(cx, 0.);
-    let (sat_float, set_sat_float) = create_signal(cx, 0.);
-    let (value_float, set_value_float) = create_signal(cx, 0.);
+    let color_hsv = create_memo(cx, move |_| color().to_color::<Hsv>());
 
-    let update_with_hsv_floats = move || {
-        let hsv =
-            DynamicColor::from_color(Hsv::from_floats((hue_float(), sat_float(), value_float())));
+    let hue_float = Signal::derive(cx, move || color_hsv().as_floats().0);
+    let sat_float = Signal::derive(cx, move || color_hsv().as_floats().1);
+    let value_float = Signal::derive(cx, move || color_hsv().as_floats().2);
+
+    // let (hue_float, set_hue_float) = create_signal(cx, 0.);
+    // let (sat_float, set_sat_float) = create_signal(cx, 0.);
+    // let (value_float, set_value_float) = create_signal(cx, 0.);
+
+    // create_effect(move || {});
+
+    let update_with_hsv_floats = move |floats: (f64, f64, f64)| {
+        let hsv = DynamicColor::from_color(Hsv::from_floats((floats.0, floats.1, floats.2)));
         set_color(hsv.set_color_space(color().color_space()));
     };
 
     let on_hue_float_change = move |hue: f64| {
-        set_hue_float(hue);
-
-        update_with_hsv_floats();
+        update_with_hsv_floats((hue, sat_float(), value_float()));
     };
     let on_sat_float_change = move |sat: f64| {
-        set_sat_float(sat);
-
-        update_with_hsv_floats();
+        update_with_hsv_floats((hue_float(), sat, value_float()));
     };
     let on_value_float_change = move |value: f64| {
-        set_value_float(value);
-
-        update_with_hsv_floats();
+        update_with_hsv_floats((hue_float(), sat_float(), value));
     };
 
     view! { cx,
