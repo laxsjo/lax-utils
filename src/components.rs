@@ -27,6 +27,13 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let (color, set_color) =
         create_signal(cx, DynamicColor::from_color(Hsv::from_floats((1., 1., 1.))));
 
+    let (color_hsv, set_color_hsv) = create_signal(cx, color().to_color::<Hsv>());
+
+    let set_color_sync_hsv_color = move |color| {
+        set_color(color);
+        set_color_hsv(color.to_color::<Hsv>());
+    };
+
     let component_1_ref = create_node_ref::<Input>(cx);
     let component_2_ref = create_node_ref::<Input>(cx);
     let component_3_ref = create_node_ref::<Input>(cx);
@@ -72,19 +79,19 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
         sync_input_value_float(
             &component_1,
-            components.0 as f64,
+            components.0,
             DECIMAL_PRECISION,
             format_component,
         );
         sync_input_value_float(
             &component_2,
-            components.1 as f64,
+            components.1,
             DECIMAL_PRECISION,
             format_component,
         );
         sync_input_value_float(
             &component_3,
-            components.2 as f64,
+            components.2,
             DECIMAL_PRECISION,
             format_component,
         );
@@ -109,14 +116,14 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         };
 
         let components = (
-            component_1.value().parse_input::<u16>().unwrap_or(0),
-            component_2.value().parse_input::<u16>().unwrap_or(0),
-            component_3.value().parse_input::<u16>().unwrap_or(0),
+            component_1.value().parse_input::<f64>().unwrap_or(0.),
+            component_2.value().parse_input::<f64>().unwrap_or(0.),
+            component_3.value().parse_input::<f64>().unwrap_or(0.),
         );
 
         log!("got components {:?}", components);
 
-        set_color(color().set_components(components));
+        set_color_sync_hsv_color(color().set_components(components));
     };
     let update_with_floats = move |_| {
         let Some(float_1) = float_component_1_ref.get() else {
@@ -140,10 +147,26 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
         log!("got floats {:?}", floats);
 
-        set_color(color().set_floats(floats));
+        set_color_sync_hsv_color(color().set_floats(floats));
     };
 
-    let color_hsv = create_memo(cx, move |_| color().to_color::<Hsv>());
+    // let color_hsv = create_memo(cx, move |old_hsv| {
+    //     let mut new_hsv = color().to_color::<Hsv>();
+
+    //     let Some(old_hsv) = old_hsv else {
+    //         return new_hsv;
+    //     };
+
+    //     if new_hsv.v == 0. {
+    //         new_hsv.h = old_hsv.h;
+    //         new_hsv.s = old_hsv.s;
+    //     }
+    //     if new_hsv.s == 0. {
+    //         new_hsv.h = old_hsv.h
+    //     }
+
+    //     new_hsv
+    // });
 
     let hue_float = Signal::derive(cx, move || color_hsv().as_floats().0);
     let sat_float = Signal::derive(cx, move || color_hsv().as_floats().1);
@@ -161,6 +184,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     };
 
     let on_hue_float_change = move |hue: f64| {
+        // set_color_hsv(color_hsv);
         update_with_hsv_floats((hue, sat_float(), value_float()));
     };
     let on_sat_float_change = move |sat: f64| {

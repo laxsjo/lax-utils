@@ -34,7 +34,7 @@ impl ColorSpace {
         }
     }
 
-    pub const fn color_component_maxes(&self) -> (u16, u16, u16) {
+    pub const fn color_component_maxes(&self) -> (f64, f64, f64) {
         match self {
             ColorSpace::Rgb => Rgb::COMPONENT_MAXES,
             ColorSpace::Hsl => Hsl::COMPONENT_MAXES,
@@ -42,7 +42,7 @@ impl ColorSpace {
         }
     }
 
-    pub fn clamp_color_components(&self, components: (u16, u16, u16)) -> (u16, u16, u16) {
+    pub fn clamp_color_components(&self, components: (f64, f64, f64)) -> (f64, f64, f64) {
         let clamp = match self {
             ColorSpace::Rgb => Rgb::clamp_components,
             ColorSpace::Hsl => Hsl::clamp_components,
@@ -52,7 +52,7 @@ impl ColorSpace {
         clamp(components)
     }
 
-    fn components_to_floats(&self, components: (u16, u16, u16)) -> (f64, f64, f64) {
+    fn components_to_floats(&self, components: (f64, f64, f64)) -> (f64, f64, f64) {
         let convert = match self {
             ColorSpace::Rgb => Rgb::components_to_floats,
             ColorSpace::Hsl => Hsl::components_to_floats,
@@ -62,7 +62,7 @@ impl ColorSpace {
         convert(components)
     }
 
-    fn floats_to_components(&self, components: (f64, f64, f64)) -> (u16, u16, u16) {
+    fn floats_to_components(&self, components: (f64, f64, f64)) -> (f64, f64, f64) {
         let convert = match self {
             ColorSpace::Rgb => Rgb::floats_to_components,
             ColorSpace::Hsl => Hsl::floats_to_components,
@@ -72,14 +72,14 @@ impl ColorSpace {
         convert(components)
     }
 
-    fn color_components_from_rgb(&self, rgb: Rgb) -> (u16, u16, u16) {
+    fn color_components_from_rgb(&self, rgb: Rgb) -> (f64, f64, f64) {
         match self {
             ColorSpace::Rgb => Rgb::from_rgb(rgb).as_components(),
             ColorSpace::Hsl => Hsl::from_rgb(rgb).as_components(),
             ColorSpace::Hsv => Hsv::from_rgb(rgb).as_components(),
         }
     }
-    fn rgb_from_color_components(&self, components: (u16, u16, u16)) -> Rgb {
+    fn rgb_from_color_components(&self, components: (f64, f64, f64)) -> Rgb {
         match self {
             ColorSpace::Rgb => Rgb::from_components(components).as_rgb(),
             ColorSpace::Hsl => Hsl::from_components(components).as_rgb(),
@@ -88,14 +88,14 @@ impl ColorSpace {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct DynamicColor {
-    components: (u16, u16, u16),
+    components: (f64, f64, f64),
     color_space: ColorSpace,
 }
 
 impl DynamicColor {
-    pub fn new(components: (u16, u16, u16), color_space: ColorSpace) -> Self {
+    pub fn new(components: (f64, f64, f64), color_space: ColorSpace) -> Self {
         Self {
             components: color_space.clamp_color_components(components),
             color_space,
@@ -110,13 +110,42 @@ impl DynamicColor {
         C::from_components(self.set_color_space(C::COLOR_SPACE).components)
     }
 
-    pub fn components(&self) -> (u16, u16, u16) {
+    pub fn components(&self) -> (f64, f64, f64) {
         self.components
     }
 
-    pub fn set_components(mut self, components: (u16, u16, u16)) -> Self {
+    pub fn set_components(mut self, components: (f64, f64, f64)) -> Self {
         self.components = self.color_space.clamp_color_components(components);
         self
+    }
+
+    pub fn set_component_0(mut self, component: f64) -> Self {
+        self.components.0 = component;
+        self
+    }
+    pub fn set_component_1(mut self, component: f64) -> Self {
+        self.components.1 = component;
+        self
+    }
+    pub fn set_component_2(mut self, component: f64) -> Self {
+        self.components.2 = component;
+        self
+    }
+
+    pub fn set_float_0(self, float: f64) -> Self {
+        let mut floats = self.as_floats();
+        floats.0 = float;
+        self.set_floats(floats)
+    }
+    pub fn set_float_1(self, float: f64) -> Self {
+        let mut floats = self.as_floats();
+        floats.1 = float;
+        self.set_floats(floats)
+    }
+    pub fn set_float_2(self, float: f64) -> Self {
+        let mut floats = self.as_floats();
+        floats.2 = float;
+        self.set_floats(floats)
     }
 
     pub fn color_space(&self) -> ColorSpace {
@@ -144,11 +173,11 @@ impl DynamicColor {
 }
 
 pub trait Color {
-    const COMPONENT_MAXES: (u16, u16, u16);
+    const COMPONENT_MAXES: (f64, f64, f64);
     const COLOR_SPACE: ColorSpace;
 
-    fn as_components(&self) -> (u16, u16, u16);
-    fn from_components(components: (u16, u16, u16)) -> Self
+    fn as_components(&self) -> (f64, f64, f64);
+    fn from_components(components: (f64, f64, f64)) -> Self
     where
         Self: Sized;
 
@@ -185,79 +214,77 @@ pub trait Color {
     //     }
     // }
 
-    fn clamp_components(components: (u16, u16, u16)) -> (u16, u16, u16)
+    fn clamp_components(components: (f64, f64, f64)) -> (f64, f64, f64)
     where
         Self: Sized,
     {
         let maxes = Self::COMPONENT_MAXES;
         (
-            components.0.clamp(0, maxes.0 + 1),
-            components.1.clamp(0, maxes.1 + 1),
-            components.2.clamp(0, maxes.2 + 1),
+            components.0.clamp(0., maxes.0 + 1.),
+            components.1.clamp(0., maxes.1 + 1.),
+            components.2.clamp(0., maxes.2 + 1.),
         )
     }
 
-    fn components_to_floats(components: (u16, u16, u16)) -> (f64, f64, f64)
+    fn components_to_floats(components: (f64, f64, f64)) -> (f64, f64, f64)
     where
         Self: Sized,
     {
         let maxes = Self::COMPONENT_MAXES;
 
         (
-            components.0 as f64 / maxes.0 as f64,
-            components.1 as f64 / maxes.1 as f64,
-            components.2 as f64 / maxes.2 as f64,
+            components.0 / maxes.0,
+            components.1 / maxes.1,
+            components.2 / maxes.2,
         )
     }
 
-    fn floats_to_components(floats: (f64, f64, f64)) -> (u16, u16, u16)
+    fn floats_to_components(floats: (f64, f64, f64)) -> (f64, f64, f64)
     where
         Self: Sized,
     {
         let maxes = Self::COMPONENT_MAXES;
 
         (
-            ((floats.0 * maxes.0 as f64) as u16).clamp(0, maxes.0 + 1),
-            ((floats.1 * maxes.1 as f64) as u16).clamp(0, maxes.1 + 1),
-            ((floats.2 * maxes.2 as f64) as u16).clamp(0, maxes.2 + 1),
+            (floats.0 * maxes.0).clamp(0., maxes.0 + 1.),
+            (floats.1 * maxes.1).clamp(0., maxes.1 + 1.),
+            (floats.2 * maxes.2).clamp(0., maxes.2 + 1.),
         )
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Rgb {
-    pub r: u8,
-    pub g: u8,
-    pub b: u8,
+    pub r: f64,
+    pub g: f64,
+    pub b: f64,
 }
 
 impl Color for Rgb {
-    const COMPONENT_MAXES: (u16, u16, u16) = (255, 255, 255);
+    const COMPONENT_MAXES: (f64, f64, f64) = (255., 255., 255.);
     const COLOR_SPACE: ColorSpace = ColorSpace::Rgb;
 
-    fn as_components(&self) -> (u16, u16, u16) {
-        (self.r as u16, self.g as u16, self.b as u16)
+    fn as_components(&self) -> (f64, f64, f64) {
+        (self.r, self.g, self.b)
     }
-    fn from_components(components: (u16, u16, u16)) -> Self {
+    fn from_components(components: (f64, f64, f64)) -> Self {
+        let components = ColorSpace::Rgb.clamp_color_components(components);
+
         Self {
-            r: components.0 as u8,
-            g: components.1 as u8,
-            b: components.2 as u8,
+            r: components.0,
+            g: components.1,
+            b: components.2,
         }
     }
 
     fn as_floats(&self) -> (f64, f64, f64) {
-        (
-            self.r as f64 / 255.,
-            self.g as f64 / 255.,
-            self.b as f64 / 255.,
-        )
+        (self.r / 255., self.g / 255., self.b / 255.)
     }
     fn from_floats(floats: (f64, f64, f64)) -> Self {
         Self {
-            r: (floats.0 * 255.) as u8,
-            g: (floats.1 * 255.) as u8,
-            b: (floats.2 * 255.) as u8,
+            r: floats.0.clamp(0., 1.) * 255.,
+            g: floats.1.clamp(0., 1.) * 255.,
+            b: floats.2.clamp(0., 1.) * 255.,
         }
     }
 
@@ -269,40 +296,36 @@ impl Color for Rgb {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Hsl {
-    pub h: u16,
-    pub s: u16,
-    pub l: u16,
+    pub h: f64,
+    pub s: f64,
+    pub l: f64,
 }
 
 impl Color for Hsl {
-    const COMPONENT_MAXES: (u16, u16, u16) = (360, 100, 100);
+    const COMPONENT_MAXES: (f64, f64, f64) = (360., 100., 100.);
     const COLOR_SPACE: ColorSpace = ColorSpace::Hsl;
 
-    fn as_components(&self) -> (u16, u16, u16) {
+    fn as_components(&self) -> (f64, f64, f64) {
         (self.h, self.s, self.l)
     }
-    fn from_components(components: (u16, u16, u16)) -> Self {
+    fn from_components(components: (f64, f64, f64)) -> Self {
         Self {
-            h: components.0.clamp(0, 361),
-            s: components.1.clamp(0, 101),
-            l: components.2.clamp(0, 101),
+            h: components.0.clamp(0., 360.),
+            s: components.1.clamp(0., 100.),
+            l: components.2.clamp(0., 100.),
         }
     }
 
     fn as_floats(&self) -> (f64, f64, f64) {
-        (
-            self.h as f64 / 360.,
-            self.s as f64 / 100.,
-            self.l as f64 / 100.,
-        )
+        (self.h / 360., self.s / 100., self.l / 100.)
     }
     fn from_floats(floats: (f64, f64, f64)) -> Self {
         Self {
-            h: (floats.0.clamp(0., 1.) * 360.) as u16,
-            s: (floats.1.clamp(0., 1.) * 100.) as u16,
-            l: (floats.2.clamp(0., 1.) * 100.) as u16,
+            h: floats.0.clamp(0., 1.) * 360.,
+            s: floats.1.clamp(0., 1.) * 100.,
+            l: floats.2.clamp(0., 1.) * 100.,
         }
     }
 
@@ -313,7 +336,7 @@ impl Color for Hsl {
         let (h, s, l) = self.as_floats();
 
         if s == 0. {
-            let value = (l * 255.) as u16;
+            let value = l * 255.;
             return Rgb::from_components((value, value, value));
         }
 
@@ -382,21 +405,21 @@ impl Color for Hsl {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Hsv {
-    pub h: u16,
-    pub s: u16,
-    pub v: u16,
+    pub h: f64,
+    pub s: f64,
+    pub v: f64,
 }
 
 impl Color for Hsv {
-    const COMPONENT_MAXES: (u16, u16, u16) = (360, 100, 100);
+    const COMPONENT_MAXES: (f64, f64, f64) = (360., 100., 100.);
     const COLOR_SPACE: ColorSpace = ColorSpace::Hsv;
 
-    fn as_components(&self) -> (u16, u16, u16) {
+    fn as_components(&self) -> (f64, f64, f64) {
         (self.h, self.s, self.v)
     }
-    fn from_components(components: (u16, u16, u16)) -> Self {
+    fn from_components(components: (f64, f64, f64)) -> Self {
         let components = Self::clamp_components(components);
 
         Self {
@@ -417,11 +440,10 @@ impl Color for Hsv {
 
     /// Source: https://www.codespeedy.com/hsv-to-rgb-in-cpp/
     fn as_rgb(&self) -> Rgb {
-        let (h_int, s_int, v_int) = self.as_components();
-        let (h, _, v) = (h_int as f64, s_int as f64, v_int as f64);
+        let (h, s, v) = self.as_components();
 
-        if s_int == 0 {
-            let adjusted_value = (v / 100. * 255.) as u16;
+        if s == 0. {
+            let adjusted_value = v / 100. * 255.;
             return Rgb::from_components((adjusted_value, adjusted_value, adjusted_value));
         }
 
@@ -433,12 +455,12 @@ impl Color for Hsv {
         let m = v_float - c;
 
         // These aren't really the final r, g, and b float components. See below.
-        let (r, g, b) = match h_int {
-            0..=59 => (c, x, 0.),
-            60..=119 => (x, c, 0.),
-            120..=179 => (0., c, x),
-            180..=239 => (0., x, c),
-            240..=300 => (x, 0., c),
+        let (r, g, b) = match () {
+            _ if (0.0..=59.0).contains(&h) => (c, x, 0.),
+            _ if (60.0..=119.0).contains(&h) => (x, c, 0.),
+            _ if (120.0..=179.0).contains(&h) => (0., c, x),
+            _ if (180.0..=239.0).contains(&h) => (0., x, c),
+            _ if (240.0..=300.0).contains(&h) => (x, 0., c),
             _ => (c, 0., x),
         };
 

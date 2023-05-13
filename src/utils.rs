@@ -1,6 +1,6 @@
 use crate::string_utils::*;
 use approx::*;
-use leptos::{html::*, *};
+use leptos::html::*;
 use num_traits::{AsPrimitive, Float};
 
 pub trait FloatUtils: Float {
