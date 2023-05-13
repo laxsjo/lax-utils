@@ -71,7 +71,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             return;
         };
 
-        log!("set components {:?}, floats {:?}", components, floats);
+        // log!("set components {:?}, floats {:?}", components, floats);
 
         let format_component = |value: f64| -> _ { naturally_format_float(value, 0, 2) };
 
@@ -121,7 +121,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             component_3.value().parse_input::<f64>().unwrap_or(0.),
         );
 
-        log!("got components {:?}", components);
+        // log!("got components {:?}", components);
 
         set_color_sync_hsv_color(color().set_components(components));
     };
@@ -145,41 +145,18 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             float_3.value().parse_input::<f64>().unwrap_or(0.),
         );
 
-        log!("got floats {:?}", floats);
+        // log!("got floats {:?}", floats);
 
         set_color_sync_hsv_color(color().set_floats(floats));
     };
-
-    // let color_hsv = create_memo(cx, move |old_hsv| {
-    //     let mut new_hsv = color().to_color::<Hsv>();
-
-    //     let Some(old_hsv) = old_hsv else {
-    //         return new_hsv;
-    //     };
-
-    //     if new_hsv.v == 0. {
-    //         new_hsv.h = old_hsv.h;
-    //         new_hsv.s = old_hsv.s;
-    //     }
-    //     if new_hsv.s == 0. {
-    //         new_hsv.h = old_hsv.h
-    //     }
-
-    //     new_hsv
-    // });
 
     let hue_float = Signal::derive(cx, move || color_hsv().as_floats().0);
     let sat_float = Signal::derive(cx, move || color_hsv().as_floats().1);
     let value_float = Signal::derive(cx, move || color_hsv().as_floats().2);
 
-    // let (hue_float, set_hue_float) = create_signal(cx, 0.);
-    // let (sat_float, set_sat_float) = create_signal(cx, 0.);
-    // let (value_float, set_value_float) = create_signal(cx, 0.);
-
-    // create_effect(move || {});
-
     let update_with_hsv_floats = move |floats: (f64, f64, f64)| {
-        let hsv = DynamicColor::from_color(Hsv::from_floats((floats.0, floats.1, floats.2)));
+        set_color_hsv(Hsv::from_floats((floats.0, floats.1, floats.2)));
+        let hsv = DynamicColor::from_color(color_hsv());
         set_color(hsv.set_color_space(color().color_space()));
     };
 
