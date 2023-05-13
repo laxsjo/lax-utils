@@ -44,7 +44,10 @@ impl ColorSpace {
         }
     }
 
-    pub fn clamp_color_components(&self, components: (f64, f64, f64)) -> (f64, f64, f64) {
+    pub fn clamp_color_components(
+        &self,
+        components: (f64, f64, f64),
+    ) -> (f64, f64, f64) {
         let clamp = match self {
             ColorSpace::Rgb => Rgb::clamp_components,
             ColorSpace::Hsl => Hsl::clamp_components,
@@ -54,7 +57,10 @@ impl ColorSpace {
         clamp(components)
     }
 
-    fn components_to_floats(&self, components: (f64, f64, f64)) -> (f64, f64, f64) {
+    fn components_to_floats(
+        &self,
+        components: (f64, f64, f64),
+    ) -> (f64, f64, f64) {
         let convert = match self {
             ColorSpace::Rgb => Rgb::components_to_floats,
             ColorSpace::Hsl => Hsl::components_to_floats,
@@ -104,7 +110,10 @@ impl DynamicColor {
         }
     }
 
-    pub fn from_floats(floats: (f64, f64, f64), color_space: ColorSpace) -> Self {
+    pub fn from_floats(
+        floats: (f64, f64, f64),
+        color_space: ColorSpace,
+    ) -> Self {
         Self {
             components: color_space.floats_to_components(floats),
             color_space,
@@ -407,7 +416,9 @@ impl Color for Hsl {
             _ if max == r => (g - b) / delta + (if g < b { 6. } else { 0. }),
             _ if max == g => (b - r) / delta + 2.,
             _ if max == b => (r - g) / delta + 4.,
-            _ => panic!("float comparison failed for finding maximum component"),
+            _ => {
+                panic!("float comparison failed for finding maximum component")
+            }
         } / 6.;
 
         Self::from_floats((h, s, l))
@@ -453,7 +464,11 @@ impl Color for Hsv {
 
         if s == 0. {
             let adjusted_value = v / 100. * 255.;
-            return Rgb::from_components((adjusted_value, adjusted_value, adjusted_value));
+            return Rgb::from_components((
+                adjusted_value,
+                adjusted_value,
+                adjusted_value,
+            ));
         }
 
         let (_, s_float, v_float) = self.as_floats();
@@ -463,7 +478,8 @@ impl Color for Hsv {
         let x = c * (1. - ((h / 60. % 2.) - 1.).abs());
         let m = v_float - c;
 
-        // These aren't really the final r, g, and b float components. See below.
+        // These aren't really the final r, g, and b float components. See
+        // below.
         let (r, g, b) = match () {
             _ if (0.0..=59.0).contains(&h) => (c, x, 0.),
             _ if (60.0..=119.0).contains(&h) => (x, c, 0.),

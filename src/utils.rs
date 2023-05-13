@@ -5,8 +5,8 @@ use num_traits::{AsPrimitive, Float};
 
 pub trait FloatUtils: Float {
     /// Round float to a specified amount of decimal digits.
-    /// Positive values for `digits` specify the amount of digits before the decimal
-    /// point and negative values specify
+    /// Positive values for `digits` specify the amount of digits before the
+    /// decimal point and negative values specify
     /// the amount after.
     ///
     /// **Note:** This doesn't seem to be safe for very large floats. Proceed
@@ -61,7 +61,8 @@ pub trait FloatUtils: Float {
 
         let len = str.chars().count();
 
-        let point_index = str.chars().position(|char| char == '.').unwrap_or(len) as isize;
+        let point_index =
+            str.chars().position(|char| char == '.').unwrap_or(len) as isize;
 
         let index = if digit >= 0 {
             point_index - 1 - digit
@@ -89,7 +90,8 @@ pub trait FloatUtils: Float {
         // ? How can I remove this extra expect, while keeping the formatting
         // from `panic!`;
         char.to_digit(10)
-            .expect("float string contains only decimal characters '.0-9'") as u8
+            .expect("float string contains only decimal characters '.0-9'")
+            as u8
     }
 
     // Prone to floating point issues:
@@ -99,11 +101,8 @@ pub trait FloatUtils: Float {
     //     f64: AsPrimitive<Self>,
     // {
     //     let ten: Self = 10.0_f64.as_();
-
     //     let factor = ten.powi(-digit - 1);
-
     //     let fractional = (self * factor).fract();
-
     //     (fractional * ten).floor().as_()
     // }
 
@@ -115,7 +114,8 @@ pub trait FloatUtils: Float {
 
         let len = string.chars().count();
 
-        let point_index = string.chars().position(|char| char == '.').unwrap_or(len);
+        let point_index =
+            string.chars().position(|char| char == '.').unwrap_or(len);
 
         let Some(non_zero_index_back) = string.chars().rev().position(|char| char != '0') else {
             return 0;
@@ -130,8 +130,8 @@ pub trait FloatUtils: Float {
     }
 
     /// Check if two floats are equal to a specified decimal digits.
-    /// Positive values for `digits` specify the amount of digits before the decimal
-    /// point, and negative values specify the amount after.
+    /// Positive values for `digits` specify the amount of digits before the
+    /// decimal point, and negative values specify the amount after.
     ///
     /// **Note:** This naturally rounds the floats to the nearest integer in a
     /// step, instead of simply flooring them (see example 3).
@@ -183,17 +183,23 @@ impl<F> FloatUtils for F where F: Float {}
 /// assert_eq!(naturally_format_float(1.23000, 1, 3), "1.23".to_owned());
 /// assert_eq!(naturally_format_float(1.00000, 1, 3), "1.0".to_owned());
 /// ```
-pub fn naturally_format_float(float: f64, min_decimals: usize, max_decimals: usize) -> String {
+pub fn naturally_format_float(
+    float: f64,
+    min_decimals: usize,
+    max_decimals: usize,
+) -> String {
     // float.fract()
     let float = float.round_digits(-(max_decimals as i32));
 
-    let decimal_places = float.decimal_places().clamp(min_decimals, max_decimals);
+    let decimal_places =
+        float.decimal_places().clamp(min_decimals, max_decimals);
 
     format!("{:.*}", decimal_places, float)
 }
 
 /// Update a input value with a new modified version of the same value, keeping
-/// it unchanged if they are sufficiently similar (to get around floating point errors).
+/// it unchanged if they are sufficiently similar (to get around floating point
+/// errors).
 #[allow(unused)]
 pub fn sync_input_value_float(
     input_element: &HtmlElement<Input>,
@@ -201,7 +207,8 @@ pub fn sync_input_value_float(
     decimals: usize,
     format_fn: impl FnOnce(f64) -> String,
 ) {
-    let current_value = input_element.value().parse_input::<f64>().unwrap_or(0.);
+    let current_value =
+        input_element.value().parse_input::<f64>().unwrap_or(0.);
 
     if !value.float_compare_digits(current_value, -(decimals as i32)) {
         input_element.set_value(&format_fn(value));
