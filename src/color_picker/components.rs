@@ -2,6 +2,7 @@ use leptos::{ev::*, html::*, *};
 use wasm_bindgen::prelude::*;
 
 use crate::color_picker::*;
+use crate::components::*;
 use crate::string_utils::*;
 use crate::utils::*;
 
@@ -9,12 +10,15 @@ use crate::utils::*;
 pub fn ColorPicker(cx: Scope) -> impl IntoView {
     const DECIMAL_PRECISION: usize = 2;
 
-    let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
+    let (color_space, _set_color_space) = create_signal(cx, ColorSpace::Rgb);
 
-    let (color, set_color) =
-        create_signal(cx, DynamicColor::from_floats((1., 1., 1.), color_space()));
+    let (color, set_color) = create_signal(
+        cx,
+        DynamicColor::from_floats((1., 1., 1.), color_space()),
+    );
 
-    let (color_hsv, set_color_hsv) = create_signal(cx, color().to_color::<Hsv>());
+    let (color_hsv, set_color_hsv) =
+        create_signal(cx, color().to_color::<Hsv>());
 
     let set_color_sync_hsv_color = move |color: DynamicColor| {
         set_color(color);
@@ -64,9 +68,11 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
         // log!("set components {:?}, floats {:?}", components, floats);
 
-        let format_component = |value: f64| -> _ { naturally_format_float(value, 0, 2) };
+        let format_component =
+            |value: f64| -> _ { naturally_format_float(value, 0, 2) };
 
-        let format_float = |value: f64| -> _ { naturally_format_float(value, 1, 2) };
+        let format_float =
+            |value: f64| -> _ { naturally_format_float(value, 1, 2) };
 
         sync_input_value_float(
             &component_1,
@@ -87,9 +93,24 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             format_component,
         );
 
-        sync_input_value_float(&float_1, floats.0, DECIMAL_PRECISION, format_float);
-        sync_input_value_float(&float_2, floats.1, DECIMAL_PRECISION, format_float);
-        sync_input_value_float(&float_3, floats.2, DECIMAL_PRECISION, format_float);
+        sync_input_value_float(
+            &float_1,
+            floats.0,
+            DECIMAL_PRECISION,
+            format_float,
+        );
+        sync_input_value_float(
+            &float_2,
+            floats.1,
+            DECIMAL_PRECISION,
+            format_float,
+        );
+        sync_input_value_float(
+            &float_3,
+            floats.2,
+            DECIMAL_PRECISION,
+            format_float,
+        );
     });
 
     let update_with_components = move |_| {
@@ -161,6 +182,8 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let on_value_float_change = move |value: f64| {
         update_with_hsv_floats((hue_float(), sat_float(), value));
     };
+
+    let (options, set_options) = create_signal(cx, vec![0, 1, 2]);
 
     view! { cx,
         <div
@@ -301,7 +324,8 @@ where
             on_pointer_move_color(ev);
         }
     };
-    // let on_pointer_move_color_closure = wrap_closure_as_event_listener(on_pointer_move_color);
+    // let on_pointer_move_color_closure =
+    // wrap_closure_as_event_listener(on_pointer_move_color);
 
     let on_pointer_down = move |_: PointerEvent| {
         set_dragging(true);
@@ -335,7 +359,11 @@ where
 }
 
 #[component]
-pub fn HueSlider<F>(cx: Scope, #[prop(into)] hue: Signal<f64>, set_hue: F) -> impl IntoView
+pub fn HueSlider<F>(
+    cx: Scope,
+    #[prop(into)] hue: Signal<f64>,
+    set_hue: F,
+) -> impl IntoView
 where
     F: Fn(f64) + Copy + 'static,
 {

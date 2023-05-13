@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::string_utils::*;
 use approx::*;
 use leptos::html::*;
@@ -213,4 +215,12 @@ pub fn sync_input_value_float(
     if !value.float_compare_digits(current_value, -(decimals as i32)) {
         input_element.set_value(&format_fn(value));
     }
+}
+
+/// Like the [Display] trait, but for UI.
+pub trait UiDisplay: Display {
+    /// For dynamic environment state, like the current language.
+    type Environment: Default + Copy;
+
+    fn to_ui_string(&self, env: Self::Environment) -> String;
 }
