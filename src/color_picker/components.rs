@@ -10,7 +10,12 @@ use crate::utils::*;
 pub fn ColorPicker(cx: Scope) -> impl IntoView {
     const DECIMAL_PRECISION: usize = 2;
 
-    let (color_space, _set_color_space) = create_signal(cx, ColorSpace::Rgb);
+    let (color_space_options, _) = create_signal(
+        cx,
+        vec![ColorSpace::Rgb, ColorSpace::Hsl, ColorSpace::Hsv],
+    );
+
+    let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
 
     let (color, set_color) = create_signal(
         cx,
@@ -28,6 +33,10 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     create_effect(cx, move |_| {
         set_color(color().set_color_space(color_space()));
     });
+
+    let on_color_space_change = move |color_space: Option<_>| {
+        color_space.map(|color_space| set_color_space(color_space));
+    };
 
     let component_1_ref = create_node_ref::<Input>(cx);
     let component_2_ref = create_node_ref::<Input>(cx);
@@ -183,7 +192,11 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         update_with_hsv_floats((hue_float(), sat_float(), value));
     };
 
-    let (options, set_options) = create_signal(cx, vec![0, 1, 2]);
+    let id = unique_id();
+
+    let select_id = Signal::derive(cx, move || {
+        Some(format!("color-picker-color-space_{}", id))
+    });
 
     view! { cx,
         <div
@@ -203,6 +216,16 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 />
             </div>
             <div class="controls">
+                <div class="color-space">
+                    <label for=select_id>
+                        "Color Space"
+                    </label>
+                    <FancySelect
+                        items=color_space_options
+                        on_select=on_color_space_change
+                        select_id=select_id
+                    />
+                </div>
                 <div class="integers">
                     <input
                         type="text"

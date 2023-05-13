@@ -1,9 +1,11 @@
-use std::fmt::Display;
-
 use crate::string_utils::*;
 use approx::*;
 use leptos::html::*;
 use num_traits::{AsPrimitive, Float};
+use std::{
+    fmt::Display,
+    sync::atomic::{AtomicU64, Ordering},
+};
 
 pub trait FloatUtils: Float {
     /// Round float to a specified amount of decimal digits.
@@ -217,8 +219,14 @@ pub fn sync_input_value_float(
     }
 }
 
+pub fn unique_id() -> u64 {
+    // Interesting link: https://doc.rust-lang.org/nightly/nomicon/atomics.html
+    static COUNTER: AtomicU64 = AtomicU64::new(1);
+    COUNTER.fetch_add(1, Ordering::Relaxed)
+}
+
 /// Like the [Display] trait, but for UI.
-pub trait UiDisplay: Display {
+pub trait UiDisplay {
     /// For dynamic environment state, like the current language.
     type Environment: Default + Copy;
 

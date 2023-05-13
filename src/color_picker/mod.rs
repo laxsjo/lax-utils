@@ -1,5 +1,7 @@
 pub mod components;
 
+use crate::utils::*;
+
 #[derive(Debug, Clone, Copy)]
 pub struct ColorSpaceInfo {
     pub labels: (&'static str, &'static str, &'static str),
@@ -10,7 +12,7 @@ pub struct ColorSpaceInfo {
     ),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ColorSpace {
     Rgb,
     Hsl,
@@ -93,6 +95,19 @@ impl ColorSpace {
             ColorSpace::Hsl => Hsl::from_components(components).as_rgb(),
             ColorSpace::Hsv => Hsv::from_components(components).as_rgb(),
         }
+    }
+}
+
+impl UiDisplay for ColorSpace {
+    type Environment = ();
+
+    fn to_ui_string(&self, _env: Self::Environment) -> String {
+        match self {
+            ColorSpace::Rgb => "RGB",
+            ColorSpace::Hsl => "HSL",
+            ColorSpace::Hsv => "HSV",
+        }
+        .to_owned()
     }
 }
 
