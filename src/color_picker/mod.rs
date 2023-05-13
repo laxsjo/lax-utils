@@ -102,6 +102,10 @@ impl DynamicColor {
         }
     }
 
+    pub fn from_color<C: Color>(color: C) -> Self {
+        Self::new(color.as_components(), C::COLOR_SPACE)
+    }
+
     pub fn components(&self) -> (u16, u16, u16) {
         self.components
     }
@@ -137,6 +141,7 @@ impl DynamicColor {
 
 pub trait Color {
     const COMPONENT_MAXES: (u16, u16, u16);
+    const COLOR_SPACE: ColorSpace;
 
     fn as_components(&self) -> (u16, u16, u16);
     fn from_components(components: (u16, u16, u16)) -> Self
@@ -224,6 +229,7 @@ pub struct Rgb {
 
 impl Color for Rgb {
     const COMPONENT_MAXES: (u16, u16, u16) = (255, 255, 255);
+    const COLOR_SPACE: ColorSpace = ColorSpace::Rgb;
 
     fn as_components(&self) -> (u16, u16, u16) {
         (self.r as u16, self.g as u16, self.b as u16)
@@ -268,6 +274,7 @@ pub struct Hsl {
 
 impl Color for Hsl {
     const COMPONENT_MAXES: (u16, u16, u16) = (360, 100, 100);
+    const COLOR_SPACE: ColorSpace = ColorSpace::Hsl;
 
     fn as_components(&self) -> (u16, u16, u16) {
         (self.h, self.s, self.l)
@@ -380,6 +387,7 @@ pub struct Hsv {
 
 impl Color for Hsv {
     const COMPONENT_MAXES: (u16, u16, u16) = (360, 100, 100);
+    const COLOR_SPACE: ColorSpace = ColorSpace::Hsv;
 
     fn as_components(&self) -> (u16, u16, u16) {
         (self.h, self.s, self.v)

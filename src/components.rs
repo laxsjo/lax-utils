@@ -1,10 +1,10 @@
-use gloo_events::*;
 use leptos::{ev::*, html::*, *};
-use leptos_meta::*;
 use leptos_router::*;
 use wasm_bindgen::prelude::*;
 
 use crate::color_picker::*;
+use crate::string_utils::*;
+use crate::utils::*;
 
 #[component]
 pub fn RouteLink(cx: Scope, route_name: &'static str, children: Children) -> impl IntoView {
@@ -22,22 +22,9 @@ pub fn RouteLink(cx: Scope, route_name: &'static str, children: Children) -> imp
 
 #[component]
 pub fn ColorPicker(cx: Scope) -> impl IntoView {
-    let (hue_float, set_hue_float) = create_signal(cx, 0.);
-    let (sat_float, set_sat_float) = create_signal(cx, 0.);
-    let (value_float, set_value_float) = create_signal(cx, 0.);
+    const DECIMAL_PRECISION: usize = 2;
 
-    // let test: Box<dyn Color>;
-
-    let (color_rgb, set_color_rgb) = create_signal(
-        cx,
-        Rgb {
-            r: 255,
-            g: 255,
-            b: 255,
-        },
-    );
-
-    let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
+    let (color, set_color) = create_signal(cx, DynamicColor::new((255, 255, 255), ColorSpace::Rgb));
 
     let component_1_ref = create_node_ref::<Input>(cx);
     let component_2_ref = create_node_ref::<Input>(cx);
@@ -46,83 +33,210 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let float_component_2_ref = create_node_ref::<Input>(cx);
     let float_component_3_ref = create_node_ref::<Input>(cx);
 
-    let update_with_inputs = move || {
-        // let component_1
+    create_effect(cx, move |_| {
+        let components = color().components();
+        let floats = color().as_floats();
+
+        let Some(component_1) = component_1_ref.get() else {
+            // error!("couldn't find component_1");
+            return;
+        };
+        let Some(component_2) = component_2_ref.get() else {
+            // error!("couldn't find component_2");
+            return;
+        };
+        let Some(component_3) = component_3_ref.get() else {
+            // error!("couldn't find component_3");
+            return;
+        };
+
+        let Some(float_1) = float_component_1_ref.get() else {
+            // error!("couldn't find float_component_1");
+            return;
+        };
+        let Some(float_2) = float_component_2_ref.get() else {
+            // error!("couldn't find float_component_2");
+            return;
+        };
+        let Some(float_3) = float_component_3_ref.get() else {
+            // error!("couldn't find float_component_3");
+            return;
+        };
+
+        log!("set components {:?}, floats {:?}", components, floats);
+
+        let format_component = |value: f64| -> _ { naturally_format_float(value, 0, 2) };
+
+        let format_float = |value: f64| -> _ { naturally_format_float(value, 1, 2) };
+
+        sync_input_value_float(
+            &component_1,
+            components.0 as f64,
+            DECIMAL_PRECISION,
+            format_component,
+        );
+        sync_input_value_float(
+            &component_2,
+            components.1 as f64,
+            DECIMAL_PRECISION,
+            format_component,
+        );
+        sync_input_value_float(
+            &component_3,
+            components.2 as f64,
+            DECIMAL_PRECISION,
+            format_component,
+        );
+
+        sync_input_value_float(&float_1, floats.0, DECIMAL_PRECISION, format_float);
+        sync_input_value_float(&float_2, floats.1, DECIMAL_PRECISION, format_float);
+        sync_input_value_float(&float_3, floats.2, DECIMAL_PRECISION, format_float);
+    });
+
+    let update_with_components = move |_| {
+        let Some(component_1) = component_1_ref.get() else {
+            error!("couldn't find component_1");
+            return;
+        };
+        let Some(component_2) = component_2_ref.get() else {
+            error!("couldn't find component_2");
+            return;
+        };
+        let Some(component_3) = component_3_ref.get() else {
+            error!("couldn't find component_3");
+            return;
+        };
+
+        let components = (
+            component_1.value().parse_input::<u16>().unwrap_or(0),
+            component_2.value().parse_input::<u16>().unwrap_or(0),
+            component_3.value().parse_input::<u16>().unwrap_or(0),
+        );
+
+        log!("got components {:?}", components);
+
+        set_color(color().set_components(components));
+    };
+    let update_with_floats = move |_| {
+        let Some(float_1) = float_component_1_ref.get() else {
+            error!("couldn't find float_component_1");
+            return;
+        };
+        let Some(float_2) = float_component_2_ref.get() else {
+            error!("couldn't find float_component_2");
+            return;
+        };
+        let Some(float_3) = float_component_3_ref.get() else {
+            error!("couldn't find float_component_3");
+            return;
+        };
+
+        let floats = (
+            float_1.value().parse_input::<f64>().unwrap_or(0.),
+            float_2.value().parse_input::<f64>().unwrap_or(0.),
+            float_3.value().parse_input::<f64>().unwrap_or(0.),
+        );
+
+        log!("got floats {:?}", floats);
+
+        set_color(color().set_floats(floats));
     };
 
-    let on_input = move |_| {};
+    let (hue_float, set_hue_float) = create_signal(cx, 0.);
+    let (sat_float, set_sat_float) = create_signal(cx, 0.);
+    let (value_float, set_value_float) = create_signal(cx, 0.);
+
+    let update_with_hsv_floats = move || {
+        let hsv =
+            DynamicColor::from_color(Hsv::from_floats((hue_float(), sat_float(), value_float())));
+        set_color(hsv.set_color_space(color().color_space()));
+    };
+
+    let on_hue_float_change = move |hue: f64| {
+        set_hue_float(hue);
+
+        update_with_hsv_floats();
+    };
+    let on_sat_float_change = move |sat: f64| {
+        set_sat_float(sat);
+
+        update_with_hsv_floats();
+    };
+    let on_value_float_change = move |value: f64| {
+        set_value_float(value);
+
+        update_with_hsv_floats();
+    };
 
     view! { cx,
         <div
             class="color-picker"
-            // style=custom_properties
         >
-            <div class="color-picker__map">
+            <div class="map">
                 <SatValueSurface
                     sat=sat_float
-                    set_sat=set_sat_float
+                    set_sat=on_sat_float_change
                     value=value_float
-                    set_value=set_value_float
+                    set_value=on_value_float_change
                     hue=hue_float
                 />
                 <HueSlider
                     hue=hue_float
-                    set_hue=set_hue_float
+                    set_hue=on_hue_float_change
                 />
-                // <div
-                //     class="color-picker__hue"
-                //     on:pointerdown=on_pointer_down_hue
-                //     _ref=hue_surface_ref
-                // >
-                //     <div class="color-picker__hue__cursor"/>
-                // </div>
-                <div class="controls">
-                    <div class="integers">
-                        <input
-                            type="text"
-                            inputmode="decimal"
-                            placeholder="100"
-                            on:input=on_input
-                            _ref=component_1_ref
-                        />
-                        <input
-                            type="text"
-                            inputmode="decimal"
-                            placeholder="100"
-                            on:input=on_input
-                            _ref=component_1_ref
-                        />
-                        <input
-                            type="text"
-                            inputmode="decimal"
-                            placeholder="100"
-                            on:input=on_input
-                            _ref=component_3_ref
-                        />
-                    </div>
-                    <div class="floats">
-                        <input
-                            type="text"
-                            inputmode="decimal"
-                            placeholder="1.0"
-                            on:input=on_input
-                            _ref=float_component_1_ref
-                        />
-                        <input
-                            type="text"
-                            inputmode="decimal"
-                            placeholder="1.0"
-                            on:input=on_input
-                            _ref=float_component_2_ref
-                        />
-                        <input
-                            type="text"
-                            inputmode="decimal"
-                            placeholder="1.0"
-                            on:input=on_input
-                            _ref=float_component_3_ref
-                        />
-                    </div>
+            </div>
+            <div class="controls">
+                <div class="integers">
+                    <input
+                        type="text"
+                        inputmode="decimal"
+                        placeholder="100"
+                        value="255"
+                        on:input=update_with_components
+                        _ref=component_1_ref
+                    />
+                    <input
+                        type="text"
+                        inputmode="decimal"
+                        placeholder="100"
+                        value="255"
+                        on:input=update_with_components
+                        _ref=component_2_ref
+                    />
+                    <input
+                        type="text"
+                        inputmode="decimal"
+                        placeholder="100"
+                        value="255"
+                        on:input=update_with_components
+                        _ref=component_3_ref
+                    />
+                </div>
+                <div class="floats">
+                    <input
+                        type="text"
+                        inputmode="decimal"
+                        placeholder="1.0"
+                        value="1.0"
+                        on:input=update_with_floats
+                        _ref=float_component_1_ref
+                    />
+                    <input
+                        type="text"
+                        inputmode="decimal"
+                        placeholder="1.0"
+                        value="1.0"
+                        on:input=update_with_floats
+                        _ref=float_component_2_ref
+                    />
+                    <input
+                        type="text"
+                        inputmode="decimal"
+                        placeholder="1.0"
+                        value="1.0"
+                        on:input=update_with_floats
+                        _ref=float_component_3_ref
+                    />
                 </div>
             </div>
         </div>
@@ -130,21 +244,25 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn SatValueSurface(
+pub fn SatValueSurface<S, V>(
     cx: Scope,
     #[prop(into)] sat: Signal<f64>,
-    set_sat: WriteSignal<f64>,
+    set_sat: S,
     #[prop(into)] value: Signal<f64>,
-    set_value: WriteSignal<f64>,
+    set_value: V,
     #[prop(into)] hue: Signal<f64>,
-) -> impl IntoView {
+) -> impl IntoView
+where
+    S: Fn(f64) + Copy + 'static,
+    V: Fn(f64) + Copy + 'static,
+{
     let (dragging, set_dragging) = create_signal(cx, false);
 
     let custom_properties = move || {
         format!(
             "--cursor-x: {}; --cursor-y: {}; --current-hue: {};",
             sat(),
-            value(),
+            1. - value(),
             hue(),
         )
     };
@@ -177,7 +295,7 @@ pub fn SatValueSurface(
         let y = ((global_y - element_y) / height).clamp(0., 1.);
 
         set_sat(x);
-        set_value(y);
+        set_value(1. - y);
     };
 
     let on_pointer_move = move |ev: Event| {
@@ -223,11 +341,10 @@ pub fn SatValueSurface(
 }
 
 #[component]
-pub fn HueSlider(
-    cx: Scope,
-    #[prop(into)] hue: Signal<f64>,
-    set_hue: WriteSignal<f64>,
-) -> impl IntoView {
+pub fn HueSlider<F>(cx: Scope, #[prop(into)] hue: Signal<f64>, set_hue: F) -> impl IntoView
+where
+    F: Fn(f64) + Copy + 'static,
+{
     let (dragging, set_dragging) = create_signal(cx, false);
 
     let custom_properties = move || format!("--hue: {}", hue());

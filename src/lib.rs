@@ -2,6 +2,8 @@ pub mod app;
 pub mod color_picker;
 pub mod components;
 pub mod routes;
+pub mod string_utils;
+pub mod utils;
 
 use cfg_if::cfg_if;
 use leptos::*;

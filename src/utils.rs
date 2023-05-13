@@ -187,8 +187,6 @@ pub fn naturally_format_float(float: f64, min_decimals: usize, max_decimals: usi
     // float.fract()
     let float = float.round_digits(-(max_decimals as i32));
 
-    log!("{}", float);
-
     let decimal_places = float.decimal_places().clamp(min_decimals, max_decimals);
 
     format!("{:.*}", decimal_places, float)
