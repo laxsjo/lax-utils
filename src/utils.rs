@@ -1,6 +1,6 @@
 use crate::string_utils::*;
 use approx::*;
-use leptos::html::*;
+use leptos::{html::*, *};
 use num_traits::{AsPrimitive, Float};
 
 pub trait FloatUtils: Float {
@@ -133,9 +133,8 @@ pub trait FloatUtils: Float {
     /// Positive values for `digits` specify the amount of digits before the decimal
     /// point, and negative values specify the amount after.
     ///
-    /// **Note:** This does not naturally round the floats, but instead floors them to
-    /// cut of the unwanted digits.
-    /// TODO: Maybe this should change?
+    /// **Note:** This naturally rounds the floats to the nearest integer in a
+    /// step, instead of simply flooring them (see example 3).
     ///
     /// # Examples
     /// ```
@@ -143,6 +142,7 @@ pub trait FloatUtils: Float {
     ///
     /// assert!(1.0_f64.float_compare_digits(1.002, -2));
     /// assert!(!1.0_f64.float_compare_digits(1.002, -3));
+    /// assert!(1.01_f64.float_compare_digits(1.008, -2));
     /// assert!(0.000011_f64.float_compare_digits(0.0000112, -6));
     /// assert!(!0.000011_f64.float_compare_digits(0.0000112, -7));
     /// assert!(100150.0_f64.float_compare_digits(100000., 4));
@@ -164,7 +164,7 @@ pub trait FloatUtils: Float {
         // you should read
         // https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
         // (I was too tired to read it when writing this)
-        ulps_eq!((self * factor).floor(), (other * factor).floor())
+        ulps_eq!((self * factor).round(), (other * factor).round())
     }
 }
 
@@ -187,15 +187,12 @@ pub fn naturally_format_float(float: f64, min_decimals: usize, max_decimals: usi
     // float.fract()
     let float = float.round_digits(-(max_decimals as i32));
 
-    println!("{}", float);
+    log!("{}", float);
 
     let decimal_places = float.decimal_places().clamp(min_decimals, max_decimals);
 
     format!("{:.*}", decimal_places, float)
 }
-
-#[test]
-fn test() {}
 
 /// Update a input value with a new modified version of the same value, keeping
 /// it unchanged if they are sufficiently similar (to get around floating point errors).
