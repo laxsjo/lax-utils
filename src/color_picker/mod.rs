@@ -1,3 +1,5 @@
+pub mod components;
+
 #[derive(Debug, Clone, Copy)]
 pub struct ColorSpaceInfo {
     pub labels: (&'static str, &'static str, &'static str),

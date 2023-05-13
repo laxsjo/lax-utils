@@ -1,4 +1,4 @@
-use crate::components::*;
+use crate::color_picker::components::*;
 use crate::*;
 use leptos::*;
 
