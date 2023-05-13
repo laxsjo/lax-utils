@@ -88,7 +88,7 @@ impl ColorSpace {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DynamicColor {
     components: (u16, u16, u16),
     color_space: ColorSpace,
@@ -104,6 +104,10 @@ impl DynamicColor {
 
     pub fn from_color<C: Color>(color: C) -> Self {
         Self::new(color.as_components(), C::COLOR_SPACE)
+    }
+
+    pub fn to_color<C: Color>(self) -> C {
+        C::from_components(self.set_color_space(C::COLOR_SPACE).components)
     }
 
     pub fn components(&self) -> (u16, u16, u16) {
@@ -220,7 +224,7 @@ pub trait Color {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Rgb {
     pub r: u8,
     pub g: u8,
@@ -265,7 +269,7 @@ impl Color for Rgb {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Hsl {
     pub h: u16,
     pub s: u16,
@@ -378,7 +382,7 @@ impl Color for Hsl {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Hsv {
     pub h: u16,
     pub s: u16,
@@ -442,6 +446,7 @@ impl Color for Hsv {
     }
 
     /// Source: https://www.rapidtables.com/convert/color/rgb-to-hsv.html
+    /// Fixes from: https://mattlockyer.github.io/iat455/documents/rgb-hsv.pdf
     fn from_rgb(rgb: Rgb) -> Self
     where
         Self: Sized,
@@ -453,17 +458,18 @@ impl Color for Hsv {
 
         let delta = max - min;
 
-        let h_degrees = 60.
-            * if delta == 0. {
-                0.
-            } else if max == r {
-                (g - b) / delta % 6.
-            } else if max == g {
-                (b - r) / delta + 2.
-            } else {
-                // blue is max
-                (r - g) / delta + 4.
-            };
+        let h_degrees = if delta == 0. {
+            0.
+        } else if max == r {
+            (g - b) / delta
+        } else if max == g {
+            (b - r) / delta + 2.
+        } else {
+            // blue is max
+            (r - g) / delta + 4.
+        }
+        .rem_euclid(6.)
+            * 60.;
         let h = h_degrees / 360.;
 
         let s = if max == 0. { 0. } else { delta / max };
