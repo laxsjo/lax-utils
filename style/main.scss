@@ -16,17 +16,30 @@ body {
 	font-family: sans-serif;
 	text-align: center;
 
-	color: var(--main-fg);
+	color: var(--fg-primary);
 
-	background-color: var(--main-bg);
+	background-color: var(--bg-primary);
+}
+
+:link {
+	color: var(--fg-link);
+
+	&:visited {
+		color: var(--fg-link-visited);
+	}
+
+	&:hover,
+	&:focus-visible {
+		color: var(--fg-link-hover);
+	}
 }
 
 .side-nav {
 	grid-area: menu;
 
-	color: var(--secondary-fg);
+	color: var(--fg-primary);
 
-	background-color: var(--secondary-bg);
+	background-color: var(--bg-header);
 
 	nav {
 		display: flex;
@@ -64,17 +77,27 @@ body {
 			transition: background-color ease 0.2s;
 
 			&.active {
-				background-color: var(--secondary-selected-bg);
+				background-color: var(--bg-btn-primary);
+
+				&:hover,
+				&:focus-visible {
+					background-color: var(--bg-btn-primary-hover);
+				}
+				&:active {
+					background-color: var(--bg-btn-primary-active);
+				}
 			}
 
 			&:hover,
 			&:focus-visible {
-				background-color: var(--secondary-hover-bg);
+				background-color: var(--bg-btn-secondary-hover);
 			}
 
 			&:active {
-				background-color: var(--secondary-active-bg);
-				box-shadow: 0 0 0.2em var(--shadow);
+				color: var(--fg-primary);
+
+				background-color: var(--bg-btn-secondary-active);
+				// box-shadow: 0 0 0.2em var(--shadow);
 
 				transition: none;
 			}

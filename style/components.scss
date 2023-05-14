@@ -104,7 +104,7 @@
 		width: 1rem;
 		height: 1rem;
 
-		border: 2px solid var(--main-fg);
+		border: 2px solid white;
 		border-radius: 50%;
 	}
 
@@ -163,9 +163,9 @@
 
 		border-radius: var(--width);
 
-		background-color: var(--main-fg);
+		background-color: white;
 	}
 }
 
-.copyable-label {
-}
+// .copyable-label {
+// }

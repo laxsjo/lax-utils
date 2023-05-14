@@ -1,12 +1,39 @@
 :root {
-	--main-bg: hsl(10, 0%, 33%);
-	--main-fg: hsl(210, 10%, 90%);
+	// --main-bg: hsl(10, 0%, 33%);
+	// --main-fg: hsl(210, 10%, 90%);
 
-	--secondary-bg: hsl(10, 15%, 37%);
-	--secondary-hover-bg: hsl(10, 20%, 50%);
-	--secondary-active-bg: hsl(10, 30%, 40%);
-	--secondary-selected-bg: hsl(10, 50%, 40%);
-	--secondary-fg: hsl(210, 10%, 98%);
+	// --secondary-bg: hsl(10, 15%, 37%);
+	// --secondary-hover-bg: hsl(10, 20%, 50%);
+	// --secondary-active-bg: hsl(10, 30%, 40%);
+	// --secondary-selected-bg: hsl(10, 50%, 40%);
+	// --secondary-fg: hsl(210, 10%, 98%);
 
-	--shadow: hsl(0 0% 10% / 0.8);
+	// --shadow: hsl(0 0% 10% / 0.8);
+
+	--fg-primary: hsl(0 0% 93%);
+	--bg-primary: hsl(0 0% 11%);
+
+	--bg-secondary: hsl(0 0% 15%);
+
+	--bg-input: hsl(0 0% 20%);
+	--bg-input-hover: hsl(0 0% 25%);
+	--fg-input: hsl(0 0% 80%);
+
+	--bg-header: hsl(230 7% 18%);
+
+	--bg-btn-primary: hsl(274 80% 20%);
+	--bg-btn-primary-hover: hsl(274 80% 30%);
+	--bg-btn-primary-active: hsl(274 90% 25%);
+
+	--bg-btn-secondary: hsl(0 0% 7%);
+	--bg-btn-secondary-hover: hsl(0 0% 15%);
+	--bg-btn-secondary-active: hsl(0 0% 10%);
+
+	--accent: hsl(274 100% 24%);
+
+	--fg-focus: hsl(94 100% 24%);
+
+	--fg-link: hsl(232 69% 67%);
+	--fg-link-hover: hsl(354 85% 63%);
+	--fg-link-visited: hsl(300 33% 59%);
 }
