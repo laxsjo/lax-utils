@@ -18,10 +18,11 @@
 	--hue-cursor: 1;
 	display: grid;
 	grid:
-		"map" 20rem
-		"components" auto
-		"floats" auto
-		/ 20rem;
+		"map display" 20rem
+		"color-space ." auto
+		"components ." auto
+		"floats ." auto
+		/ auto;
 	gap: 0.8rem;
 
 	margin-inline: auto;
@@ -31,11 +32,23 @@
 
 	background-color: var(--bg-secondary);
 
+	input {
+		width: 6ch;
+		padding: 0.6rem;
+
+		font-size: 1.2em;
+		text-align: end;
+
+		border-radius: 0.4rem;
+	}
+
 	.map {
 		display: flex;
 		flex-direction: column;
 		gap: 0.6rem;
-		grid-area: "map";
+		grid-area: map;
+
+		// width: 20rem;
 
 		.sat-value-surface {
 			flex-grow: 1;
@@ -47,11 +60,15 @@
 	.controls {
 		display: contents;
 
+		.color-space {
+			grid-area: color-space;
+		}
+
 		.integers {
-			grid-area: "components";
+			grid-area: components;
 		}
 		.floats {
-			grid-area: "floats";
+			grid-area: floats;
 		}
 
 		.integers,
@@ -63,14 +80,42 @@
 		}
 	}
 
-	input {
-		width: 6ch;
-		padding: 0.6rem;
+	.display {
+		grid-area: display;
+		width: 12rem;
 
-		font-size: 1.2em;
-		text-align: end;
+		.color-display {
+			width: 100%;
+			height: 8rem;
 
-		border-radius: 0.4rem;
+			border-radius: 0.4rem 0.4rem 0 0;
+
+			background-color: rgb(var(--r), var(--g), var(--b));
+		}
+
+		.copyable-label {
+			justify-content: space-between;
+
+			width: 100%;
+
+			font-size: 1.2em;
+
+			border-radius: 0 0 0.4rem 0.4rem;
+
+			.label {
+				display: contents;
+			}
+
+			.prefix {
+				font-size: 1rem;
+
+				color: var(--fg-input);
+			}
+
+			.icon {
+				// font-size: 1rem;
+			}
+		}
 	}
 }
 

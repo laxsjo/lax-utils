@@ -201,6 +201,15 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         update_with_hsv_floats((hue_float(), sat_float(), value));
     };
 
+    let color_display_style = move || {
+        let rgb: Rgb = color().to_color();
+
+        format!(
+            "--r: {}; --g: {}; --b: {};",
+            rgb.r as u8, rgb.g as u8, rgb.b as u8
+        )
+    };
+
     let id = unique_id();
 
     let select_id = Signal::derive(cx, move || {
@@ -289,11 +298,14 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 </div>
             </div>
             <div class="display">
-
+                <div
+                    class="color-display"
+                    style=color_display_style
+                />
                 <CopyableLabel
                     content=hex_code_hashtag
                 >
-                    <span class="label">"#"</span>
+                    <span class="prefix">"#"</span>
                     <span class="code">
                         {hex_code}
                     </span>
