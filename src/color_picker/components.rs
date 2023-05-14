@@ -285,7 +285,9 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             </div>
             <div class="display">
 
-                <CopyableLabel content=hex_code/>
+                <CopyableLabel content=hex_code>
+                    {hex_code}
+                </CopyableLabel>
             </div>
         </div>
     }

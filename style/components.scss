@@ -1,9 +1,10 @@
 @import url("https://css.gg/css");
 
 .icon {
+	--size: 1em;
 	display: inline-block;
-	width: 1em;
-	height: 1em;
+	width: var(--size);
+	height: var(--size);
 	stroke-width: 0;
 	stroke: currentColor;
 	fill: currentColor;
@@ -64,8 +65,9 @@
 
 	input {
 		width: 6ch;
-		padding: 0.4rem;
+		padding: 0.6rem;
 
+		font-size: 1.2em;
 		text-align: end;
 
 		border-radius: 0.4rem;
@@ -177,6 +179,99 @@
 	}
 }
 
+@keyframes popup-slide-up {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, 100%);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translate(-50%, 0);
+	}
+}
+
 .copyable-label {
+	--padding: 0.6rem;
+
+	cursor: pointer;
+
+	display: flex;
+	flex-flow: row nowrap;
+	gap: 0.4rem;
+	align-items: center;
+
+	position: relative;
+
+	width: fit-content;
+	padding: var(--padding);
+
+	color: var(--fg-primary);
+
+	border-radius: 0.4rem;
+	border: none;
+
 	background-color: var(--bg-input);
+
+	.icon {
+		color: var(--fg-input);
+	}
+
+	&:hover,
+	&:focus-visible {
+		background-color: var(--bg-input-hover);
+
+		.icon {
+			color: inherit;
+		}
+	}
+
+	.popup {
+		cursor: default;
+
+		display: flex;
+		flex-flow: row wrap;
+		align-items: center;
+		gap: 0.5rem;
+		opacity: 0;
+
+		position: fixed;
+		// bottom: calc(100% + 0.5rem);
+		bottom: 1.5rem;
+		left: 50%;
+		// left: calc(-1 * var(--padding));
+
+		width: max-content;
+		max-width: 100vw;
+		padding: 0.6rem 0.8rem;
+		margin-inline: auto;
+
+		font-size: 1.15em;
+
+		border-radius: 10000rem;
+
+		background-color: var(--accent);
+
+		transform: translateX(-50%);
+
+		transition: opacity ease-in-out var(--duration-out);
+
+		.icon {
+			--size: 1.3em;
+
+			color: inherit;
+		}
+
+		&.shown {
+			display: flex;
+
+			opacity: 1;
+
+			animation: 0.5s cubic-bezier(0.6, 0.4, 0, 1) none popup-slide-up;
+		}
+
+		&.hidden {
+			display: none;
+		}
+	}
 }
