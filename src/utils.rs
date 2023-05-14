@@ -2,10 +2,7 @@ use crate::string_utils::*;
 use approx::*;
 use leptos::html::*;
 use num_traits::{AsPrimitive, Float};
-use std::{
-    fmt::Display,
-    sync::atomic::{AtomicU64, Ordering},
-};
+use std::sync::atomic::{AtomicU64, Ordering};
 
 pub trait FloatUtils: Float {
     /// Round float to a specified amount of decimal digits.

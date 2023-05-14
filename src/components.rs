@@ -72,3 +72,42 @@ where
         </div>
     }
 }
+
+/// Display an svg icon.
+///
+/// You can browse the available icons here: https://fonts.google.com/icons
+/// The names you specify should be separated by underscores.
+/// E.g. `border_color`
+///
+/// # Maintenance Note
+/// The icons were generated using
+/// [icomoon.io](https://icomoon.io/app/#/select), and exported as a single
+/// svg symbol file called `symbol-defs.svg` on the page, which was then renamed
+/// to `material-icons-defs.svg` and placed in the `assets/` folder.
+#[component]
+pub fn Icon(
+    cx: Scope,
+    /// The icon to display. Should be of the form `<icon_name>`
+    icon_id: &'static str,
+) -> impl IntoView {
+    let use_element_str = format!("<use href=\"#icon-{}\"></use>", icon_id);
+
+    view! { cx,
+        <svg
+            class="icon"
+            viewBox="0 0 24 24"
+        >
+            {use_element_str}
+        </svg>
+    }
+}
+
+#[component]
+pub fn CopyableLabel(cx: Scope) -> impl IntoView {
+    view! { cx,
+        <div class="copyable-label">
+            "Copy me!"
+            <Icon icon_id="content_copy"/>
+        </div>
+    }
+}

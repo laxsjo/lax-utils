@@ -9,6 +9,9 @@ pub fn App(cx: Scope) -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context(cx);
 
+    // This is very cursed
+    let icons_svg = include_str!("../assets/material-icons-defs.svg");
+
     view! {
         cx,
 
@@ -18,6 +21,8 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         // sets the document title
         <Title text="lax-utils"/>
+
+        {icons_svg}
 
         // content for this welcome page
         <Router>

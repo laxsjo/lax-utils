@@ -281,6 +281,9 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     />
                 </div>
             </div>
+            <div class="display">
+                <CopyableLabel/>
+            </div>
         </div>
     }
 }
