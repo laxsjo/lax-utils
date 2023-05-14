@@ -30,6 +30,13 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         set_color_hsv(color.to_color::<Hsv>());
     };
 
+    let hex_code = create_memo(cx, move |_| {
+        let rgb = color().to_color::<Rgb>();
+        rgb.as_hex_code()
+    });
+    let hex_code_hashtag =
+        Signal::derive(cx, move || format!("#{}", hex_code()));
+
     create_effect(cx, move |_| {
         set_color(color().set_color_space(color_space()));
     });
@@ -200,8 +207,6 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         Some(format!("color-picker-color-space_{}", id))
     });
 
-    let (hex_code, _set_hex_code) = create_signal(cx, String::from("copy me"));
-
     view! { cx,
         <div
             class="color-picker"
@@ -285,8 +290,13 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             </div>
             <div class="display">
 
-                <CopyableLabel content=hex_code>
-                    {hex_code}
+                <CopyableLabel
+                    content=hex_code_hashtag
+                >
+                    <span class="label">"#"</span>
+                    <span class="code">
+                        {hex_code}
+                    </span>
                 </CopyableLabel>
             </div>
         </div>

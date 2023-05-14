@@ -293,6 +293,21 @@ pub struct Rgb {
     pub b: f64,
 }
 
+impl Rgb {
+    /// Format rgb color as an hex code.
+    ///
+    /// The three hexadecimal components are returned without the usual hashtag
+    /// prefix.
+    /// E.g. `"f0f0f0"` instead of `"#f0f0f0"`.
+    pub fn as_hex_code(self) -> String {
+        let r = self.r as u8;
+        let g = self.g as u8;
+        let b = self.b as u8;
+
+        format!("{:x}{:x}{:x}", r, g, b)
+    }
+}
+
 impl Color for Rgb {
     const COMPONENT_MAXES: (f64, f64, f64) = (255., 255., 255.);
     const COLOR_SPACE: ColorSpace = ColorSpace::Rgb;
