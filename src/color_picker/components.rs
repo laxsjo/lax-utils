@@ -54,6 +54,12 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let float_component_1_ref = create_node_ref::<Input>(cx);
     let float_component_2_ref = create_node_ref::<Input>(cx);
 
+    let format_component =
+        |value: f64| -> _ { naturally_format_float(value, 0, 2) };
+
+    let format_float =
+        |value: f64| -> _ { naturally_format_float(value, 1, 2) };
+
     create_effect(cx, move |_| {
         let components = color().components();
         let floats = color().as_floats();
@@ -85,12 +91,6 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         };
 
         // log!("set components {:?}, floats {:?}", components, floats);
-
-        let format_component =
-            |value: f64| -> _ { naturally_format_float(value, 0, 2) };
-
-        let format_float =
-            |value: f64| -> _ { naturally_format_float(value, 1, 2) };
 
         sync_input_value_float(
             &component_0,
@@ -131,7 +131,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         );
     });
 
-    let update_with_components = move |_| {
+    let update_with_components = move |ev: Event| {
         let Some(component_0) = component_0_ref.get() else {
             error!("couldn't find component_1");
             return;
@@ -151,11 +151,17 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             component_2.value().parse_input::<f64>().unwrap_or(0.),
         );
 
+        if &ev.type_() == "change" {
+            component_0.set_value(&format_component(components.0));
+            component_1.set_value(&format_component(components.1));
+            component_2.set_value(&format_component(components.2));
+        }
+
         // log!("got components {:?}", components);
 
         set_color_sync_hsv_color(color().set_components(components));
     };
-    let update_with_floats = move |_| {
+    let update_with_floats = move |ev: Event| {
         let Some(float_0) = float_component_0_ref.get() else {
             error!("couldn't find float_component_1");
             return;
@@ -174,6 +180,12 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             float_1.value().parse_input::<f64>().unwrap_or(0.),
             float_2.value().parse_input::<f64>().unwrap_or(0.),
         );
+
+        if &ev.type_() == "change" {
+            float_0.set_value(&format_float(floats.0));
+            float_1.set_value(&format_float(floats.1));
+            float_2.set_value(&format_float(floats.2));
+        }
 
         // log!("got floats {:?}", floats);
 
@@ -278,6 +290,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             placeholder="100"
                             value="255"
                             on:input=update_with_components
+                            on:change=update_with_components
                             _ref=component_0_ref
                         />
                     </LabeledFloatInput>
@@ -291,6 +304,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             placeholder="100"
                             value="255"
                             on:input=update_with_components
+                            on:change=update_with_components
                             _ref=component_1_ref
                         />
                     </LabeledFloatInput>
@@ -304,6 +318,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             placeholder="100"
                             value="255"
                             on:input=update_with_components
+                            on:change=update_with_components
                             _ref=component_2_ref
                         />
                     </LabeledFloatInput>
@@ -319,6 +334,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             placeholder="1.0"
                             value="1.0"
                             on:input=update_with_floats
+                            on:change=update_with_floats
                             _ref=float_component_0_ref
                         />
                     </LabeledFloatInput>
@@ -332,6 +348,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             placeholder="1.0"
                             value="1.0"
                             on:input=update_with_floats
+                            on:change=update_with_floats
                             _ref=float_component_1_ref
                         />
                     </LabeledFloatInput>
@@ -345,6 +362,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             placeholder="1.0"
                             value="1.0"
                             on:input=update_with_floats
+                            on:change=update_with_floats
                             _ref=float_component_2_ref
                         />
                     </LabeledFloatInput>
