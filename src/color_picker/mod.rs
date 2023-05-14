@@ -520,10 +520,10 @@ impl Color for Hsv {
         // These aren't really the final r, g, and b float components. See
         // below.
         let (r, g, b) = match () {
-            _ if (0.0..=59.0).contains(&h) => (c, x, 0.),
-            _ if (60.0..=119.0).contains(&h) => (x, c, 0.),
-            _ if (120.0..=179.0).contains(&h) => (0., c, x),
-            _ if (180.0..=239.0).contains(&h) => (0., x, c),
+            _ if (0.0..=60.0).contains(&h) => (c, x, 0.),
+            _ if (60.0..=120.0).contains(&h) => (x, c, 0.),
+            _ if (120.0..=180.0).contains(&h) => (0., c, x),
+            _ if (180.0..=240.0).contains(&h) => (0., x, c),
             _ if (240.0..=300.0).contains(&h) => (x, 0., c),
             _ => (c, 0., x),
         };
