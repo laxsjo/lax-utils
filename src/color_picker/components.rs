@@ -35,7 +35,9 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     });
 
     let on_color_space_change = move |color_space: Option<_>| {
-        color_space.map(|color_space| set_color_space(color_space));
+        if let Some(color_space) = color_space {
+            set_color_space(color_space)
+        }
     };
 
     let component_1_ref = create_node_ref::<Input>(cx);
