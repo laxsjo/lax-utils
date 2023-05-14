@@ -262,6 +262,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     </label>
                     <FancySelect
                         items=color_space_options
+                        default_selected=color_space()
                         on_select=on_color_space_change
                         select_id=select_id
                     />

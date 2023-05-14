@@ -27,6 +27,7 @@ pub fn RouteLink(
 pub fn FancySelect<T, F>(
     cx: Scope,
     #[prop(into)] items: Signal<Vec<T>>,
+    #[prop(optional)] default_selected: Option<T>,
     on_select: F,
     /// The [UiDisplay] environment.
     #[prop(optional)]
@@ -38,12 +39,18 @@ where
     F: Fn(Option<T>) + 'static,
 {
     let select_ref = create_node_ref::<Select>(cx);
+    let selected_index = match default_selected {
+        Some(selected) => {
+            items().iter().position(|x| *x == selected).unwrap_or(0)
+        }
+        None => 0,
+    };
 
     let on_change = move |_| {
         let Some(select) = select_ref.get() else {
-            error!("Couldn't find select element");
-            return;
-        };
+        error!("Couldn't find select element");
+        return;
+    };
 
         let selected_index = select.selected_index();
         if selected_index < 0 {
@@ -51,6 +58,31 @@ where
         }
 
         on_select(items().get(selected_index as usize).copied());
+    };
+
+    select_ref.on_load(cx, move |select| {
+        // TODO: figure out what is changing the select value after loading
+        set_timeout(
+            move || {
+                log!("selected index {}", selected_index);
+                select.set_selected_index(selected_index as i32);
+            },
+            Duration::from_secs_f64(0.1),
+        )
+    });
+
+    let generate_item = move |cx, item: T| {
+        let selected = match default_selected {
+            Some(selected) => item == selected,
+            None => false,
+        };
+        view! { cx,
+            <option
+                selected=selected
+            >
+                {item.to_ui_string(env)}
+            </option>
+        }
     };
 
     view! { cx,
@@ -65,9 +97,7 @@ where
                     key=|item: &T| {
                         *item
                     }
-                    view=move |cx, item| view! { cx,
-                        <option>{item.to_ui_string(env)}</option>
-                    }
+                    view=generate_item
                 />
             </select>
         </div>

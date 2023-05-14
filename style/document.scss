@@ -37,15 +37,15 @@ body {
 			width: 2em;
 
 			text-decoration: none;
-			writing-mode: sideways-rl;
+			writing-mode: vertical-lr;
 			text-align: center;
 
 			color: inherit;
 
 			$radius: 0.6em;
 
-			border-start-start-radius: $radius;
-			border-start-end-radius: $radius;
+			border-end-start-radius: $radius;
+			border-end-end-radius: $radius;
 
 			transition: background-color ease 0.2s;
 
