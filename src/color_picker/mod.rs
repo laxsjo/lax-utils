@@ -299,12 +299,21 @@ impl Rgb {
     /// The three hexadecimal components are returned without the usual hashtag
     /// prefix.
     /// E.g. `"f0f0f0"` instead of `"#f0f0f0"`.
+    ///
+    /// # Examples
+    /// ```
+    /// use lax_utils::color_picker::*;
+    ///
+    /// assert_eq!(Rgb::from_components((127., 127., 127.)).as_hex_code(), "7f7f7f".to_owned());
+    ///
+    /// assert_eq!(Rgb::from_components((0., 255., 0.)).as_hex_code(), "00ff00".to_owned());
+    /// ```
     pub fn as_hex_code(self) -> String {
         let r = self.r as u8;
         let g = self.g as u8;
         let b = self.b as u8;
 
-        format!("{:x}{:x}{:x}", r, g, b)
+        format!("{:02x}{:02x}{:02x}", r, g, b)
     }
 }
 
