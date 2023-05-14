@@ -103,10 +103,13 @@ pub fn Icon(
 }
 
 #[component]
-pub fn CopyableLabel(cx: Scope) -> impl IntoView {
+pub fn CopyableLabel(
+    cx: Scope,
+    #[prop(into)] content: Signal<String>,
+) -> impl IntoView {
     view! { cx,
         <div class="copyable-label">
-            "Copy me!"
+            {content}
             <Icon icon_id="content_copy"/>
         </div>
     }

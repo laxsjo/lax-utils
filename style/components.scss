@@ -24,6 +24,11 @@
 	gap: 0.8rem;
 
 	margin-inline: auto;
+	padding: 0.8rem;
+
+	border-radius: 0.4rem;
+
+	background-color: var(--bg-secondary);
 
 	.map {
 		display: flex;
@@ -54,11 +59,16 @@
 			flex-flow: row nowrap;
 
 			gap: 0.2rem;
-
-			input {
-				width: 5ch;
-			}
 		}
+	}
+
+	input {
+		width: 6ch;
+		padding: 0.4rem;
+
+		text-align: end;
+
+		border-radius: 0.4rem;
 	}
 }
 
@@ -167,5 +177,6 @@
 	}
 }
 
-// .copyable-label {
-// }
+.copyable-label {
+	background-color: var(--bg-input);
+}

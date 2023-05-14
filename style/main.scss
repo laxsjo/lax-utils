@@ -1,14 +1,12 @@
 @use "theme.scss";
 @use "components.scss";
+@use "document.scss";
+
+:root {
+	color-scheme: dark;
+}
 
 body {
-	display: grid;
-	grid:
-		"menu main" auto
-		"menu footer" auto
-		/ min-content 1fr;
-	gap: 1rem;
-
 	min-height: 100vh;
 	margin: 0;
 	padding: 0;
@@ -34,84 +32,14 @@ body {
 	}
 }
 
-.side-nav {
-	grid-area: menu;
+:focus-visible {
+	outline: 2px solid var(--fg-focus);
+}
 
+input {
 	color: var(--fg-primary);
 
-	background-color: var(--bg-header);
+	border: none;
 
-	nav {
-		display: flex;
-		flex-flow: column nowrap;
-		// gap: 0.6rem;
-
-		height: 100%;
-
-		background-color: var(--secondary-bg);
-	}
-
-	li {
-		list-style-type: none;
-		// text-orientation: sideways-right;
-
-		a {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-
-			padding-inline: 0.5em;
-			width: 2em;
-
-			text-decoration: none;
-			writing-mode: sideways-rl;
-			text-align: center;
-
-			color: inherit;
-
-			$radius: 0.6em;
-
-			border-start-start-radius: $radius;
-			border-start-end-radius: $radius;
-
-			transition: background-color ease 0.2s;
-
-			&.active {
-				background-color: var(--bg-btn-primary);
-
-				&:hover,
-				&:focus-visible {
-					background-color: var(--bg-btn-primary-hover);
-				}
-				&:active {
-					background-color: var(--bg-btn-primary-active);
-				}
-			}
-
-			&:hover,
-			&:focus-visible {
-				background-color: var(--bg-btn-secondary-hover);
-			}
-
-			&:active {
-				color: var(--fg-primary);
-
-				background-color: var(--bg-btn-secondary-active);
-				// box-shadow: 0 0 0.2em var(--shadow);
-
-				transition: none;
-			}
-		}
-	}
-}
-
-main {
-	grid-area: main;
-	place-self: center;
-
-	width: max(10rem, 50%);
-}
-
-footer {
-	grid-area: footer;
+	background-color: var(--bg-input);
 }

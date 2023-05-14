@@ -200,6 +200,8 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         Some(format!("color-picker-color-space_{}", id))
     });
 
+    let (hex_code, _set_hex_code) = create_signal(cx, String::from("copy me"));
+
     view! { cx,
         <div
             class="color-picker"
@@ -282,7 +284,8 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 </div>
             </div>
             <div class="display">
-                <CopyableLabel/>
+
+                <CopyableLabel content=hex_code/>
             </div>
         </div>
     }
