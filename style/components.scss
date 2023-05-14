@@ -32,14 +32,30 @@
 
 	background-color: var(--bg-secondary);
 
-	input {
-		width: 6ch;
-		padding: 0.6rem;
-
-		font-size: 1.2em;
-		text-align: end;
-
+	.labeled-input {
 		border-radius: 0.4rem;
+
+		.prefix {
+			margin-left: 0.6rem;
+		}
+		.postfix {
+			margin-right: 0.3rem;
+			width: 1em;
+
+			text-align: start;
+		}
+
+		input {
+			width: 6ch;
+			padding: 0.6rem;
+			padding-left: calc(0.6rem + 1ch);
+			padding-right: calc(0.3rem + 0.2rem + 0.83em);
+
+			font-size: 1.2em;
+			text-align: end;
+
+			border-radius: 0.4rem;
+		}
 	}
 
 	.map {
@@ -112,9 +128,9 @@
 				color: var(--fg-input);
 			}
 
-			.icon {
-				// font-size: 1rem;
-			}
+			// .icon {
+			// 	// font-size: 1rem;
+			// }
 		}
 	}
 }
@@ -233,6 +249,51 @@
 	100% {
 		opacity: 1;
 		transform: translate(-50%, 0);
+	}
+}
+
+.labeled-input {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+
+	position: relative;
+	// --width: 6ch;
+
+	// width: var(--width);
+
+	background-color: var(--bg-input);
+
+	.input {
+		display: contents;
+
+		& > * {
+			z-index: 1;
+
+			background-color: transparent;
+			// position: absolute;
+
+			// inset: 0;
+		}
+	}
+
+	.prefix {
+		left: 0;
+	}
+
+	.postfix {
+		right: 0;
+	}
+
+	.prefix,
+	.postfix {
+		user-select: none;
+		pointer-events: none;
+
+		position: absolute;
+		z-index: 2;
+
+		color: var(--fg-input);
 	}
 }
 

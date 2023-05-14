@@ -104,6 +104,30 @@ pub fn Icon(
 }
 
 #[component]
+pub fn LabeledFloatInput(
+    cx: Scope,
+    #[prop(into)] prefix: MaybeSignal<Option<String>>,
+    #[prop(into)] postfix: MaybeSignal<Option<String>>,
+    children: Children,
+) -> impl IntoView
+where
+{
+    view! { cx,
+        <div class="labeled-input">
+            <span class="prefix">
+                {prefix}
+            </span>
+            <span class="input">
+                {children(cx)}
+            </span>
+            <span class="postfix">
+                {postfix}
+            </span>
+        </div>
+    }
+}
+
+#[component]
 pub fn CopyableLabel(
     cx: Scope,
     #[prop(into)] content: Signal<String>,

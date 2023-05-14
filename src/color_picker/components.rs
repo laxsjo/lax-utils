@@ -47,39 +47,39 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         }
     };
 
+    let component_0_ref = create_node_ref::<Input>(cx);
     let component_1_ref = create_node_ref::<Input>(cx);
     let component_2_ref = create_node_ref::<Input>(cx);
-    let component_3_ref = create_node_ref::<Input>(cx);
+    let float_component_0_ref = create_node_ref::<Input>(cx);
     let float_component_1_ref = create_node_ref::<Input>(cx);
     let float_component_2_ref = create_node_ref::<Input>(cx);
-    let float_component_3_ref = create_node_ref::<Input>(cx);
 
     create_effect(cx, move |_| {
         let components = color().components();
         let floats = color().as_floats();
 
-        let Some(component_1) = component_1_ref.get() else {
+        let Some(component_0) = component_0_ref.get() else {
             // error!("couldn't find component_1");
             return;
         };
-        let Some(component_2) = component_2_ref.get() else {
+        let Some(component_1) = component_1_ref.get() else {
             // error!("couldn't find component_2");
             return;
         };
-        let Some(component_3) = component_3_ref.get() else {
+        let Some(component_2) = component_2_ref.get() else {
             // error!("couldn't find component_3");
             return;
         };
 
-        let Some(float_1) = float_component_1_ref.get() else {
+        let Some(float_0) = float_component_0_ref.get() else {
             // error!("couldn't find float_component_1");
             return;
         };
-        let Some(float_2) = float_component_2_ref.get() else {
+        let Some(float_1) = float_component_1_ref.get() else {
             // error!("couldn't find float_component_2");
             return;
         };
-        let Some(float_3) = float_component_3_ref.get() else {
+        let Some(float_2) = float_component_2_ref.get() else {
             // error!("couldn't find float_component_3");
             return;
         };
@@ -93,38 +93,38 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             |value: f64| -> _ { naturally_format_float(value, 1, 2) };
 
         sync_input_value_float(
-            &component_1,
+            &component_0,
             components.0,
             DECIMAL_PRECISION,
             format_component,
         );
         sync_input_value_float(
-            &component_2,
+            &component_1,
             components.1,
             DECIMAL_PRECISION,
             format_component,
         );
         sync_input_value_float(
-            &component_3,
+            &component_2,
             components.2,
             DECIMAL_PRECISION,
             format_component,
         );
 
         sync_input_value_float(
-            &float_1,
+            &float_0,
             floats.0,
             DECIMAL_PRECISION,
             format_float,
         );
         sync_input_value_float(
-            &float_2,
+            &float_1,
             floats.1,
             DECIMAL_PRECISION,
             format_float,
         );
         sync_input_value_float(
-            &float_3,
+            &float_2,
             floats.2,
             DECIMAL_PRECISION,
             format_float,
@@ -132,23 +132,23 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     });
 
     let update_with_components = move |_| {
-        let Some(component_1) = component_1_ref.get() else {
+        let Some(component_0) = component_0_ref.get() else {
             error!("couldn't find component_1");
             return;
         };
-        let Some(component_2) = component_2_ref.get() else {
+        let Some(component_1) = component_1_ref.get() else {
             error!("couldn't find component_2");
             return;
         };
-        let Some(component_3) = component_3_ref.get() else {
+        let Some(component_2) = component_2_ref.get() else {
             error!("couldn't find component_3");
             return;
         };
 
         let components = (
+            component_0.value().parse_input::<f64>().unwrap_or(0.),
             component_1.value().parse_input::<f64>().unwrap_or(0.),
             component_2.value().parse_input::<f64>().unwrap_or(0.),
-            component_3.value().parse_input::<f64>().unwrap_or(0.),
         );
 
         // log!("got components {:?}", components);
@@ -156,23 +156,23 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         set_color_sync_hsv_color(color().set_components(components));
     };
     let update_with_floats = move |_| {
-        let Some(float_1) = float_component_1_ref.get() else {
+        let Some(float_0) = float_component_0_ref.get() else {
             error!("couldn't find float_component_1");
             return;
         };
-        let Some(float_2) = float_component_2_ref.get() else {
+        let Some(float_1) = float_component_1_ref.get() else {
             error!("couldn't find float_component_2");
             return;
         };
-        let Some(float_3) = float_component_3_ref.get() else {
+        let Some(float_2) = float_component_2_ref.get() else {
             error!("couldn't find float_component_3");
             return;
         };
 
         let floats = (
+            float_0.value().parse_input::<f64>().unwrap_or(0.),
             float_1.value().parse_input::<f64>().unwrap_or(0.),
             float_2.value().parse_input::<f64>().unwrap_or(0.),
-            float_3.value().parse_input::<f64>().unwrap_or(0.),
         );
 
         // log!("got floats {:?}", floats);
@@ -200,6 +200,28 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let on_value_float_change = move |value: f64| {
         update_with_hsv_floats((hue_float(), sat_float(), value));
     };
+
+    let color_space_info = create_memo(cx, move |_| color_space().info());
+
+    let label_0 = Signal::derive(cx, move || {
+        Some(color_space_info().labels.0.to_owned())
+    });
+    let label_1 = Signal::derive(cx, move || {
+        Some(color_space_info().labels.1.to_owned())
+    });
+    let label_2 = Signal::derive(cx, move || {
+        Some(color_space_info().labels.2.to_owned())
+    });
+
+    let unit_0 = Signal::derive(cx, move || {
+        color_space_info().units.0.map(Into::<String>::into)
+    });
+    let unit_1 = Signal::derive(cx, move || {
+        color_space_info().units.1.map(Into::<String>::into)
+    });
+    let unit_2 = Signal::derive(cx, move || {
+        color_space_info().units.2.map(Into::<String>::into)
+    });
 
     let color_display_style = move || {
         let rgb: Rgb = color().to_color();
@@ -245,56 +267,86 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     />
                 </div>
                 <div class="integers">
-                    <input
-                        type="text"
-                        inputmode="decimal"
-                        placeholder="100"
-                        value="255"
-                        on:input=update_with_components
-                        _ref=component_1_ref
-                    />
-                    <input
-                        type="text"
-                        inputmode="decimal"
-                        placeholder="100"
-                        value="255"
-                        on:input=update_with_components
-                        _ref=component_2_ref
-                    />
-                    <input
-                        type="text"
-                        inputmode="decimal"
-                        placeholder="100"
-                        value="255"
-                        on:input=update_with_components
-                        _ref=component_3_ref
-                    />
+                    <LabeledFloatInput
+                        prefix=label_0
+                        postfix=unit_0
+                    >
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="100"
+                            value="255"
+                            on:input=update_with_components
+                            _ref=component_0_ref
+                        />
+                    </LabeledFloatInput>
+                    <LabeledFloatInput
+                        prefix=label_1
+                        postfix=unit_1
+                    >
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="100"
+                            value="255"
+                            on:input=update_with_components
+                            _ref=component_1_ref
+                        />
+                    </LabeledFloatInput>
+                    <LabeledFloatInput
+                        prefix=label_2
+                        postfix=unit_2
+                    >
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="100"
+                            value="255"
+                            on:input=update_with_components
+                            _ref=component_2_ref
+                        />
+                    </LabeledFloatInput>
                 </div>
                 <div class="floats">
-                    <input
-                        type="text"
-                        inputmode="decimal"
-                        placeholder="1.0"
-                        value="1.0"
-                        on:input=update_with_floats
-                        _ref=float_component_1_ref
-                    />
-                    <input
-                        type="text"
-                        inputmode="decimal"
-                        placeholder="1.0"
-                        value="1.0"
-                        on:input=update_with_floats
-                        _ref=float_component_2_ref
-                    />
-                    <input
-                        type="text"
-                        inputmode="decimal"
-                        placeholder="1.0"
-                        value="1.0"
-                        on:input=update_with_floats
-                        _ref=float_component_3_ref
-                    />
+                    <LabeledFloatInput
+                        prefix=label_0
+                        postfix=None
+                    >
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="1.0"
+                            value="1.0"
+                            on:input=update_with_floats
+                            _ref=float_component_0_ref
+                        />
+                    </LabeledFloatInput>
+                    <LabeledFloatInput
+                        prefix=label_1
+                        postfix=None
+                    >
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="1.0"
+                            value="1.0"
+                            on:input=update_with_floats
+                            _ref=float_component_1_ref
+                        />
+                    </LabeledFloatInput>
+                    <LabeledFloatInput
+                        prefix=label_2
+                        postfix=None
+                    >
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="1.0"
+                            value="1.0"
+                            on:input=update_with_floats
+                            _ref=float_component_2_ref
+                        />
+                    </LabeledFloatInput>
                 </div>
             </div>
             <div class="display">

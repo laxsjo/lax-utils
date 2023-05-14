@@ -2,7 +2,7 @@ pub mod components;
 
 use crate::utils::*;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ColorSpaceInfo {
     pub labels: (&'static str, &'static str, &'static str),
     pub units: (
