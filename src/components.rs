@@ -100,6 +100,7 @@ where
                     view=generate_item
                 />
             </select>
+            <Icon icon_id="expand_more"/>
         </div>
     }
 }

@@ -264,6 +264,13 @@
 
 	background-color: var(--bg-input);
 
+	transition: background-color ease 0.2s;
+
+	&:hover,
+	&:focus-within {
+		background-color: var(--bg-input-hover);
+	}
+
 	.input {
 		display: contents;
 
@@ -318,6 +325,8 @@
 	border: none;
 
 	background-color: var(--bg-input);
+
+	transition: background-color ease 0.2s;
 
 	.icon {
 		color: var(--fg-input);
@@ -379,5 +388,80 @@
 		&.hidden {
 			display: none;
 		}
+	}
+}
+
+.fancy-select {
+	display: inline-flex;
+	flex-direction: row;
+	align-items: center;
+	// border: 2;
+
+	position: relative;
+
+	width: fit-content;
+
+	font-size: 1.2em;
+
+	border-radius: 0.4rem;
+
+	&:focus-within {
+		.icon {
+			color: var(--fg-primary);
+
+			transform: rotate(180deg);
+		}
+	}
+
+	:focus-visible {
+		outline-color: var(--accent);
+	}
+
+	select {
+		appearance: none;
+
+		position: relative;
+		z-index: 1;
+
+		padding: 0.4rem 0.6rem;
+		padding-right: calc(0.2rem + 0.4rem + 1.2em);
+
+		font-size: 1em;
+
+		border: none;
+		border-radius: inherit;
+
+		background-color: var(--bg-input);
+
+		transition: background-color ease 0.2s;
+
+		&:hover,
+		&:focus-visible {
+			background-color: var(--bg-input-hover);
+		}
+
+		option {
+			background-color: var(--bg-input);
+
+			&:hover,
+			&:focus-visible {
+				background-color: var(--bg-input-hover);
+			}
+		}
+	}
+
+	.icon {
+		--size: 1.2em;
+
+		pointer-events: none;
+		user-select: none;
+
+		position: absolute;
+		right: 0.4rem;
+		z-index: 2;
+
+		color: var(--fg-input);
+
+		transition: transform ease-out 0.2s;
 	}
 }

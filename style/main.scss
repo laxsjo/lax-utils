@@ -42,4 +42,11 @@ input {
 	border: none;
 
 	background-color: var(--bg-input);
+
+	transition: background-color ease 0.2s;
+
+	&:hover,
+	&:focus-visible {
+		background-color: var(--bg-input-hover);
+	}
 }
