@@ -1,8 +1,13 @@
 use crate::string_utils::*;
 use approx::*;
-use leptos::html::*;
+use gloo_events::EventListener;
+use leptos::{html::*, leptos_dom::is_browser, *};
 use num_traits::{AsPrimitive, Float};
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::{
+    borrow::Cow,
+    sync::atomic::{AtomicU64, Ordering},
+};
+use web_sys::Event;
 
 pub trait FloatUtils: Float {
     /// Round float to a specified amount of decimal digits.
@@ -196,6 +201,24 @@ pub fn naturally_format_float(
         float.decimal_places().clamp(min_decimals, max_decimals);
 
     format!("{:.*}", decimal_places, float)
+}
+
+/// Create an event listener on the window that is tied to the current scope,
+/// and is properly disposed of when the component is dropped.
+///
+/// It uses a [gloo_events::EventListener] that is stored in the current scope
+/// using [store_value]
+pub fn create_managed_window_event_listener<S, F>(
+    cx: Scope,
+    event_type: S,
+    callback: F,
+) where
+    S: Into<Cow<'static, str>>,
+    F: FnMut(&Event) + 'static,
+{
+    if is_browser() {
+        store_value(cx, EventListener::new(&window(), event_type, callback));
+    }
 }
 
 /// Update a input value with a new modified version of the same value, keeping

@@ -441,7 +441,7 @@ where
         set_value(1. - y);
     };
 
-    let on_pointer_move = move |ev: Event| {
+    let on_pointer_move = move |ev: &Event| {
         let ev = ev
             .dyn_ref::<PointerEvent>()
             .expect("event wasn't a pointer event");
@@ -461,16 +461,26 @@ where
         // );
     };
 
-    window_event_listener("pointermove", on_pointer_move);
+    create_managed_window_event_listener(cx, "pointermove", on_pointer_move);
 
-    window_event_listener("pointerup", move |_| {
-        // log!("up!");
+    create_managed_window_event_listener(cx, "pointerup", move |_| {
         set_dragging(false);
         // window().remove_event_listener_with_callback(
         //     "pointermove",
         //     &on_pointer_move_color_closure.unchecked_ref(),
         // );
     });
+
+    // store_value(
+    //     cx,
+    //     EventListener::new(&window(), "pointermove", on_pointer_move),
+    // );
+    // store_value(
+    //     cx,
+    //     EventListener::new(&window(), "pointerup", move |_: &Event| {
+    //         set_dragging(false);
+    //     }),
+    // );
 
     view! {cx,
         <div
@@ -504,7 +514,7 @@ where
         set_dragging(true);
     };
 
-    let on_pointer_move = move |ev: Event| {
+    let on_pointer_move = move |ev: &Event| {
         // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
         const PRIMARY_BUTTON: u16 = 1;
 
@@ -539,7 +549,7 @@ where
         set_hue(x);
     };
 
-    let on_pointer_up = move |_| {
+    let on_pointer_up = move |_: &_| {
         // log!("up");
         set_dragging(false);
     };
@@ -550,8 +560,32 @@ where
     // listener.forget();
 
     // TODO: These event listeners are not destroyed on element cleanup.
-    window_event_listener("pointerup", on_pointer_up);
-    window_event_listener("pointermove", on_pointer_move);
+    create_managed_window_event_listener(cx, "pointerup", on_pointer_up);
+    create_managed_window_event_listener(cx, "pointermove", on_pointer_move);
+
+    // create_managed_window_event_listener(cx, "pointerup", move |_| {
+    //     log!("up");
+    // });
+
+    // create_managed_event_listener(cx, );
+
+    // _ = window().focus();
+
+    // if is_browser() {
+    //     store_value(
+    //         cx,
+    //         EventListener::new(&window(), "pointerup", move |_| {
+    //             log!("up");
+    //             set_dragging(false);
+    //         }),
+    //     );
+    // }
+    // store_value(
+    //     cx,
+    //     EventListener::new(&window(), "pointermove", on_pointer_move),
+    // );
+
+    // window().event
 
     view! {cx,
         <div
