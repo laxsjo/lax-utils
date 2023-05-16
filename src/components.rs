@@ -2,6 +2,7 @@ use crate::utils::*;
 use leptos::{html::*, leptos_dom::helpers::*, *};
 use leptos_router::*;
 use std::{hash::*, time::Duration};
+use web_sys::Event;
 // use web_sys::*;
 
 #[component]
@@ -38,6 +39,8 @@ where
     T: Copy + Eq + Hash + UiDisplay + 'static,
     F: Fn(Option<T>) + 'static,
 {
+    let (expanded, set_expanded) = create_signal(cx, false);
+
     let select_ref = create_node_ref::<Select>(cx);
     let selected_index = match default_selected {
         Some(selected) => {
@@ -59,6 +62,21 @@ where
 
         on_select(items().get(selected_index as usize).copied());
     };
+
+    // let on_pointer_up = move |_| {
+    //     log!("pointer up");
+    //     set_expanded(false);
+    // };
+
+    // let on_focus = move |_| {
+    //     log!("focus");
+    //     set_expanded(true);
+    // };
+
+    // let on_blur = move |_| {
+    //     log!("blur");
+    //     set_expanded(false);
+    // };
 
     select_ref.on_load(cx, move |select| {
         // TODO: figure out what is changing the select value after loading
@@ -86,11 +104,17 @@ where
     };
 
     view! { cx,
-        <div class="fancy-select">
+        <div
+            class="fancy-select"
+            class:expanded=expanded
+        >
             <select
                 id=select_id
                 on:input=on_change
                 _ref=select_ref
+                // on:focus=on_focus
+                // on:blur=on_blur
+                // on:click=on_pointer_up
             >
                 <For
                     each=items
