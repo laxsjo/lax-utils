@@ -18,10 +18,9 @@
 	--hue-cursor: 1;
 	display: grid;
 	grid:
-		"map display" 20rem
-		"color-space ." auto
-		"components ." auto
-		"floats ." auto
+		"m d" 20rem
+		"c ." auto
+		"i ." auto
 		/ auto;
 	gap: 0.8rem;
 
@@ -62,7 +61,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.6rem;
-		grid-area: map;
+		grid-area: m;
 
 		// width: 20rem;
 
@@ -73,31 +72,50 @@
 		}
 	}
 
-	.controls {
-		display: contents;
+	.color-space {
+		grid-area: c;
+	}
 
-		.color-space {
-			grid-area: color-space;
-		}
+	.controls {
+		display: grid;
+		grid:
+			"o1 i i i" auto
+			"o2 i i i" auto
+			/ 1fr min-content min-content min-content;
+		gap: 0.8rem 0.4rem;
+
+		grid-area: i;
 
 		.integers {
-			grid-area: components;
+			display: contents;
+
+			& > :first-child {
+				grid-column: 2;
+			}
 		}
 		.floats {
-			grid-area: floats;
+			display: contents;
+
+			& > :first-child {
+				grid-column: 2;
+			}
 		}
 
-		.integers,
-		.floats {
-			display: flex;
-			flex-flow: row nowrap;
+		// .integers,
+		// .floats {
+		// 	display: flex;
+		// 	flex-flow: row nowrap;
 
-			gap: 0.2rem;
-		}
+		// 	gap: 0.2rem;
+		// }
+
+		// .labeled-input {
+		// 	grid-area: i;
+		// }
 	}
 
 	.display {
-		grid-area: display;
+		grid-area: d;
 		width: 12rem;
 
 		.color-display {

@@ -267,8 +267,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     set_hue=on_hue_float_change
                 />
             </div>
-            <div class="controls">
-                <div class="color-space">
+            <div class="color-space">
                     <label for=select_id>
                         "Color Space"
                     </label>
@@ -279,6 +278,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                         select_id=select_id
                     />
                 </div>
+            <div class="controls">
                 <div class="integers">
                     <LabeledFloatInput
                         prefix=label_0
