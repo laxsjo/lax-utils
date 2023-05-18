@@ -82,10 +82,11 @@
 	.controls {
 		display: grid;
 		grid:
-			"i i i" auto
-			"i i i" auto
-			/ 1fr 1fr 1fr;
+			"i i i cpy" auto
+			"i i i cpy" auto
+			/ 1fr 1fr 1fr max-content;
 		gap: 0.8rem 0.4rem;
+		place-items: center;
 
 		grid-area: i;
 
@@ -102,6 +103,15 @@
 			input {
 				width: 100%;
 			}
+		}
+
+		.copy-button {
+			width: min-content;
+			aspect-ratio: 1;
+
+			font-size: 1.2em;
+
+			border-radius: 100%;
 		}
 
 		// .integers,
@@ -134,7 +144,7 @@
 			background-color: rgb(var(--r), var(--g), var(--b));
 		}
 
-		.copyable-label {
+		.copy-button {
 			justify-content: space-between;
 
 			width: 100%;
@@ -341,7 +351,7 @@
 	}
 }
 
-.copyable-label {
+.copy-button {
 	--padding: 0.6rem;
 
 	cursor: pointer;
@@ -407,7 +417,7 @@
 		padding: 0.6rem 0.8rem;
 		margin-inline: auto;
 
-		font-size: 1.15em;
+		font-size: 1.15rem;
 
 		border-radius: 10000rem;
 

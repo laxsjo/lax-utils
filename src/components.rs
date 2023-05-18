@@ -2,8 +2,6 @@ use crate::utils::*;
 use leptos::{html::*, leptos_dom::helpers::*, *};
 use leptos_router::*;
 use std::{hash::*, time::Duration};
-use web_sys::Event;
-// use web_sys::*;
 
 #[component]
 pub fn RouteLink(
@@ -39,8 +37,6 @@ where
     T: Copy + Eq + Hash + UiDisplay + 'static,
     F: Fn(Option<T>) + 'static,
 {
-    let (expanded, set_expanded) = create_signal(cx, false);
-
     let select_ref = create_node_ref::<Select>(cx);
     let selected_index = match default_selected {
         Some(selected) => {
@@ -105,7 +101,6 @@ where
     view! { cx,
         <div
             class="fancy-select"
-            class:expanded=expanded
         >
             <select
                 id=select_id
@@ -187,6 +182,144 @@ pub fn CopyableLabel(
     #[prop(into)] content: Signal<String>,
     children: Children,
 ) -> impl IntoView {
+    // const DURATION_IN_SECONDS: f64 = 5.;
+    // const DURATION_OUT_SECONDS: f64 = 0.3;
+    // let (shown, set_shown) = create_signal(cx, false);
+    // let (hidden, set_hidden) = create_signal(cx, true);
+    // let (in_timeout_handle, set_in_timeout_handle) =
+    //     create_signal::<Option<TimeoutHandle>>(cx, None);
+    // let (out_timeout_handle, set_out_timeout_handle) =
+    //     create_signal::<Option<TimeoutHandle>>(cx, None);
+
+    // create_effect(cx, move |_| {
+    //     if shown() {
+    //         set_hidden(false);
+    //     }
+    // });
+
+    // let activate_fade_out = move || {
+    //     let Ok(handle) = set_timeout_with_handle(
+    //         move || {
+    //             set_out_timeout_handle(None);
+
+    //             set_hidden(true);
+    //         },
+    //         Duration::from_secs_f64(DURATION_OUT_SECONDS),
+    //     ) else {
+    //         set_out_timeout_handle(None);
+    //         return;
+    //     };
+
+    //     set_out_timeout_handle(Some(handle));
+    // };
+
+    // let activate_popup = move || {
+    //     if let Some(handle) = out_timeout_handle() {
+    //         handle.clear();
+    //     }
+    //     if let Some(handle) = in_timeout_handle() {
+    //         handle.clear();
+    //     }
+    //     // log!("clicked!");
+    //     set_shown(false);
+
+    //     set_timeout(
+    //         move || {
+    //             set_shown(true);
+
+    //             let Ok(handle) = set_timeout_with_handle(
+    //                 move || {
+    //                     // ? Does this cause a memory error if the component
+    // has been                     // disposed of in the time between the
+    // timeout activation and                     // this closure being ran?
+    //                     set_shown(false);
+    //                     activate_fade_out();
+    //                 },
+    //                 Duration::from_secs_f64(DURATION_IN_SECONDS),
+    //             ) else {
+    //                 set_in_timeout_handle(None);
+    //                 return;
+    //             };
+
+    //             set_in_timeout_handle(Some(handle));
+    //         },
+    //         Duration::from_secs(0),
+    //     );
+    // };
+
+    // let copy_to_clipboard = move || -> bool {
+    //     let Some(clipboard) = window().navigator().clipboard() else {
+    //         // TODO: give user feedback that copy to clipboard failed.
+    //         error!("Failed to get clipboard");
+    //         return false;
+    //     };
+
+    //     let _ = clipboard.write_text(content().as_str());
+
+    //     activate_popup();
+
+    //     true
+    // };
+
+    // let on_click = move |_| {
+    //     copy_to_clipboard();
+    // };
+
+    // let style = format!(
+    //     "--duration: {}s; --duration-out: {}s",
+    //     DURATION_IN_SECONDS, DURATION_OUT_SECONDS
+    // );
+
+    view! { cx,
+        <CopyButton
+            value=content
+        >
+            <span class="label">
+                {children(cx)}
+            </span>
+        </CopyButton>
+
+        // <button
+        //     class="copyable-label"
+        //     on:click=on_click
+        //     style=style
+        // >
+        //     // <Show
+        //     //     when=popup_active
+        //     //     fallback= move |_cx| view! {cx, <></> }
+        //     // >
+        //     //     <Transition/>
+        //     // </Show>
+
+        //     <span
+        //         class="popup"
+        //         aria-live="polite"
+        //         class:shown=shown
+        //         class:hidden=hidden
+        //     >
+        //         <Icon icon_id="check_circle"/>
+        //         "Copied to clipboard"
+        //     </span>
+        //     <span class="label">
+        //         {children(cx)}
+        //     </span>
+        //     <Icon icon_id="content_copy"/>
+        // </button>
+    }
+}
+
+#[component]
+pub fn CopyButton(
+    cx: Scope,
+    /// The value that will be copied into the clipboard.
+    #[prop(into)]
+    value: Signal<String>,
+    /// An optional aria-label and tooltip that will be applied to the button
+    /// element.
+    #[prop(into, optional)]
+    label: MaybeSignal<Option<String>>,
+    children: Children,
+) -> impl IntoView {
     const DURATION_IN_SECONDS: f64 = 5.;
     const DURATION_OUT_SECONDS: f64 = 0.3;
     let (shown, set_shown) = create_signal(cx, false);
@@ -232,23 +365,22 @@ pub fn CopyableLabel(
             move || {
                 set_shown(true);
 
-                let Ok(handle) = set_timeout_with_handle(
+                match set_timeout_with_handle(
                     move || {
-                        // ? Does this cause a memory error if the component has been
-                        // disposed of in the time between the timeout activation and
+                        // ? Does this cause a memory error if the component has
+                        // been disposed of in the time
+                        // between the timeout activation and
                         // this closure being ran?
                         set_shown(false);
                         activate_fade_out();
                     },
                     Duration::from_secs_f64(DURATION_IN_SECONDS),
-                ) else {
-                    set_in_timeout_handle(None);
-                    return;
+                ) {
+                    Ok(handle) => set_in_timeout_handle(Some(handle)),
+                    Err(_) => set_in_timeout_handle(None),
                 };
-
-                set_in_timeout_handle(Some(handle));
             },
-            Duration::from_secs(0),
+            Duration::from_secs_f64(0.1),
         );
     };
 
@@ -259,7 +391,7 @@ pub fn CopyableLabel(
             return false;
         };
 
-        let _ = clipboard.write_text(content().as_str());
+        let _ = clipboard.write_text(value().as_str());
 
         activate_popup();
 
@@ -277,17 +409,14 @@ pub fn CopyableLabel(
 
     view! { cx,
         <button
-            class="copyable-label"
-            on:click=on_click
+            class="copy-button"
             style=style
+            aria-label=label.clone()
+            title=label
+            on:click=on_click
         >
-            // <Show
-            //     when=popup_active
-            //     fallback= move |_cx| view! {cx, <></> }
-            // >
-            //     <Transition/>
-            // </Show>
-
+            {children(cx)}
+            <Icon icon_id="content_copy" />
             <span
                 class="popup"
                 aria-live="polite"
@@ -295,12 +424,8 @@ pub fn CopyableLabel(
                 class:hidden=hidden
             >
                 <Icon icon_id="check_circle"/>
-                "Copied to clipboard"
+                "Copied '" {value} "' to clipboard"
             </span>
-            <span class="label">
-                {children(cx)}
-            </span>
-            <Icon icon_id="content_copy"/>
         </button>
     }
 }
