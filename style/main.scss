@@ -15,6 +15,7 @@ body {
 	text-align: center;
 
 	color: var(--fg-primary);
+	accent-color: var(--accent);
 
 	background-color: var(--bg-primary);
 }
@@ -48,5 +49,66 @@ input {
 	&:hover,
 	&:focus-visible {
 		background-color: var(--bg-input-hover);
+	}
+
+	&[type="checkbox"] {
+		--height: 1.5em;
+		--bg: var(--bg-input);
+		--bg-hover: var(--bg-input-hover);
+		// --ease-in: cubic-bezier(0.36, 0, 0.66, -0.56);
+		--ease-out: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+		appearance: none;
+
+		display: inline-flex;
+		flex-direction: row;
+		align-items: center;
+
+		position: relative;
+
+		width: calc(var(--height) * 2);
+		height: var(--height);
+		margin: 0;
+		margin-inline: 0.4em;
+
+		border-radius: 100em;
+
+		background-color: var(--bg);
+
+		&:hover,
+		&:focus-visible {
+			background-color: var(--bg-hover);
+		}
+
+		&:checked {
+			--bg: var(--bg-btn-primary);
+			--bg-hover: var(--bg-btn-primary-hover);
+
+			&::after {
+				transform: translateX(var(--height));
+			}
+		}
+
+		&::after {
+			--margin: 0.15em;
+			--button-width: calc(var(--height) - var(--margin) * 2);
+
+			content: "";
+
+			display: block;
+
+			// position: absolute;
+			// left: 0;
+
+			width: var(--button-width);
+			height: var(--button-width);
+			margin-left: var(--margin);
+
+			border-radius: 100%;
+
+			background-color: var(--fg-primary);
+
+			transition: transform var(--ease-out) 0.2s;
+		}
 	}
 }
