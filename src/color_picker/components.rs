@@ -21,7 +21,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
     let (color, set_color) = create_signal(
         cx,
-        DynamicColor::from_floats((1., 1., 1.), color_space()),
+        DynamicColor::from_floats((1., 1., 1.), color_space.get_untracked()),
     );
 
     let (color_hsv, set_color_hsv) =
@@ -417,7 +417,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 </label>
                 <FancySelect
                     items=color_space_options
-                    default_selected=color_space()
+                    default_selected=color_space.get_untracked()
                     on_select=on_color_space_change
                     select_id=select_id
                 />
@@ -509,7 +509,7 @@ where
             .dyn_ref::<PointerEvent>()
             .expect("event wasn't a pointer event");
 
-        if dragging() {
+        if dragging.get_untracked() {
             on_pointer_move_color(ev);
         }
     };
@@ -583,7 +583,7 @@ where
 
         // log!("moved {:?}", cx.id());
 
-        if !dragging() {
+        if !dragging.get_untracked() {
             return;
         }
 

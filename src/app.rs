@@ -1,6 +1,4 @@
-use crate::components::*;
-use crate::routes::*;
-use crate::toasts::provide_toasts;
+use crate::{components::*, routes::*, toasts::*};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -25,10 +23,11 @@ pub fn App(cx: Scope) -> impl IntoView {
         // sets the document title
         <Title text="lax-utils"/>
 
-        <div inner_html=icons_svg />
+        <div class="hidden" inner_html=icons_svg />
 
         // content for this welcome page
         <Router>
+            <ToastsContainer />
             <aside class="side-nav">
                 <nav>
                     <li><RouteLink route_name="">"Home"</RouteLink></li>

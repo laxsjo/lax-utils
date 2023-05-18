@@ -1,4 +1,4 @@
-use crate::utils::*;
+use crate::{toasts, utils::*};
 use leptos::{html::*, leptos_dom::helpers::*, *};
 use leptos_router::*;
 use std::{hash::*, time::Duration};
@@ -392,13 +392,14 @@ pub fn CopyButton(
 
         let _ = clipboard.write_text(value().as_str());
 
-        activate_popup();
+        // activate_popup();
 
         true
     };
 
     let on_click = move |_| {
         copy_to_clipboard();
+        toasts::add_toast(cx, format!("Copied '{}' to clipboard", value()));
     };
 
     let style = format!(
@@ -416,15 +417,15 @@ pub fn CopyButton(
         >
             {children(cx)}
             <Icon icon_id="content_copy" />
-            <span
-                class="popup"
-                aria-live="polite"
-                class:shown=shown
-                class:hidden=hidden
-            >
-                <Icon icon_id="check_circle"/>
-                "Copied '" {value} "' to clipboard"
-            </span>
+            // <span
+            //     class="popup"
+            //     aria-live="polite"
+            //     class:shown=shown
+            //     class:hidden=hidden
+            // >
+            //     <Icon icon_id="check_circle"/>
+            //     "Copied '" {value} "' to clipboard"
+            // </span>
         </button>
     }
 }
