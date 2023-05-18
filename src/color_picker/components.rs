@@ -399,7 +399,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             </div>
             <div class="options">
                 <label>
-                    "Precise Input"
+                    "Precise Inputs"
                     <input
                         type="checkbox"
                         on:input=on_precise_input_change
