@@ -100,7 +100,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         // log!("set components {:?}, floats {:?}", components, floats);
 
         let force_update = force_update_inputs.get_untracked();
-        if (force_update) {
+        if force_update {
             set_force_update_inputs.set_untracked(false);
         }
 
@@ -257,6 +257,25 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         color_space_info().units.2.map(Into::<String>::into)
     });
 
+    let components_copy_string = Signal::derive(cx, move || {
+        let components = color().components();
+        format!(
+            "{}, {}, {}",
+            format_component()(components.0),
+            format_component()(components.1),
+            format_component()(components.2)
+        )
+    });
+    let floats_copy_string = Signal::derive(cx, move || {
+        let floats = color().as_floats();
+        format!(
+            "{}, {}, {}",
+            format_float(floats.0),
+            format_float(floats.1),
+            format_float(floats.2)
+        )
+    });
+
     let on_precise_input_change = move |ev: Event| {
         let checked = event_target_checked(&ev);
 
@@ -340,6 +359,9 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             _ref=component_2_ref
                         />
                     </LabeledFloatInput>
+                    <CopyButton
+                        value=components_copy_string
+                    ><></></CopyButton>
                 </div>
                 <div class="floats">
                     <LabeledFloatInput
@@ -384,6 +406,9 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             _ref=float_component_2_ref
                         />
                     </LabeledFloatInput>
+                    <CopyButton
+                        value=floats_copy_string
+                    ><></></CopyButton>
                 </div>
             </div>
             <div class="color-space">
