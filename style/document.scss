@@ -88,3 +88,73 @@ main {
 footer {
 	grid-area: footer;
 }
+
+@keyframes slide-up {
+	0% {
+		opacity: 0;
+		transform: translateY(100%);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.toasts {
+	pointer-events: none;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: end;
+	gap: 0.5rem;
+
+	// grid-area: span 2 / span 2;
+	// place-self: end center;
+
+	position: fixed;
+	bottom: calc(100% + 0.5rem);
+	top: 0;
+	bottom: 1.5rem;
+	left: 50%;
+	z-index: 100;
+	// margin-top: auto;
+
+	transform: translateX(-50%);
+	// left: calc(-1 * var(--padding));
+
+	.toast {
+		cursor: default;
+
+		display: flex;
+		flex-flow: row wrap;
+		align-items: center;
+		gap: 0.5rem;
+		opacity: 0;
+		width: max-content;
+		max-width: 100vw;
+		padding: 0.6rem 0.8rem;
+		margin-inline: auto;
+
+		font-size: 1.15rem;
+
+		border-radius: 10000rem;
+
+		background-color: var(--accent);
+
+		transition: opacity ease-in-out var(--duration-out);
+
+		animation: 0.5s cubic-bezier(0.6, 0.4, 0, 1) none slide-up;
+
+		.icon {
+			--size: 1.3em;
+
+			color: inherit;
+		}
+
+		&.active {
+			opacity: 1;
+		}
+	}
+}

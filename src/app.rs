@@ -8,7 +8,7 @@ pub fn App(cx: Scope) -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context(cx);
 
-    provide_toasts(cx);
+    provide_toast(cx);
 
     // This is very cursed
     let icons_svg = include_str!("../assets/material-icons-defs.svg");

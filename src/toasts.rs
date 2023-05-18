@@ -1,6 +1,6 @@
-use std::{collections::HashSet, time::Duration};
-
-use leptos::*;
+use crate::components::*;
+use leptos::{leptos_dom::is_browser, *};
+use std::time::Duration;
 
 pub const TOAST_DURATION_SECONDS: f64 = 5.;
 pub const TOAST_FADE_OUT_SECONDS: f64 = 0.3;
@@ -15,140 +15,104 @@ pub struct Toasts {
 }
 
 /// Add a new toast and return a handle to that
-pub fn add_toast(cx: Scope, message: String) -> ToastHandle {
+pub fn add_toast(cx: Scope, message: String) {
     // TODO: this is bad as it uses the single global context.
-    let toasts = use_context::<RwSignal<Toasts>>(cx)
+    let toast = use_context::<RwSignal<String>>(cx)
         .expect("toasts context to be provided");
-    let next_id = create_read_slice(cx, toasts, |toasts| toasts.next_id);
-    let handle = ToastHandle(next_id());
 
-    toasts.update(|toasts| {
-        toasts.toasts.push((ToastHandle(toasts.next_id), message));
-        toasts.next_id += 1;
-    });
-
-    set_timeout(
-        move || remove_toast(cx, handle),
-        Duration::from_secs_f64(TOAST_DURATION_SECONDS),
-    );
-
-    handle
+    toast.set(message);
 }
 
-pub fn remove_toast(cx: Scope, handle: ToastHandle) {
-    let toasts = use_context::<RwSignal<Toasts>>(cx)
+pub fn use_toast(cx: Scope) -> Signal<String> {
+    let toast = use_context::<RwSignal<String>>(cx)
         .expect("toasts context to be provided");
 
-    toasts.update(|toasts| {
-        let Some(index) = toasts.toasts.iter().position(move |(this_handle,
-    _)| *this_handle == handle) else {         return;
-        };
-
-        toasts.toasts.remove(index);
-    });
-}
-
-pub fn use_toasts(cx: Scope) -> Signal<Vec<(ToastHandle, String)>> {
-    let toasts = use_context::<RwSignal<Toasts>>(cx)
-        .expect("toasts context to be provided");
-
-    Signal::derive(cx, move || toasts().toasts)
+    toast.into()
 }
 
 /// Make sure that this is called **once** somewhere in the application.
-pub fn provide_toasts(cx: Scope) {
-    let toasts = create_rw_signal(cx, Toasts::default());
-    provide_context(cx, toasts);
+pub fn provide_toast(cx: Scope) {
+    let toast = create_rw_signal(cx, "".to_owned());
+    provide_context(cx, toast);
 }
 
 /// Displays the currently active toasts.
 #[component]
 pub fn ToastsContainer(cx: Scope) -> impl IntoView {
-    let toasts = use_toasts(cx);
+    let new_toast = use_toast(cx);
 
-    let displayed_toasts = create_rw_signal(
-        cx,
-        toasts()
-            .into_iter()
-            .map(|toast| (toast.0, toast.1, true))
-            .collect::<Vec<(_, _, _)>>(),
-    );
+    let next_index = store_value(cx, 0);
 
-    create_effect(cx, move |_| {
-        let toasts_vec = toasts();
-        let displayed_toasts_vec = displayed_toasts();
+    let displayed_toasts = create_rw_signal::<Vec<(usize, String)>>(cx, vec![]);
 
-        let new_toasts = toasts_vec
-            .iter()
-            .map(|(handle, _)| *handle)
-            .collect::<HashSet<ToastHandle>>();
-        let old_toasts = displayed_toasts_vec
-            .iter()
-            .map(|(handle, _, _)| *handle)
-            .collect::<HashSet<ToastHandle>>();
+    create_effect(cx, move |last| {
+        let toast = new_toast();
+        if last.is_none() {
+            return;
+        }
 
-        let removed_toasts = &old_toasts - &new_toasts;
-        let added_toasts = &new_toasts - &old_toasts;
+        let index = next_index();
 
         displayed_toasts.update(move |toasts| {
-            toasts.append(
-                &mut added_toasts
-                    .into_iter()
-                    .filter_map(|handle| {
-                        toasts_vec.iter().find(|toast| toast.0 == handle).map(
-                            |(handle, message)| {
-                                (*handle, message.clone(), true)
-                            },
-                        )
-                    })
-                    .collect(),
-            );
-
-            for handle in removed_toasts {
-                let Some(toast) = toasts.iter_mut().find(|(this_handle, _,_)| {
-                    *this_handle == handle
-                }) else {
-                    log!("couldn't find toast handle {:?}", handle);
-                    continue;
-
-                };
-
-                log!("hid toast handle {:?}", handle);
-
-                toast.2 = false;
-
-                // // ? One timeout per removed toast. This should be fine since
-                // // only one toast will be removed at a time usually, right?
-                // set_timeout(
-                //     move || {
-                //         displayed_toasts.update(move |toasts| {
-                //             if let Some(index) =
-                //                 toasts.iter().position(|(this_handle, _, _)|
-                // {                     *this_handle == handle
-                //                 })
-                //             {
-                //                 toasts.remove(index);
-                //             };
-                //         })
-                //     },
-                //     Duration::from_secs_f64(TOAST_FADE_OUT_SECONDS),
-                // );
-            }
+            toasts.push((index, toast));
         });
+
+        next_index.update_value(|i| *i += 1);
+
+        set_timeout(
+            move || {
+                displayed_toasts.update(move |toasts| {
+                    if let Some(index) =
+                        toasts.iter().position(|(handle, _)| *handle == index)
+                    {
+                        toasts.remove(index);
+                    }
+                })
+            },
+            Duration::from_secs_f64(
+                TOAST_DURATION_SECONDS + TOAST_FADE_OUT_SECONDS,
+            ),
+        );
     });
 
     view! { cx,
-        <div class="toasts">
+        <div
+            class="toasts"
+            style=("--duration-out", format!("{}s", TOAST_FADE_OUT_SECONDS))
+        >
             <For
                 each=displayed_toasts
-                key=|(handle, _, _)| *handle
-                view=move |cx, (_, message, shown)| view! { cx,
-                    <div
-                        class="toast"
-                        class:active=shown
-                    >{message}</div>
+                key=|(handle, _)| *handle
+                view=move |cx, (_, message)| view! { cx,
+                    <Toast
+                        message=message
+                        duration=Duration::from_secs_f64(TOAST_DURATION_SECONDS)
+                    />
                 }
             />
+        </div>
+    }
+}
+
+#[component]
+pub fn Toast(cx: Scope, message: String, duration: Duration) -> impl IntoView {
+    let (active, set_active) = create_signal(cx, true);
+
+    if is_browser() {
+        set_timeout(
+            move || {
+                set_active(false);
+            },
+            duration,
+        )
+    }
+    view! { cx,
+        <div
+            class="toast"
+            class:active=active
+        >
+        <Icon icon_id="check_circle"/>
+        {message}
         </div>
     }
 }
