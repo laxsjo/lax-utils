@@ -229,12 +229,13 @@ pub fn sync_input_value_float(
     input_element: &HtmlElement<Input>,
     value: f64,
     decimals: usize,
+    force: bool,
     format_fn: impl FnOnce(f64) -> String,
 ) {
     let current_value =
         input_element.value().parse_input::<f64>().unwrap_or(0.);
 
-    if !value.float_compare_digits(current_value, -(decimals as i32)) {
+    if !value.float_compare_digits(current_value, -(decimals as i32)) || force {
         input_element.set_value(&format_fn(value));
     }
 }

@@ -18,9 +18,10 @@
 	--hue-cursor: 1;
 	display: grid;
 	grid:
-		"m d" 20rem
-		"c ." auto
-		"i ." auto
+		"m d" auto
+		"m c" auto
+		"i c" auto
+		"i o" auto
 		/ auto;
 	gap: 0.8rem;
 
@@ -63,6 +64,8 @@
 		gap: 0.6rem;
 		grid-area: m;
 
+		height: 20rem;
+
 		// width: 20rem;
 
 		.sat-value-surface {
@@ -79,25 +82,25 @@
 	.controls {
 		display: grid;
 		grid:
-			"o1 i i i" auto
-			"o2 i i i" auto
-			/ 1fr min-content min-content min-content;
+			"i i i" auto
+			"i i i" auto
+			/ 1fr 1fr 1fr;
 		gap: 0.8rem 0.4rem;
 
 		grid-area: i;
 
 		.integers {
 			display: contents;
-
-			& > :first-child {
-				grid-column: 2;
-			}
 		}
 		.floats {
 			display: contents;
+		}
 
-			& > :first-child {
-				grid-column: 2;
+		.labeled-input {
+			justify-self: stretch;
+
+			input {
+				width: 100%;
 			}
 		}
 
@@ -112,6 +115,10 @@
 		// .labeled-input {
 		// 	grid-area: i;
 		// }
+	}
+
+	.options {
+		grid-area: o;
 	}
 
 	.display {

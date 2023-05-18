@@ -17,6 +17,8 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
     let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
 
+    let (precise_inputs, set_precise_inputs) = create_signal(cx, false);
+
     let (color, set_color) = create_signal(
         cx,
         DynamicColor::from_floats((1., 1., 1.), color_space()),
@@ -47,6 +49,9 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         }
     };
 
+    let (force_update_inputs, set_force_update_inputs) =
+        create_signal(cx, false);
+
     let component_0_ref = create_node_ref::<Input>(cx);
     let component_1_ref = create_node_ref::<Input>(cx);
     let component_2_ref = create_node_ref::<Input>(cx);
@@ -54,8 +59,10 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let float_component_1_ref = create_node_ref::<Input>(cx);
     let float_component_2_ref = create_node_ref::<Input>(cx);
 
-    let format_component =
-        |value: f64| -> _ { naturally_format_float(value, 0, 2) };
+    let format_component = move || match precise_inputs() {
+        true => |value: f64| -> _ { naturally_format_float(value, 0, 2) },
+        false => |value: f64| -> _ { naturally_format_float(value, 0, 0) },
+    };
 
     let format_float =
         |value: f64| -> _ { naturally_format_float(value, 1, 2) };
@@ -92,44 +99,57 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
         // log!("set components {:?}, floats {:?}", components, floats);
 
+        let force_update = force_update_inputs.get_untracked();
+        if (force_update) {
+            set_force_update_inputs.set_untracked(false);
+        }
+
         sync_input_value_float(
             &component_0,
             components.0,
             DECIMAL_PRECISION,
-            format_component,
+            force_update,
+            format_component(),
         );
         sync_input_value_float(
             &component_1,
             components.1,
             DECIMAL_PRECISION,
-            format_component,
+            force_update,
+            format_component(),
         );
         sync_input_value_float(
             &component_2,
             components.2,
             DECIMAL_PRECISION,
-            format_component,
+            force_update,
+            format_component(),
         );
 
         sync_input_value_float(
             &float_0,
             floats.0,
             DECIMAL_PRECISION,
+            force_update,
             format_float,
         );
         sync_input_value_float(
             &float_1,
             floats.1,
             DECIMAL_PRECISION,
+            force_update,
             format_float,
         );
         sync_input_value_float(
             &float_2,
             floats.2,
             DECIMAL_PRECISION,
+            force_update,
             format_float,
         );
     });
+
+    // create_tri
 
     let update_with_components = move |ev: Event| {
         let Some(component_0) = component_0_ref.get() else {
@@ -150,6 +170,8 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             component_1.value().parse_input::<f64>().unwrap_or(0.),
             component_2.value().parse_input::<f64>().unwrap_or(0.),
         );
+
+        let format_component = format_component();
 
         if &ev.type_() == "change" {
             component_0.set_value(&format_component(components.0));
@@ -235,6 +257,13 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         color_space_info().units.2.map(Into::<String>::into)
     });
 
+    let on_precise_input_change = move |ev: Event| {
+        let checked = event_target_checked(&ev);
+
+        set_force_update_inputs(true);
+        set_precise_inputs(checked);
+    };
+
     let color_display_style = move || {
         let rgb: Rgb = color().to_color();
 
@@ -267,17 +296,6 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     set_hue=on_hue_float_change
                 />
             </div>
-            <div class="color-space">
-                    <label for=select_id>
-                        "Color Space"
-                    </label>
-                    <FancySelect
-                        items=color_space_options
-                        default_selected=color_space()
-                        on_select=on_color_space_change
-                        select_id=select_id
-                    />
-                </div>
             <div class="controls">
                 <div class="integers">
                     <LabeledFloatInput
@@ -367,6 +385,26 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                         />
                     </LabeledFloatInput>
                 </div>
+            </div>
+            <div class="color-space">
+                <label for=select_id>
+                    "Color Space"
+                </label>
+                <FancySelect
+                    items=color_space_options
+                    default_selected=color_space()
+                    on_select=on_color_space_change
+                    select_id=select_id
+                />
+            </div>
+            <div class="options">
+                <label>
+                    "Precise Input"
+                    <input
+                        type="checkbox"
+                        on:input=on_precise_input_change
+                    />
+                </label>
             </div>
             <div class="display">
                 <div

@@ -82,7 +82,6 @@ where
         // TODO: figure out what is changing the select value after loading
         set_timeout(
             move || {
-                log!("selected index {}", selected_index);
                 select.set_selected_index(selected_index as i32);
             },
             Duration::from_secs_f64(0.1),
