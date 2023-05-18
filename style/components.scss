@@ -304,6 +304,10 @@
 		background-color: var(--bg-input-hover);
 	}
 
+	&:active {
+		background-color: var(--bg-input-active);
+	}
+
 	.input {
 		display: contents;
 
@@ -368,6 +372,14 @@
 	&:hover,
 	&:focus-visible {
 		background-color: var(--bg-input-hover);
+
+		.icon {
+			color: inherit;
+		}
+	}
+
+	&:active {
+		background-color: var(--bg-input-active);
 
 		.icon {
 			color: inherit;
@@ -446,6 +458,12 @@
 		}
 	}
 
+	&:hover {
+		.icon {
+			color: var(--fg-primary);
+		}
+	}
+
 	:focus-visible {
 		outline-color: var(--accent);
 	}
@@ -473,12 +491,20 @@
 			background-color: var(--bg-input-hover);
 		}
 
+		&:active {
+			background-color: var(--bg-input-active);
+		}
+
 		option {
 			background-color: var(--bg-input);
 
 			&:hover,
 			&:focus-visible {
 				background-color: var(--bg-input-hover);
+			}
+
+			&:active {
+				background-color: var(--bg-input-active);
 			}
 		}
 	}

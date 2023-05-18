@@ -51,10 +51,15 @@ input {
 		background-color: var(--bg-input-hover);
 	}
 
+	&:active {
+		background-color: var(--bg-input-active);
+	}
+
 	&[type="checkbox"] {
 		--height: 1.5em;
 		--bg: var(--bg-input);
 		--bg-hover: var(--bg-input-hover);
+		--bg-active: var(--bg-input-active);
 		// --ease-in: cubic-bezier(0.36, 0, 0.66, -0.56);
 		--ease-out: cubic-bezier(0.34, 1.56, 0.64, 1);
 
@@ -80,9 +85,14 @@ input {
 			background-color: var(--bg-hover);
 		}
 
+		&:active {
+			background-color: var(--bg-active);
+		}
+
 		&:checked {
 			--bg: var(--bg-btn-primary);
 			--bg-hover: var(--bg-btn-primary-hover);
+			--bg-active: var(--bg-btn-primary-active);
 
 			&::after {
 				transform: translateX(var(--height));
