@@ -3,6 +3,7 @@ pub mod color_picker;
 pub mod components;
 pub mod routes;
 pub mod string_utils;
+pub mod toasts;
 pub mod utils;
 
 use cfg_if::cfg_if;

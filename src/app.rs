@@ -1,5 +1,6 @@
 use crate::components::*;
 use crate::routes::*;
+use crate::toasts::provide_toasts;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -8,6 +9,8 @@ use leptos_router::*;
 pub fn App(cx: Scope) -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context(cx);
+
+    provide_toasts(cx);
 
     // This is very cursed
     let icons_svg = include_str!("../assets/material-icons-defs.svg");
@@ -22,7 +25,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         // sets the document title
         <Title text="lax-utils"/>
 
-        {icons_svg}
+        <div inner_html=icons_svg />
 
         // content for this welcome page
         <Router>

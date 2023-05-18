@@ -361,7 +361,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     </LabeledFloatInput>
                     <CopyButton
                         value=components_copy_string
-                    ><></></CopyButton>
+                    ><div/></CopyButton>
                 </div>
                 <div class="floats">
                     <LabeledFloatInput
@@ -408,7 +408,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     </LabeledFloatInput>
                     <CopyButton
                         value=floats_copy_string
-                    ><></></CopyButton>
+                    ><div/></CopyButton>
                 </div>
             </div>
             <div class="color-space">

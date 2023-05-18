@@ -146,9 +146,8 @@ pub fn Icon(
         <svg
             class="icon"
             viewBox="0 0 24 24"
-        >
-            {use_element_str}
-        </svg>
+            inner_html=use_element_str
+        />
     }
 }
 
