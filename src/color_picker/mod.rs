@@ -327,6 +327,41 @@ impl Rgb {
 
         format!("{:02x}{:02x}{:02x}", r, g, b)
     }
+
+    /// Create a rgb color from a hex code.
+    ///
+    /// The code may begin with a hashtag.
+    ///
+    /// # Examples
+    /// ```
+    /// use lax_utils::color_picker::*;
+    ///
+    /// assert_eq!(Rgb::from_hex_code("7f7f7f"), Some(Rgb::from_components((127., 127., 127.))));
+    /// assert_eq!(Rgb::from_hex_code("#00ff00"), Some(Rgb::from_components((0., 255., 0.))));
+    ///
+    /// assert_eq!(Rgb::from_hex_code("0f00"), None);
+    /// assert_eq!(Rgb::from_hex_code("00fg00"), None);
+    /// ```
+    pub fn from_hex_code(code: &str) -> Option<Self> {
+        let code = code.trim_start_matches('#');
+
+        if code.len() != 6 {
+            return None;
+        }
+
+        // code.char_indices().
+
+        let mut components = code
+            .chars()
+            .array_chunks::<2>() // ooo, I'm using an unstable feature!
+            .filter_map(|[a, b]| Some(a.to_digit(16)? * 16 + b.to_digit(16)?));
+
+        Some(Rgb {
+            r: components.next()? as f64,
+            g: components.next()? as f64,
+            b: components.next()? as f64,
+        })
+    }
 }
 
 impl Color for Rgb {

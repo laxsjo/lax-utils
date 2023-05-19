@@ -1,3 +1,5 @@
+#![feature(iter_array_chunks)]
+
 pub mod app;
 pub mod color_picker;
 pub mod components;

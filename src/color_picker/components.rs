@@ -1,10 +1,6 @@
+use crate::{color_picker::*, components::*, string_utils::*, utils::*};
 use leptos::{ev::*, html::*, *};
 use wasm_bindgen::prelude::*;
-
-use crate::color_picker::*;
-use crate::components::*;
-use crate::string_utils::*;
-use crate::utils::*;
 
 #[component]
 pub fn ColorPicker(cx: Scope) -> impl IntoView {
@@ -32,17 +28,23 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let (color_hsv, set_color_hsv) =
         create_signal(cx, color.get_untracked().to_color::<Hsv>());
 
-    let set_color_sync_hsv_color = move |color: DynamicColor| {
-        set_color(color);
-        set_color_hsv(color.to_color::<Hsv>());
-    };
-
-    let hex_code = create_memo(cx, move |_| {
-        let rgb = color().to_color::<Rgb>();
-        rgb.as_hex_code()
-    });
+    let (hex_code, set_hex_code) = create_signal(
+        cx,
+        color.get_untracked().to_color::<Rgb>().as_hex_code(),
+    );
     let hex_code_hashtag =
         Signal::derive(cx, move || format!("#{}", hex_code()));
+
+    let set_color_sync_other = move |color: DynamicColor| {
+        set_color(color);
+        set_color_hsv(color.to_color::<Hsv>());
+        set_hex_code(color.to_color::<Rgb>().as_hex_code());
+    };
+
+    // let hex_code = create_memo(cx, move |_| {
+    //     let rgb = color().to_color::<Rgb>();
+    //     rgb.as_hex_code()
+    // });
 
     create_effect(cx, move |_| {
         set_color(color().set_color_space(color_space()));
@@ -188,9 +190,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
         // log!("got components {:?}", components);
 
-        set_color_sync_hsv_color(
-            color.get_untracked().set_components(components),
-        );
+        set_color_sync_other(color.get_untracked().set_components(components));
     };
     let update_with_floats = move |ev: Event| {
         let Some(float_0) = float_component_0_ref.get() else {
@@ -220,7 +220,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
         // log!("got floats {:?}", floats);
 
-        set_color_sync_hsv_color(color.get_untracked().set_floats(floats));
+        set_color_sync_other(color().set_floats(floats));
     };
 
     let hue_float = Signal::derive(cx, move || color_hsv().as_floats().0);
@@ -231,6 +231,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         set_color_hsv(Hsv::from_floats((floats.0, floats.1, floats.2)));
         let hsv = DynamicColor::from_color(color_hsv());
         set_color(hsv.set_color_space(color.get_untracked().color_space()));
+        set_hex_code(hsv.to_color::<Rgb>().as_hex_code());
     };
 
     let on_hue_float_change = move |hue: f64| {
@@ -242,6 +243,37 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     };
     let on_value_float_change = move |value: f64| {
         update_with_hsv_floats((hue_float(), sat_float(), value));
+    };
+
+    let update_with_hex_code = move |hex: &str| {
+        let Some(rgb) = Rgb::from_hex_code(hex) else {
+            return;
+        };
+
+        let color = DynamicColor::new(
+            rgb.as_components(),
+            color.get_untracked().color_space(),
+        );
+
+        set_color(color);
+        set_color_hsv(color.to_color::<Hsv>());
+        set_hex_code(hex.to_owned());
+    };
+
+    let on_hex_code_change = move |ev: Event| {
+        let value = event_target_value(&ev);
+        let mut value_str = value.as_str();
+        if value_str.starts_with('#') {
+            // // ? is this unsafe?
+            // let target = event_target::<web_sys::HtmlInputElement>(&ev);
+
+            value_str = value_str.trim_start_matches('#');
+
+            // target.set_value(value_str);
+            // set_hex_code(value_str.to_owned());
+        }
+
+        update_with_hex_code(value_str);
     };
 
     let color_space_info = create_memo(cx, move |_| color_space().info());
@@ -451,14 +483,27 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     class="color-display"
                     style=color_display_style
                 />
-                <CopyableLabel
-                    content=hex_code_hashtag
-                >
+                // <CopyableLabel
+                //     content=hex_code_hashtag
+                // >
+                //     <span class="prefix">"#"</span>
+                //     <span class="code">
+                //         {hex_code}
+                //     </span>
+                // </CopyableLabel>
+                <div class="hex-code">
                     <span class="prefix">"#"</span>
-                    <span class="code">
-                        {hex_code}
-                    </span>
-                </CopyableLabel>
+                    <input
+                        on:input=on_hex_code_change
+                        prop:value=hex_code
+                        placeholder="ffffff"
+                        // value=hex_code.get_untracked()
+                    />
+
+                    <CopyButton
+                        value=hex_code_hashtag
+                    />
+                </div>
             </div>
         </div>
     }

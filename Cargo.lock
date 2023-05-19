@@ -1201,6 +1201,7 @@ dependencies = [
  "leptos",
  "leptos_actix",
  "leptos_meta",
+ "leptos_reactive",
  "leptos_router",
  "log",
  "num-traits",

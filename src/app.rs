@@ -6,6 +6,8 @@ use leptos_router::*;
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
+    leptos_reactive::SpecialNonReactiveZone::enter(); // doesn't seem to work :(
+
     provide_meta_context(cx);
 
     provide_toast(cx);

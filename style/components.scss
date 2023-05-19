@@ -83,22 +83,46 @@
 		grid-area: c;
 
 		.radio-group {
-			display: flex;
+			display: grid;
+			grid:
+				auto
+				auto
+				/ 1fr 1fr 1fr;
 			flex-direction: row;
 			align-items: start;
 			gap: 0.4rem;
 
-			padding: 0;
+			padding: 0.5rem;
 			margin: 0;
+			// padding-top: 0.5em;
 
 			border: none;
+			border-radius: 0.4rem;
+
+			background-color: var(--bg-input);
 
 			legend {
-				position: fixed;
-				top: -10000px;
-				left: -10000px;
-				width: 1px;
-				height: 1px;
+				// source: https://stackoverflow.com/a/24627851/15507414
+				grid-column: span 3;
+
+				float: left;
+
+				margin-inline: auto;
+
+				// font-variant-caps: titling-caps;
+				text-transform: uppercase;
+
+				color: var(--fg-input);
+
+				// position: fixed;
+				// top: -10000px;
+				// left: -10000px;
+				// width: 1px;
+				// height: 1px;
+			}
+
+			& > :not(legend) {
+				clear: both;
 			}
 		}
 	}
@@ -168,18 +192,23 @@
 			background-color: rgb(var(--r), var(--g), var(--b));
 		}
 
-		.copy-button {
+		.hex-code {
+			box-sizing: border-box;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 0.4rem;
+
 			justify-content: space-between;
 
 			width: 100%;
+			padding-left: 0.6rem;
 
 			font-size: 1.2em;
 
 			border-radius: 0 0 0.4rem 0.4rem;
 
-			.label {
-				display: contents;
-			}
+			background-color: var(--bg-input);
 
 			.prefix {
 				font-size: 1rem;
@@ -187,9 +216,28 @@
 				color: var(--fg-input);
 			}
 
-			// .icon {
-			// 	// font-size: 1rem;
-			// }
+			input {
+				align-self: stretch;
+				flex-grow: 1;
+				flex-shrink: 1;
+
+				min-width: 6ch;
+
+				text-align: center;
+				font-size: 1.2rem;
+
+				border-radius: 0.4rem;
+			}
+
+			.copy-button {
+				border-radius: 100%;
+
+				font-size: 1.2rem;
+			}
+
+			// // .icon {
+			// // 	// font-size: 1rem;
+			// // }
 		}
 	}
 }

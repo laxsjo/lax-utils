@@ -2,6 +2,10 @@
 @use "components.scss";
 @use "document.scss";
 
+* {
+	box-sizing: border-box;
+}
+
 :root {
 	color-scheme: dark;
 }
