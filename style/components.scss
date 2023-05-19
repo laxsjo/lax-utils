@@ -539,3 +539,57 @@
 		transition: transform ease-out 0.2s;
 	}
 }
+
+.radio-group label {
+	display: inline-block;
+	// width: max-content;
+	// height: max-content;
+
+	position: relative;
+
+	// padding: 0.4rem;
+
+	&[data-checked] {
+		& > input {
+			--bg: var(--bg-btn-primary);
+			--bg-hover: var(--bg-btn-primary-hover);
+			--bg-active: var(--bg-btn-primary-active);
+		}
+	}
+
+	& > span {
+		display: block;
+		position: relative;
+		z-index: 1;
+
+		margin: 0.4rem 0.6rem;
+	}
+
+	& > input {
+		--bg: var(--bg-btn-secondary);
+		--bg-hover: var(--bg-btn-secondary-hover);
+		--bg-active: var(--bg-btn-secondary-active);
+		appearance: none;
+		display: block;
+
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+
+		margin: 0;
+		padding: 0;
+
+		border-radius: 100rem;
+
+		background-color: var(--bg);
+
+		&:hover,
+		&:focus-within {
+			background-color: var(--bg-hover);
+		}
+
+		&:active {
+			background-color: var(--bg-active);
+		}
+	}
+}

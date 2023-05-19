@@ -1,7 +1,8 @@
 use crate::{toasts, utils::*};
-use leptos::{html::*, leptos_dom::helpers::*, *};
+use leptos::{html::*, leptos_dom::helpers::*, window, *};
 use leptos_router::*;
 use std::{hash::*, time::Duration};
+use web_sys::*;
 
 #[component]
 pub fn RouteLink(
@@ -427,5 +428,82 @@ pub fn CopyButton(
             //     "Copied '" {value} "' to clipboard"
             // </span>
         </button>
+    }
+}
+
+#[component]
+pub fn RadioGroup<T, F>(
+    cx: Scope,
+    #[prop(into)] title: MaybeSignal<String>,
+    #[prop(into)] name: Signal<String>,
+    #[prop(into)] options: MaybeSignal<Vec<(String, T)>>,
+    #[prop(optional)] on_change: Option<F>,
+) -> impl IntoView
+where
+    T: Copy + Hash + 'static + Eq + ToString,
+    F: Fn(T) + 'static + Copy,
+{
+    let any_changed = create_trigger(cx);
+
+    let create_input = move |cx, (label, value): (String, T)| {
+        let (checked, set_checked) = create_signal(cx, false);
+        let input = create_node_ref::<Input>(cx);
+        // let input
+
+        create_effect(cx, move |_| {
+            any_changed();
+
+            let Some(input) = input.get() else {
+                set_checked(false);
+                return;
+            };
+
+            set_checked(input.checked());
+        });
+        let on_change = move |ev| {
+            any_changed.notify();
+            let checked = event_target_checked(&ev);
+
+            if let Some(on_change) = on_change {
+                // Failsafe in case change event is dispatched on deselect.
+                if checked {
+                    on_change(value);
+                }
+            }
+
+            // log!("clicked for {:?}", cx);
+            // let checked = event_target_checked(&ev);
+            // set_checked(checked);
+
+            // if let Some(on_change) = on_change {
+            //     if checked {
+            //         on_change(value);
+            //     }
+            // }
+        };
+
+        view! {cx,
+            <label data-checked=checked>
+                <span>{label}</span>
+                <input
+                    type="radio"
+                    name=name
+                    value=value.to_string()
+                    on:change=on_change
+                    _ref=input
+                />
+            </label>
+        }
+    };
+
+    view! { cx,
+        <fieldset class="radio-group">
+            <legend>{title}</legend>
+            <For
+                each=options
+                key=move|(_, value)| *value
+                view=create_input
+            />
+        </fieldset>
     }
 }

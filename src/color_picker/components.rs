@@ -10,10 +10,15 @@ use crate::utils::*;
 pub fn ColorPicker(cx: Scope) -> impl IntoView {
     const DECIMAL_PRECISION: usize = 2;
 
-    let (color_space_options, _) = create_signal(
-        cx,
-        vec![ColorSpace::Rgb, ColorSpace::Hsl, ColorSpace::Hsv],
-    );
+    // let (color_space_options_old, _) = create_signal(
+    //     cx,
+    //     vec![ColorSpace::Rgb, ColorSpace::Hsl, ColorSpace::Hsv],
+    // );
+    let color_space_options = vec![
+        ("RGB".to_owned(), ColorSpace::Rgb),
+        ("HSL".to_owned(), ColorSpace::Hsl),
+        ("HSV".to_owned(), ColorSpace::Hsv),
+    ];
 
     let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
 
@@ -25,7 +30,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     );
 
     let (color_hsv, set_color_hsv) =
-        create_signal(cx, color().to_color::<Hsv>());
+        create_signal(cx, color.get_untracked().to_color::<Hsv>());
 
     let set_color_sync_hsv_color = move |color: DynamicColor| {
         set_color(color);
@@ -43,11 +48,13 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         set_color(color().set_color_space(color_space()));
     });
 
-    let on_color_space_change = move |color_space: Option<_>| {
-        if let Some(color_space) = color_space {
-            set_color_space(color_space)
-        }
-    };
+    // let on_color_space_change_old = move |color_space: Option<_>| {
+    //     if let Some(color_space) = color_space {
+    //         set_color_space(color_space)
+    //     }
+    // };
+
+    let on_color_space_change = set_color_space;
 
     let (force_update_inputs, set_force_update_inputs) =
         create_signal(cx, false);
@@ -361,7 +368,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     </LabeledFloatInput>
                     <CopyButton
                         value=components_copy_string
-                    ><div/></CopyButton>
+                    >""</CopyButton>
                 </div>
                 <div class="floats">
                     <LabeledFloatInput
@@ -408,18 +415,24 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     </LabeledFloatInput>
                     <CopyButton
                         value=floats_copy_string
-                    ><div/></CopyButton>
+                    >""</CopyButton>
                 </div>
             </div>
             <div class="color-space">
                 <label for=select_id>
                     "Color Space"
                 </label>
-                <FancySelect
-                    items=color_space_options
-                    default_selected=color_space.get_untracked()
-                    on_select=on_color_space_change
-                    select_id=select_id
+                // <FancySelect
+                //     items=color_space_options_old
+                //     default_selected=color_space.get_untracked()
+                //     on_select=on_color_space_change_old
+                //     select_id=select_id
+                // />
+                <RadioGroup
+                    options=color_space_options
+                    title="Color Space".to_owned()
+                    name=Signal::derive(cx, || "color-space".to_owned())
+                    on_change=on_color_space_change
                 />
             </div>
             <div class="options">

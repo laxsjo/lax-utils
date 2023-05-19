@@ -1,5 +1,7 @@
 pub mod components;
 
+use std::fmt::Display;
+
 use crate::utils::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -108,6 +110,16 @@ impl UiDisplay for ColorSpace {
             ColorSpace::Hsv => "HSV",
         }
         .to_owned()
+    }
+}
+
+impl Display for ColorSpace {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            ColorSpace::Rgb => "RGB",
+            ColorSpace::Hsl => "HSL",
+            ColorSpace::Hsv => "HSV",
+        })
     }
 }
 
