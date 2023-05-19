@@ -2,7 +2,6 @@ use crate::{toasts, utils::*};
 use leptos::{html::*, leptos_dom::helpers::*, window, *};
 use leptos_router::*;
 use std::{hash::*, time::Duration};
-use web_sys::*;
 
 #[component]
 pub fn RouteLink(
@@ -322,67 +321,67 @@ pub fn CopyButton(
 ) -> impl IntoView {
     const DURATION_IN_SECONDS: f64 = 5.;
     const DURATION_OUT_SECONDS: f64 = 0.3;
-    let (shown, set_shown) = create_signal(cx, false);
-    let (hidden, set_hidden) = create_signal(cx, true);
-    let (in_timeout_handle, set_in_timeout_handle) =
-        create_signal::<Option<TimeoutHandle>>(cx, None);
-    let (out_timeout_handle, set_out_timeout_handle) =
-        create_signal::<Option<TimeoutHandle>>(cx, None);
+    // let (shown, set_shown) = create_signal(cx, false);
+    // let (hidden, set_hidden) = create_signal(cx, true);
+    // let (in_timeout_handle, set_in_timeout_handle) =
+    //     create_signal::<Option<TimeoutHandle>>(cx, None);
+    // let (out_timeout_handle, set_out_timeout_handle) =
+    //     create_signal::<Option<TimeoutHandle>>(cx, None);
 
-    create_effect(cx, move |_| {
-        if shown() {
-            set_hidden(false);
-        }
-    });
+    // create_effect(cx, move |_| {
+    //     if shown() {
+    //         set_hidden(false);
+    //     }
+    // });
 
-    let activate_fade_out = move || {
-        let Ok(handle) = set_timeout_with_handle(
-            move || {
-                set_out_timeout_handle(None);
+    // let activate_fade_out = move || {
+    //     let Ok(handle) = set_timeout_with_handle(
+    //         move || {
+    //             set_out_timeout_handle(None);
 
-                set_hidden(true);
-            },
-            Duration::from_secs_f64(DURATION_OUT_SECONDS),
-        ) else {
-            set_out_timeout_handle(None);
-            return;
-        };
+    //             set_hidden(true);
+    //         },
+    //         Duration::from_secs_f64(DURATION_OUT_SECONDS),
+    //     ) else {
+    //         set_out_timeout_handle(None);
+    //         return;
+    //     };
 
-        set_out_timeout_handle(Some(handle));
-    };
+    //     set_out_timeout_handle(Some(handle));
+    // };
 
-    let activate_popup = move || {
-        if let Some(handle) = out_timeout_handle() {
-            handle.clear();
-        }
-        if let Some(handle) = in_timeout_handle() {
-            handle.clear();
-        }
-        // log!("clicked!");
-        set_shown(false);
+    // let activate_popup = move || {
+    //     if let Some(handle) = out_timeout_handle() {
+    //         handle.clear();
+    //     }
+    //     if let Some(handle) = in_timeout_handle() {
+    //         handle.clear();
+    //     }
+    //     // log!("clicked!");
+    //     set_shown(false);
 
-        set_timeout(
-            move || {
-                set_shown(true);
+    //     set_timeout(
+    //         move || {
+    //             set_shown(true);
 
-                match set_timeout_with_handle(
-                    move || {
-                        // ? Does this cause a memory error if the component has
-                        // been disposed of in the time
-                        // between the timeout activation and
-                        // this closure being ran?
-                        set_shown(false);
-                        activate_fade_out();
-                    },
-                    Duration::from_secs_f64(DURATION_IN_SECONDS),
-                ) {
-                    Ok(handle) => set_in_timeout_handle(Some(handle)),
-                    Err(_) => set_in_timeout_handle(None),
-                };
-            },
-            Duration::from_secs_f64(0.1),
-        );
-    };
+    //             match set_timeout_with_handle(
+    //                 move || {
+    //                     // ? Does this cause a memory error if the component
+    // has                     // been disposed of in the time
+    //                     // between the timeout activation and
+    //                     // this closure being ran?
+    //                     set_shown(false);
+    //                     activate_fade_out();
+    //                 },
+    //                 Duration::from_secs_f64(DURATION_IN_SECONDS),
+    //             ) {
+    //                 Ok(handle) => set_in_timeout_handle(Some(handle)),
+    //                 Err(_) => set_in_timeout_handle(None),
+    //             };
+    //         },
+    //         Duration::from_secs_f64(0.1),
+    //     );
+    // };
 
     let copy_to_clipboard = move || -> bool {
         let Some(clipboard) = window().navigator().clipboard() else {

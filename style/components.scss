@@ -81,6 +81,26 @@
 
 	.color-space {
 		grid-area: c;
+
+		.radio-group {
+			display: flex;
+			flex-direction: row;
+			align-items: start;
+			gap: 0.4rem;
+
+			padding: 0;
+			margin: 0;
+
+			border: none;
+
+			legend {
+				position: fixed;
+				top: -10000px;
+				left: -10000px;
+				width: 1px;
+				height: 1px;
+			}
+		}
 	}
 
 	.controls {
@@ -584,7 +604,7 @@
 		background-color: var(--bg);
 
 		&:hover,
-		&:focus-within {
+		&:focus-visible {
 			background-color: var(--bg-hover);
 		}
 

@@ -188,7 +188,9 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
         // log!("got components {:?}", components);
 
-        set_color_sync_hsv_color(color().set_components(components));
+        set_color_sync_hsv_color(
+            color.get_untracked().set_components(components),
+        );
     };
     let update_with_floats = move |ev: Event| {
         let Some(float_0) = float_component_0_ref.get() else {
@@ -218,7 +220,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
         // log!("got floats {:?}", floats);
 
-        set_color_sync_hsv_color(color().set_floats(floats));
+        set_color_sync_hsv_color(color.get_untracked().set_floats(floats));
     };
 
     let hue_float = Signal::derive(cx, move || color_hsv().as_floats().0);
@@ -228,7 +230,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let update_with_hsv_floats = move |floats: (f64, f64, f64)| {
         set_color_hsv(Hsv::from_floats((floats.0, floats.1, floats.2)));
         let hsv = DynamicColor::from_color(color_hsv());
-        set_color(hsv.set_color_space(color().color_space()));
+        set_color(hsv.set_color_space(color.get_untracked().color_space()));
     };
 
     let on_hue_float_change = move |hue: f64| {
@@ -299,11 +301,11 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         )
     };
 
-    let id = unique_id();
+    // let id = unique_id();
 
-    let select_id = Signal::derive(cx, move || {
-        Some(format!("color-picker-color-space_{}", id))
-    });
+    // let select_id = Signal::derive(cx, move || {
+    //     Some(format!("color-picker-color-space_{}", id))
+    // });
 
     view! { cx,
         <div
@@ -419,9 +421,9 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 </div>
             </div>
             <div class="color-space">
-                <label for=select_id>
-                    "Color Space"
-                </label>
+                // <label for=select_id>
+                //     "Color Space"
+                // </label>
                 // <FancySelect
                 //     items=color_space_options_old
                 //     default_selected=color_space.get_untracked()
@@ -492,7 +494,7 @@ where
         // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
         const PRIMARY_BUTTON: u16 = 1;
 
-        let Some(surface_element) = surface_ref.get() else {
+        let Some(surface_element) = surface_ref.get_untracked() else {
             log!{"Couldn't find element '.color-picker__color'!"};
             return;
         };
