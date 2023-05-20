@@ -4,6 +4,7 @@ pub mod app;
 pub mod color_picker;
 pub mod components;
 pub mod routes;
+pub mod settings;
 pub mod string_utils;
 pub mod toasts;
 pub mod utils;

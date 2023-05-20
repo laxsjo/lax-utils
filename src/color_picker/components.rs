@@ -1,4 +1,12 @@
-use crate::{color_picker::*, components::*, string_utils::*, utils::*};
+use std::marker::PhantomData;
+
+use crate::{
+    color_picker::*,
+    components::*,
+    settings::{StoredInput, StoredRadioGroup},
+    string_utils::*,
+    utils::*,
+};
 use leptos::{ev::*, html::*, *};
 use wasm_bindgen::prelude::*;
 
@@ -339,6 +347,8 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     //     Some(format!("color-picker-color-space_{}", id))
     // });
 
+    let phantom_bool = PhantomData::<bool>;
+
     view! { cx,
         <div
             class="color-picker"
@@ -462,19 +472,26 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 //     on_select=on_color_space_change_old
                 //     select_id=select_id
                 // />
-                <RadioGroup
+                <StoredRadioGroup
                     options=color_space_options
                     title="Color Space".to_owned()
                     name=Signal::derive(cx, || "color-space".to_owned())
                     on_change=on_color_space_change
+                    key="s_color_space"
                 />
             </div>
             <div class="options">
                 <label>
                     "Precise Inputs"
-                    <input
-                        type="checkbox"
-                        on:input=on_precise_input_change
+                    <StoredInput
+                        input=view! { cx,
+                            <input
+                                type="checkbox"
+                                on:input=on_precise_input_change
+                            />
+                        }
+                        key="s_precise_inputs"
+                        _type=phantom_bool
                     />
                 </label>
             </div>

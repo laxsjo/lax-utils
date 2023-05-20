@@ -1,7 +1,7 @@
 use crate::{toasts, utils::*};
 use leptos::{html::*, leptos_dom::helpers::*, window, *};
 use leptos_router::*;
-use std::{hash::*, time::Duration};
+use std::{cell::*, hash::*, rc::Rc, time::Duration};
 
 #[component]
 pub fn RouteLink(
@@ -263,21 +263,62 @@ pub fn CopyButton(
     }
 }
 
+pub type OptionalRcBox<T> = Rc<RefCell<Option<Box<T>>>>;
+
+pub fn temp<T>(_: Box<dyn Fn(T) + 'static>) {
+    // do nothing
+}
+
 #[component]
-pub fn RadioGroup<T, F>(
+pub fn RadioGroup<T, F, W>(
     cx: Scope,
     #[prop(into)] title: MaybeSignal<String>,
     #[prop(into)] name: Signal<String>,
     #[prop(into)] options: MaybeSignal<Vec<(String, T)>>,
     #[prop(optional)] on_change: Option<F>,
+    // /// A reference to a boxed function that the caller can call to set the
+    // /// value of the radio group. This reference will be set once this
+    // /// component has been initalized.
+    // #[prop(optional)]
+    // set_value: Option<OptionalRcBox<dyn Fn(T) + 'static>>,
+    /// A callback that will be called with a boxed setter function that sets
+    /// the value of this radio group. It will be called once the component
+    /// and it's elements have been initialized and loaded. (Unsure if this
+    /// means that the elements have *also* been mounted...)
+    #[prop(optional)]
+    with_set_value: Option<W>,
 ) -> impl IntoView
 where
     T: Copy + Hash + 'static + Eq + ToString,
     F: Fn(T) + 'static + Copy,
+    W: Fn(Box<dyn Fn(T) + 'static>) + 'static + Copy,
 {
     let any_changed = create_trigger(cx);
 
-    let create_input = move |cx, (label, value): (String, T)| {
+    let (current_value, set_current_value) =
+        create_signal::<Option<T>>(cx, None);
+
+    // log!("got set_value.is_none() {:?}", set_value.is_none());
+    // if let Some(set_value) = set_value {
+    //     let mut set_value = set_value.borrow_mut();
+
+    //     *set_value = Some(Box::new(move |value: T| {
+    //         log!("set value in callback");
+    //         set_current_value(Some(value));
+    //     }));
+    //     log!("assigned set value callback");
+    // }
+
+    create_effect(cx, move |_| {
+        if let Some(on_change) = on_change {
+            let Some(value) = current_value() else {
+                return;
+            };
+            on_change(value);
+        }
+    });
+
+    let create_input = move |cx, (label, this_value): (String, T)| {
         let (checked, set_checked) = create_signal(cx, false);
         let input = create_node_ref::<Input>(cx);
         // let input
@@ -290,18 +331,31 @@ where
                 return;
             };
 
-            set_checked(input.checked());
-        });
-        let on_change = move |ev| {
-            any_changed.notify();
-            let checked = event_target_checked(&ev);
-
-            if let Some(on_change) = on_change {
-                // Failsafe in case change event is dispatched on deselect.
-                if checked {
-                    on_change(value);
-                }
+            let checked = input.checked();
+            if checked {
+                set_current_value(Some(this_value));
             }
+        });
+
+        create_effect(cx, move |_| {
+            set_checked(current_value() == Some(this_value));
+        });
+
+        // create_effect(cx, move |_| {
+
+        // })
+
+        let on_change = move |_ev| {
+            set_current_value(None);
+            any_changed.notify();
+            // let checked = event_target_checked(&ev);
+
+            // if let Some(on_change) = on_change {
+            //     // Failsafe in case change event is dispatched on deselect.
+            //     if checked {
+            //         on_change(this_value);
+            //     }
+            // }
 
             // log!("clicked for {:?}", cx);
             // let checked = event_target_checked(&ev);
@@ -320,7 +374,7 @@ where
                 <input
                     type="radio"
                     name=name
-                    value=value.to_string()
+                    value=this_value.to_string()
                     on:change=on_change
                     _ref=input
                 />
@@ -328,8 +382,28 @@ where
         }
     };
 
+    let fieldset_ref = create_node_ref::<Fieldset>(cx);
+
+    let on_load = move || {
+        if let Some(with_set_value) = with_set_value {
+            with_set_value(Box::new(move |value: T| {
+                set_current_value(Some(value));
+            }));
+        }
+    };
+
+    create_effect(cx, move |_| {
+        if let Some(fieldset) = fieldset_ref.get() {
+            on_load();
+        };
+    });
+
     view! { cx,
-        <fieldset class="radio-group">
+        <fieldset
+            class="radio-group"
+            // on:load=on_load
+            _ref=fieldset_ref
+        >
             <legend>{title}</legend>
             <For
                 each=options

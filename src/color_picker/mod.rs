@@ -1,6 +1,6 @@
 pub mod components;
 
-use std::fmt::Display;
+use std::{fmt::Display, str::FromStr};
 
 use crate::utils::*;
 
@@ -116,10 +116,22 @@ impl UiDisplay for ColorSpace {
 impl Display for ColorSpace {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            ColorSpace::Rgb => "RGB",
-            ColorSpace::Hsl => "HSL",
-            ColorSpace::Hsv => "HSV",
+            ColorSpace::Rgb => "Rgb",
+            ColorSpace::Hsl => "Hsl",
+            ColorSpace::Hsv => "Hsv",
         })
+    }
+}
+
+impl FromStr for ColorSpace {
+    type Err = ();
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Rgb" => Ok(ColorSpace::Rgb),
+            "Hsl" => Ok(ColorSpace::Hsl),
+            "Hsv" => Ok(ColorSpace::Hsv),
+            _ => Err(()),
+        }
     }
 }
 

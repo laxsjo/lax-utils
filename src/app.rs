@@ -1,4 +1,4 @@
-use crate::{components::*, routes::*, toasts::*};
+use crate::{components::*, routes::*, settings::*, toasts::*};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -26,6 +26,10 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Title text="lax-utils"/>
 
         <div class="hidden" inner_html=icons_svg />
+
+        // <Test>
+        //     <input />
+        // </Test>
 
         // content for this welcome page
         <Router>
