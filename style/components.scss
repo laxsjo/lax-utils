@@ -609,6 +609,7 @@
 }
 
 .radio-group label {
+	cursor: pointer;
 	display: inline-block;
 	// width: max-content;
 	// height: max-content;
@@ -637,6 +638,8 @@
 		--bg: var(--bg-btn-secondary);
 		--bg-hover: var(--bg-btn-secondary-hover);
 		--bg-active: var(--bg-btn-secondary-active);
+
+		cursor: pointer;
 		appearance: none;
 		display: block;
 
