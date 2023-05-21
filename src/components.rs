@@ -397,11 +397,13 @@ where
             _ref=fieldset_ref
         >
             <legend>{title}</legend>
-            <For
-                each=options
-                key=move|(_, value)| *value
-                view=create_input
-            />
+            <div class="inputs">
+                <For
+                    each=options
+                    key=move|(_, value)| *value
+                    view=create_input
+                />
+            </div>
         </fieldset>
     }
 }

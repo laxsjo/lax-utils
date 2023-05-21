@@ -20,15 +20,17 @@
 	--color-cursor-x: 1;
 	--color-cursor-y: 0.5;
 	--hue-cursor: 1;
+
 	display: grid;
 	grid:
-		"m d" auto
-		"m c" auto
-		"i c" auto
-		"i o" auto
-		/ auto;
+		"map dis" auto
+		"map csp" auto
+		"inp csp" auto
+		"inp opt" auto
+		/ minmax(auto, max-content) 1fr;
 	gap: 0.8rem;
 
+	width: 100%;
 	margin-inline: auto;
 	padding: 0.8rem;
 
@@ -36,37 +38,15 @@
 
 	background-color: var(--bg-secondary);
 
-	.labeled-input {
-		border-radius: 0.4rem;
-
-		.prefix {
-			margin-left: 0.6rem;
-		}
-		.postfix {
-			margin-right: 0.3rem;
-			width: 1em;
-
-			text-align: start;
-		}
-
-		input {
-			width: 6ch;
-			padding: 0.6rem;
-			padding-left: calc(0.6rem + 1ch);
-			padding-right: calc(0.3rem + 0.2rem + 0.83em);
-
-			font-size: 1.2rem;
-			text-align: end;
-
-			border-radius: 0.4rem;
-		}
-	}
+	// @container main (max-width: 800px) {
+	// 	background-color: lightblue;
+	// }
 
 	.map {
 		display: flex;
 		flex-direction: column;
 		gap: 0.6rem;
-		grid-area: m;
+		grid-area: map;
 
 		height: 20rem;
 
@@ -77,56 +57,25 @@
 		}
 	}
 
-	.color-space {
-		grid-area: c;
-
-		.radio-group {
-			display: grid;
-			grid:
-				auto
-				auto
-				/ 1fr 1fr 1fr;
-			flex-direction: row;
-			align-items: start;
-			gap: 0.4rem;
-
-			padding: 0.5rem;
-			margin: 0;
-
-			border: none;
-			border-radius: 0.4rem;
-
-			background-color: var(--bg-input);
-
-			legend {
-				grid-column: span 3;
-
-				// source: https://stackoverflow.com/a/24627851/15507414
-				float: left;
-
-				margin-inline: auto;
-
-				text-transform: uppercase;
-
-				color: var(--fg-input);
-			}
-
-			& > :not(legend) {
-				clear: both;
-			}
-		}
-	}
-
 	.controls {
+		--input-padding-left: calc(0.6rem + 1ch);
+		--input-padding-right: calc(0.3rem + 0.2rem + 0.83rem);
+
 		display: grid;
 		grid:
-			"i i i cpy" auto
-			"i i i cpy" auto
-			/ 1fr 1fr 1fr max-content;
+			auto
+			auto
+			/ 1fr 1fr 1fr auto;
 		gap: 0.8rem 0.4rem;
 		place-items: center;
 
-		grid-area: i;
+		grid-area: inp;
+
+		// width: calc(
+		// 	3 * (6ch + var(--input-padding-left) + var(--input-padding-right)) +
+		// 		3 * 0.4rem
+		// );
+		// width: var(--input-padding-right);
 
 		.integers {
 			display: contents;
@@ -135,15 +84,9 @@
 			display: contents;
 		}
 
-		.labeled-input {
-			justify-self: stretch;
-
-			input {
-				width: 100%;
-			}
-		}
-
 		.copy-button {
+			grid-column: 4;
+
 			width: min-content;
 			aspect-ratio: 1;
 
@@ -151,15 +94,47 @@
 
 			border-radius: 100%;
 		}
-	}
 
-	.options {
-		grid-area: o;
+		.labeled-input {
+			justify-self: stretch;
+			border-radius: 0.4rem;
+
+			// max-width: calc(
+			// 	6ch + var(--input-padding-left) + var(--input-padding-right)
+			// );
+			// max-width: 6rem;
+
+			.prefix {
+				margin-left: 0.6rem;
+			}
+			.postfix {
+				margin-right: 0.3rem;
+				width: 1em;
+
+				text-align: start;
+			}
+
+			input {
+				box-sizing: content-box;
+
+				max-width: 6ch;
+				min-width: 0;
+
+				padding: 0.6rem;
+				padding-left: var(--input-padding-left);
+				padding-right: var(--input-padding-right);
+
+				font-size: 1.2rem;
+				text-align: end;
+
+				border-radius: 0.4rem;
+			}
+		}
 	}
 
 	.display {
-		grid-area: d;
-		width: 12rem;
+		grid-area: dis;
+		// width: 12rem;
 
 		.color-display {
 			width: 100%;
@@ -197,7 +172,9 @@
 				flex-grow: 1;
 				flex-shrink: 1;
 
-				min-width: 6ch;
+				padding: 0;
+				width: 6ch;
+				min-width: 0; // ? is this a good idea?
 
 				text-align: center;
 				font-size: 1.2rem;
@@ -210,6 +187,126 @@
 
 				font-size: 1.2rem;
 			}
+		}
+	}
+
+	.color-space {
+		grid-area: csp;
+
+		.radio-group {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 0.4rem;
+
+			padding: 0.5rem;
+			// padding-top: ;
+			margin: 0;
+
+			border: none;
+			border-radius: 0.4rem;
+
+			background-color: var(--bg-input);
+
+			legend {
+				// grid-column: span 3;
+
+				// source: https://stackoverflow.com/a/24627851/15507414
+				float: left;
+
+				margin-inline: auto;
+
+				text-transform: uppercase;
+
+				color: var(--fg-input);
+			}
+
+			.inputs {
+				display: flex;
+				flex-flow: row wrap;
+				justify-content: start;
+
+				// width: 100%;
+				// grid-template-columns: repeat(
+				// 	auto-fill,
+				// 	minmax(3.5rem, min-content)
+				// );
+				// flex-flow: row wrap;
+				// justify-content: center;
+				gap: 0.4rem;
+			}
+		}
+	}
+
+	.options {
+		grid-area: opt;
+	}
+
+	@container (max-width: 38rem) {
+		grid:
+			"map map map" auto
+			"inp inp inp" auto
+			"dis csp opt" auto
+			/ 1fr auto auto;
+
+		.map {
+			width: 70cqw;
+			justify-self: center;
+		}
+		.controls {
+			.labeled-input input {
+				appearance: none;
+				max-width: unset;
+				width: 100%;
+			}
+			// width: 10rem;
+		}
+		.color-space {
+			justify-self: start;
+			// max-width: max-content;
+			// .radio-group {
+			// 	max-width: max-content;
+			// }
+		}
+		.options {
+			align-self: end;
+		}
+	}
+
+	@container (max-width: 36.25rem) {
+		grid:
+			"map map" auto
+			"inp inp" auto
+			"dis csp" auto
+			"opt opt" auto
+			/ 1fr auto auto;
+
+		.controls {
+			grid:
+				auto
+				auto
+				/ auto;
+			place-items: stretch;
+
+			.labeled-input input {
+				font-size: 1rem;
+			}
+
+			.integers,
+			.floats {
+				display: flex;
+				flex-flow: row wrap;
+				gap: 0.4rem;
+				justify-content: stretch;
+
+				.labeled-input {
+					flex-grow: 1;
+				}
+			}
+		}
+
+		.options {
+			justify-self: start;
 		}
 	}
 }

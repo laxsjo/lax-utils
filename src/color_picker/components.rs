@@ -377,6 +377,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             inputmode="decimal"
                             placeholder="100"
                             value="255"
+                            size=6
                             on:input=update_with_components
                             on:change=update_with_components
                             _ref=component_0_ref
@@ -391,6 +392,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             inputmode="decimal"
                             placeholder="100"
                             value="255"
+                            size=6
                             on:input=update_with_components
                             on:change=update_with_components
                             _ref=component_1_ref
@@ -405,6 +407,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             inputmode="decimal"
                             placeholder="100"
                             value="255"
+                            size=6
                             on:input=update_with_components
                             on:change=update_with_components
                             _ref=component_2_ref
@@ -424,6 +427,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             inputmode="decimal"
                             placeholder="1.0"
                             value="1.0"
+                            size=6
                             on:input=update_with_floats
                             on:change=update_with_floats
                             _ref=float_component_0_ref
@@ -438,6 +442,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             inputmode="decimal"
                             placeholder="1.0"
                             value="1.0"
+                            size=6
                             on:input=update_with_floats
                             on:change=update_with_floats
                             _ref=float_component_1_ref
@@ -451,6 +456,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                             type="text"
                             inputmode="decimal"
                             placeholder="1.0"
+                            size=6
                             value="1.0"
                             on:input=update_with_floats
                             on:change=update_with_floats
@@ -460,6 +466,33 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                     <CopyButton
                         value=floats_copy_string
                     >""</CopyButton>
+                </div>
+            </div>
+            <div class="display">
+                <div
+                    class="color-display"
+                    style=color_display_style
+                />
+                // <CopyableLabel
+                //     content=hex_code_hashtag
+                // >
+                //     <span class="prefix">"#"</span>
+                //     <span class="code">
+                //         {hex_code}
+                //     </span>
+                // </CopyableLabel>
+                <div class="hex-code">
+                    <span class="prefix">"#"</span>
+                    <input
+                        on:input=on_hex_code_change
+                        prop:value=hex_code
+                        placeholder="000000"
+                        // value=hex_code.get_untracked()
+                    />
+
+                    <CopyButton
+                        value=hex_code_hashtag
+                    />
                 </div>
             </div>
             <div class="color-space">
@@ -494,33 +527,6 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                         _type=phantom_bool
                     />
                 </label>
-            </div>
-            <div class="display">
-                <div
-                    class="color-display"
-                    style=color_display_style
-                />
-                // <CopyableLabel
-                //     content=hex_code_hashtag
-                // >
-                //     <span class="prefix">"#"</span>
-                //     <span class="code">
-                //         {hex_code}
-                //     </span>
-                // </CopyableLabel>
-                <div class="hex-code">
-                    <span class="prefix">"#"</span>
-                    <input
-                        on:input=on_hex_code_change
-                        prop:value=hex_code
-                        placeholder="ffffff"
-                        // value=hex_code.get_untracked()
-                    />
-
-                    <CopyButton
-                        value=hex_code_hashtag
-                    />
-                </div>
             </div>
         </div>
     }
