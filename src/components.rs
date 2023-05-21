@@ -1,7 +1,7 @@
 use crate::{toasts, utils::*};
 use leptos::{html::*, leptos_dom::helpers::*, window, *};
 use leptos_router::*;
-use std::{cell::*, hash::*, rc::Rc, time::Duration};
+use std::{hash::*, time::Duration};
 
 #[component]
 pub fn RouteLink(
@@ -263,12 +263,6 @@ pub fn CopyButton(
     }
 }
 
-pub type OptionalRcBox<T> = Rc<RefCell<Option<Box<T>>>>;
-
-pub fn temp<T>(_: Box<dyn Fn(T) + 'static>) {
-    // do nothing
-}
-
 #[component]
 pub fn RadioGroup<T, F, W>(
     cx: Scope,
@@ -393,7 +387,7 @@ where
     };
 
     create_effect(cx, move |_| {
-        if let Some(fieldset) = fieldset_ref.get() {
+        if let Some(_) = fieldset_ref.get() {
             on_load();
         };
     });

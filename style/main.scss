@@ -1,3 +1,4 @@
+@use "fonts.scss";
 @use "theme.scss";
 @use "components.scss";
 @use "document.scss";
@@ -15,7 +16,7 @@ body {
 	margin: 0;
 	padding: 0;
 
-	font-family: sans-serif;
+	font-family: "Quicksand", sans-serif;
 	text-align: center;
 
 	color: var(--fg-primary);
@@ -42,6 +43,10 @@ body {
 }
 
 input {
+	font-family: "Overpass Mono", monospace;
+	// font-family: "Chivo Mono", monospace;
+	font-variant-ligatures: none;
+
 	color: var(--fg-primary);
 
 	border: none;

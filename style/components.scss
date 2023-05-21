@@ -55,7 +55,7 @@
 			padding-left: calc(0.6rem + 1ch);
 			padding-right: calc(0.3rem + 0.2rem + 0.83em);
 
-			font-size: 1.2em;
+			font-size: 1.2rem;
 			text-align: end;
 
 			border-radius: 0.4rem;
@@ -69,8 +69,6 @@
 		grid-area: m;
 
 		height: 20rem;
-
-		// width: 20rem;
 
 		.sat-value-surface {
 			flex-grow: 1;
@@ -94,7 +92,6 @@
 
 			padding: 0.5rem;
 			margin: 0;
-			// padding-top: 0.5em;
 
 			border: none;
 			border-radius: 0.4rem;
@@ -102,23 +99,16 @@
 			background-color: var(--bg-input);
 
 			legend {
-				// source: https://stackoverflow.com/a/24627851/15507414
 				grid-column: span 3;
 
+				// source: https://stackoverflow.com/a/24627851/15507414
 				float: left;
 
 				margin-inline: auto;
 
-				// font-variant-caps: titling-caps;
 				text-transform: uppercase;
 
 				color: var(--fg-input);
-
-				// position: fixed;
-				// top: -10000px;
-				// left: -10000px;
-				// width: 1px;
-				// height: 1px;
 			}
 
 			& > :not(legend) {
@@ -157,22 +147,10 @@
 			width: min-content;
 			aspect-ratio: 1;
 
-			font-size: 1.2em;
+			font-size: 1.2rem;
 
 			border-radius: 100%;
 		}
-
-		// .integers,
-		// .floats {
-		// 	display: flex;
-		// 	flex-flow: row nowrap;
-
-		// 	gap: 0.2rem;
-		// }
-
-		// .labeled-input {
-		// 	grid-area: i;
-		// }
 	}
 
 	.options {
@@ -204,8 +182,6 @@
 			width: 100%;
 			padding-left: 0.6rem;
 
-			font-size: 1.2em;
-
 			border-radius: 0 0 0.4rem 0.4rem;
 
 			background-color: var(--bg-input);
@@ -234,10 +210,6 @@
 
 				font-size: 1.2rem;
 			}
-
-			// // .icon {
-			// // 	// font-size: 1rem;
-			// // }
 		}
 	}
 }
@@ -278,8 +250,6 @@
 			0%,
 			calc(max(var(--cursor-y) * 2, var(--cursor-x) * 2) * 100%)
 		);
-		// --border-color: white;
-		// mix-blend-mode: difference;
 
 		z-index: 3;
 		cursor: pointer;
@@ -373,9 +343,6 @@
 	align-items: center;
 
 	position: relative;
-	// --width: 6ch;
-
-	// width: var(--width);
 
 	background-color: var(--bg-input);
 
@@ -397,9 +364,6 @@
 			z-index: 1;
 
 			background-color: transparent;
-			// position: absolute;
-
-			// inset: 0;
 		}
 	}
 
@@ -468,68 +432,65 @@
 		}
 	}
 
-	.popup {
-		cursor: default;
+	// .popup {
+	// 	cursor: default;
 
-		display: flex;
-		flex-flow: row wrap;
-		align-items: center;
-		gap: 0.5rem;
-		opacity: 0;
+	// 	display: flex;
+	// 	flex-flow: row wrap;
+	// 	align-items: center;
+	// 	gap: 0.5rem;
+	// 	opacity: 0;
 
-		position: fixed;
-		// bottom: calc(100% + 0.5rem);
-		bottom: 1.5rem;
-		left: 50%;
-		z-index: 100;
-		// left: calc(-1 * var(--padding));
+	// 	position: fixed;
+	// 	bottom: 1.5rem;
+	// 	left: 50%;
+	// 	z-index: 100;
 
-		width: max-content;
-		max-width: 100vw;
-		padding: 0.6rem 0.8rem;
-		margin-inline: auto;
+	// 	width: max-content;
+	// 	max-width: 100vw;
+	// 	padding: 0.6rem 0.8rem;
+	// 	margin-inline: auto;
 
-		font-size: 1.15rem;
+	// 	font-size: 1.15rem;
 
-		border-radius: 10000rem;
+	// 	border-radius: 10000rem;
 
-		background-color: var(--accent);
+	// 	background-color: var(--accent);
 
-		transform: translateX(-50%);
+	// 	transform: translateX(-50%);
 
-		transition: opacity ease-in-out var(--duration-out);
+	// 	transition: opacity ease-in-out var(--duration-out);
 
-		.icon {
-			--size: 1.3em;
+	// 	.icon {
+	// 		--size: 1.3em;
 
-			color: inherit;
-		}
+	// 		color: inherit;
+	// 	}
 
-		&.shown {
-			display: flex;
+	// 	&.shown {
+	// 		display: flex;
 
-			opacity: 1;
+	// 		opacity: 1;
 
-			animation: 0.5s cubic-bezier(0.6, 0.4, 0, 1) none popup-slide-up;
-		}
+	// 		animation: 0.5s cubic-bezier(0.6, 0.4, 0, 1) none popup-slide-up;
+	// 	}
 
-		&.hidden {
-			display: none;
-		}
-	}
+	// 	&.hidden {
+	// 		display: none;
+	// 	}
+	// }
 }
 
 .fancy-select {
 	display: inline-flex;
 	flex-direction: row;
 	align-items: center;
-	// border: 2;
 
 	position: relative;
 
 	width: fit-content;
 
-	font-size: 1.2em;
+	font-size: 1.2rem;
 
 	border-radius: 0.4rem;
 
@@ -611,12 +572,8 @@
 .radio-group label {
 	cursor: pointer;
 	display: inline-block;
-	// width: max-content;
-	// height: max-content;
 
 	position: relative;
-
-	// padding: 0.4rem;
 
 	&[data-checked] {
 		& > input {
@@ -630,6 +587,7 @@
 		display: block;
 		position: relative;
 		z-index: 1;
+		font-weight: 500; // TODO: is this boldness good?
 
 		margin: 0.4rem 0.6rem;
 	}

@@ -1,4 +1,4 @@
-use crate::{components::*, routes::*, settings::*, toasts::*};
+use crate::{components::*, routes::*, toasts::*};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -21,6 +21,12 @@ pub fn App(cx: Scope) -> impl IntoView {
         // injects a stylesheet into the document <head>
         // id=leptos means cargo-leptos will hot-reload this stylesheet
         <Stylesheet id="leptos" href="/pkg/lax-utils.css"/>
+
+        <Link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <Link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+        // <Link href="https://fonts.googleapis.com/css2?family=Overpass+Mono&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet"/>
+        <Link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+        // <Link href="https://fonts.googleapis.com/css2?family=Chivo+Mono&family=Overpass+Mono&family=Quicksand:wght@300;400;500&display=swap" rel="stylesheet"/>
 
         // sets the document title
         <Title text="lax-utils"/>
