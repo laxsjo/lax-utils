@@ -6,16 +6,14 @@ use std::{hash::*, time::Duration};
 #[component]
 pub fn RouteLink(
     cx: Scope,
-    route_name: &'static str,
+    route_path: &'static str,
+    // #[prop(optional)] _ref: Option<NodeRef<A>>,
+    // _ref: NodeRef<A>,
     children: Children,
 ) -> impl IntoView {
     let location = use_location(cx);
-    let route_path = "/".to_string() + route_name;
 
-    let is_open = move || {
-        location.pathname.get() == "/".to_string() + route_name
-        // TODO: This is very ugly...
-    };
+    let is_open = move || location.pathname.get() == route_path;
 
     view! {cx,
         <a href=route_path class:active={is_open}>{children(cx)}</a>

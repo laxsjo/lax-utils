@@ -11,7 +11,10 @@ body {
 }
 
 .side-nav {
+	--radius: 0.6rem;
 	grid-area: menu;
+
+	position: relative;
 
 	color: var(--fg-primary);
 
@@ -28,10 +31,15 @@ body {
 	}
 
 	li {
+		position: relative;
+		z-index: 2;
+
 		list-style-type: none;
-		// text-orientation: sideways-right;
 
 		a {
+			--bg: transparent;
+			--bg-hover: var(--bg-btn-secondary-hover);
+			--bg-active: var(--bg-btn-secondary-active);
 			display: flex;
 			flex-direction: row;
 			align-items: center;
@@ -46,37 +54,68 @@ body {
 
 			color: inherit;
 
-			$radius: 0.6em;
+			border-end-start-radius: var(--radius);
+			border-end-end-radius: var(--radius);
 
-			border-end-start-radius: $radius;
-			border-end-end-radius: $radius;
+			background-color: var(--bg);
 
 			transition: background-color ease 0.2s;
 
 			&.active {
-				background-color: var(--bg-btn-primary);
-
-				&:hover,
-				&:focus-visible {
-					background-color: var(--bg-btn-primary-hover);
-				}
-				&:active {
-					background-color: var(--bg-btn-primary-active);
-				}
+				--bg: var(--bg-btn-primary);
+				--bg-hover: var(--bg-btn-primary-hover);
+				--bg-active: var(--bg-btn-primary-active);
 			}
 
 			&:hover,
 			&:focus-visible {
-				background-color: var(--bg-btn-secondary-hover);
+				background-color: var(--bg-hover);
 			}
 
 			&:active {
 				color: var(--fg-primary);
 
-				background-color: var(--bg-btn-secondary-active);
+				background-color: var(--bg-active);
 				// box-shadow: 0 0 0.2em var(--shadow);
 
 				transition: none;
+			}
+		}
+	}
+
+	&[data-js-enabled] {
+		li a.active {
+			--bg: transparent;
+
+			&:hover {
+				background-color: transparent;
+			}
+		}
+
+		&::before {
+			--bg: var(--bg-btn-primary);
+			--bg-hover: var(--bg-btn-primary-hover);
+
+			content: "";
+
+			position: absolute;
+			top: var(--y-offset);
+			left: 0;
+			right: 0;
+			z-index: 1;
+
+			height: var(--height);
+			width: 100%;
+
+			border-top-right-radius: var(--radius);
+			border-bottom-right-radius: var(--radius);
+
+			background-color: var(--bg);
+
+			transition: top ease-out 0.3s;
+
+			&:hover {
+				background-color: var(--bg-hover);
 			}
 		}
 	}
