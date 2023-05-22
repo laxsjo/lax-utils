@@ -17,7 +17,10 @@ jobs:
         install -m 600 -D /dev/null ~/.ssh/id_rsa
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+    - name: pull remote changes
+      # Source: https://stackoverflow.com/questions/4157189/how-to-git-pull-while-ignoring-local-changes
+      run: ssh ${{ vars.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ vars.WORK_DIR }} && git checkout ${{ vars.MAIN_BRANCH }} && git fetch --all && git reset --hard origin/main && git pull --ff-only"
     - name: build
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ vars.WORK_DIR }} && git checkout ${{ vars.MAIN_BRANCH }} && git pull && cargo leptos build --release"
+      run: ssh ${{ vars.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ vars.WORK_DIR }} && cargo leptos build --release"
     - name: cleanup
       run: rm -rf ~/.ssh
