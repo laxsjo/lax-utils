@@ -21,6 +21,6 @@ jobs:
       # Source: https://stackoverflow.com/questions/4157189/how-to-git-pull-while-ignoring-local-changes
       run: ssh ${{ vars.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ vars.WORK_DIR }} && git checkout ${{ vars.MAIN_BRANCH }} && git fetch --all && git reset --hard origin/main && git pull --ff-only"
     - name: build
-      run: ssh ${{ vars.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ vars.WORK_DIR }} && cargo leptos build --release"
+      run: ssh ${{ vars.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ vars.WORK_DIR }} && ${{ vars.CARGO_LOCATION }} leptos build --release"
     - name: cleanup
       run: rm -rf ~/.ssh
