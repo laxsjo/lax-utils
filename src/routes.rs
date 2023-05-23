@@ -30,3 +30,12 @@ pub fn RouteColorPicker(cx: Scope) -> impl IntoView {
         <ColorPicker/>
     }
 }
+
+#[component]
+pub fn RouteComingSoon(cx: Scope) -> impl IntoView {
+    view! { cx,
+        <h1>"Coming (probably not so) soon!"</h1>
+        <p>"Yea it might be a while before this get's added..."</p>
+        <p>":)"</p>
+    }
+}

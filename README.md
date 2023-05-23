@@ -37,6 +37,7 @@ rustup target add wasm32-unknown-unknown
 ```
 
 You then need to install [cargo-leptos](https://github.com/leptos-rs/cargo-leptos).
+(this might take a while)
 
 ```powershell
 cargo install cargo-leptos

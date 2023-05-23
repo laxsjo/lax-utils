@@ -47,11 +47,11 @@ pub fn App(cx: Scope) -> impl IntoView {
             <main>
                 <Routes>
                     <Route path="/" view=|cx| view! { cx, <RouteHome/> }/>
-                    <Route path="/about" view=|cx| view! { cx, <RouteHome/> }/>
+                    <Route path="/about" view=|cx| view! { cx, <RouteComingSoon/> }/>
                     <Route path="/color-picker" view=|cx| view! { cx, <RouteColorPicker/> }/>
-                    <Route path="/color-picker/test" view=|cx| view! { cx, <RouteHome/> }/>
-                    <Route path="/base-converter" view=|cx| view! { cx, <RouteHome/> }/>
-                    <Route path="/time-zones" view=|cx| view! { cx, <RouteHome/> }/>
+                    <Route path="/color-picker/test" view=|cx| view! { cx, <RouteComingSoon/> }/>
+                    <Route path="/base-converter" view=|cx| view! { cx, <RouteComingSoon/> }/>
+                    <Route path="/time-zones" view=|cx| view! { cx, <RouteComingSoon/> }/>
                 </Routes>
             </main>
             <footer>
@@ -77,7 +77,7 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
         ("/", "Home"),
         ("/color-picker", "Color Picker"),
         ("/base-converter", "Base Converter"),
-        ("/time-zone-converter", "Time Zone Converter"),
+        ("/time-zones", "Time Zone Converter"),
     ];
     let mut node_refs = vec![];
     for _ in 0..(paths.len()) {
