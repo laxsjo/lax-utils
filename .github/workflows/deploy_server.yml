@@ -24,5 +24,7 @@ jobs:
           script: |
             echo "${{ secrets.USER_PASSWORD }}"
             sudo -S docker stop lax-utils
-            sudo docker rm lax-utils
-            sudo docker run -dp 8080:8080 --restart unless-stopped --name lax-utils laxsjo/lax-utils
+            echo "${{ secrets.USER_PASSWORD }}"
+            sudo -S docker rm lax-utils
+            echo "${{ secrets.USER_PASSWORD }}"
+            sudo -S docker run -dp 8080:8080 --restart unless-stopped --name lax-utils laxsjo/lax-utils
