@@ -32,7 +32,10 @@
 
 # GitHub recommends pinning actions to a commit SHA.
 # To get a newer version, you will need to update the SHA.
-# You can also reference a tag or branch, but the action may change without warning.
+# You can also reference a tag or branch, but the action may change without
+# warning.
+
+# source: https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
 
 name: Publish Docker image
 
@@ -72,3 +75,23 @@ jobs:
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
+    update_server_container:
+        name: Update Docker Container on Server
+        runs-on: ubuntu-latest
+        needs: push_to_registry
+
+        steps:
+            - uses: actions/checkout@v1
+
+            - name: Executing remote command
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  USERNAME: ${{ secrets.SSH_USER }}
+                  # PORT: ${{ secrets.PORT }}
+                  KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+                  script: |
+                      echo "${{ secrets.USER_PASSWORD }}"
+                      sudo -S docker stop lax-utils
+                      sudo docker rm lax-utils
+                      sudo docker run -dp 8080:8080 --restart unless-stopped --name lax-utils laxsjo/lax-utils
