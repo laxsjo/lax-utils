@@ -42,9 +42,9 @@ name: Publish Docker image
 on:
   # release:
   #     types: [published]
-  # push: # temporarily removed
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
