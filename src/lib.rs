@@ -1,4 +1,5 @@
 #![feature(iter_array_chunks)]
+#![feature(try_blocks)]
 
 pub mod app;
 pub mod color_picker;

@@ -26,7 +26,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
     let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
 
-    let (precise_inputs, set_precise_inputs) = create_signal(cx, false);
+    let precise_inputs = create_rw_signal(cx, false);
 
     let (color, set_color) = create_signal(
         cx,
@@ -76,13 +76,18 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let float_component_1_ref = create_node_ref::<Input>(cx);
     let float_component_2_ref = create_node_ref::<Input>(cx);
 
-    let format_component = move || match precise_inputs() {
+    let format_component = move || match precise_inputs.get() {
         true => |value: f64| -> _ { naturally_format_float(value, 0, 2) },
         false => |value: f64| -> _ { naturally_format_float(value, 0, 0) },
     };
 
     let format_float =
         |value: f64| -> _ { naturally_format_float(value, 1, 2) };
+
+    create_effect(cx, move |_| {
+        precise_inputs.track();
+        set_force_update_inputs.set_untracked(true);
+    });
 
     create_effect(cx, move |_| {
         let components = color().components();
@@ -325,12 +330,13 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         )
     });
 
-    let on_precise_input_change = move |ev: Event| {
-        let checked = event_target_checked(&ev);
+    // let on_precise_input_change = move |ev: Event| {
+    //     let checked = event_target_checked(&ev);
+    //     log!("precise input changed");
 
-        set_force_update_inputs(true);
-        set_precise_inputs(checked);
-    };
+    //     set_force_update_inputs(true);
+    //     set_precise_inputs(checked);
+    // };
 
     let color_display_style = move || {
         let rgb: Rgb = color().to_color();
@@ -520,11 +526,12 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                         input=view! { cx,
                             <input
                                 type="checkbox"
-                                on:input=on_precise_input_change
+                                // on:input=on_precise_input_change
                             />
                         }
                         key="s_precise_inputs"
                         _type=phantom_bool
+                        value=precise_inputs
                     />
                 </label>
             </div>

@@ -385,7 +385,7 @@ where
     };
 
     create_effect(cx, move |_| {
-        if let Some(_) = fieldset_ref.get() {
+        if fieldset_ref.get().is_some() {
             on_load();
         };
     });
