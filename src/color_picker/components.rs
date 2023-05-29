@@ -362,8 +362,6 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let phantom_bool = PhantomData::<bool>;
 
     view! { cx,
-        <div>{label_2}</div>
-        <div>{unit_2}</div>
         <div
             class="color-picker"
         >
