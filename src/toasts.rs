@@ -1,5 +1,8 @@
 use crate::components::*;
-use leptos::{leptos_dom::is_browser, *};
+use leptos::{
+    leptos_dom::{helpers::TimeoutHandle, is_browser},
+    *,
+};
 use std::time::Duration;
 
 pub const TOAST_DURATION_SECONDS: f64 = 5.;
@@ -44,6 +47,8 @@ pub fn ToastsContainer(cx: Scope) -> impl IntoView {
     let next_index = store_value(cx, 0);
 
     let displayed_toasts = create_rw_signal::<Vec<(usize, String)>>(cx, vec![]);
+
+    let timeout_handle: Option<TimeoutHandle> = None;
 
     create_effect(cx, move |last| {
         let toast = new_toast();

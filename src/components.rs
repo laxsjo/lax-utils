@@ -1,4 +1,5 @@
 use crate::{toasts, utils::*};
+use gloo_events::EventListener;
 use leptos::{html::*, leptos_dom::helpers::*, window, *};
 use leptos_router::*;
 use std::{hash::*, time::Duration};
@@ -408,5 +409,81 @@ where
                 />
             </div>
         </fieldset>
+    }
+}
+
+#[component]
+pub fn AnimatedReplacement<V>(
+    cx: Scope,
+    duration: Duration,
+    #[prop(into)] view: Signal<Option<V>>,
+) -> impl IntoView
+where
+    V: IntoView + Clone + 'static,
+{
+    let container = create_node_ref::<Div>(cx);
+
+    let current_element_ref = create_node_ref::<Div>(cx);
+
+    let listener_function = store_value::<Option<Box<dyn Fn()>>>(cx, None);
+    let pending_listener = store_value(cx, None);
+
+    create_effect(cx, move |_| {
+        let Some(container) = container.get() else {
+            return;
+        };
+
+        listener_function.with_value(move |function| {
+            if let Some(ref function) = function {
+                function();
+            }
+        });
+
+        'current_element: {
+            let Some(current_element) = current_element_ref.get_untracked() else {
+                break 'current_element;
+            };
+
+            let _ = current_element.class_list().add_1("transition-out");
+
+            listener_function.set_value(Some(Box::new(move || {
+                if let Some(element) = current_element_ref.get_untracked() {
+                    element.remove();
+                }
+                // remove the event listener
+                pending_listener.set_value(None);
+            })));
+
+            let listener = EventListener::new(
+                &current_element,
+                "animationend",
+                move |_| {
+                    listener_function.with_value(move |function| {
+                        if let Some(ref function) = function {
+                            function();
+                        }
+                    });
+                },
+            );
+
+            pending_listener.set_value(Some(listener));
+        }
+
+        let next_element = view! { cx,
+            <div>
+                {view()}
+            </div>
+        }
+        .node_ref(current_element_ref);
+
+        container.child(next_element);
+    });
+
+    view! { cx,
+        <div
+            class="animated-replacement"
+            _ref=container
+        >
+        </div>
     }
 }
