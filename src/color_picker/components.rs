@@ -237,20 +237,32 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
     let update_with_hsv_floats = move |floats: (f64, f64, f64)| {
         set_color_hsv(Hsv::from_floats((floats.0, floats.1, floats.2)));
-        let hsv = DynamicColor::from_color(color_hsv());
+        let hsv = DynamicColor::from_color(color_hsv.get_untracked());
         set_color(hsv.set_color_space(color.get_untracked().color_space()));
         set_hex_code(hsv.to_color::<Rgb>().as_hex_code());
     };
 
     let on_hue_float_change = move |hue: f64| {
         // set_color_hsv(color_hsv);
-        update_with_hsv_floats((hue, sat_float(), value_float()));
+        update_with_hsv_floats((
+            hue,
+            sat_float.get_untracked(),
+            value_float.get_untracked(),
+        ));
     };
     let on_sat_float_change = move |sat: f64| {
-        update_with_hsv_floats((hue_float(), sat, value_float()));
+        update_with_hsv_floats((
+            hue_float.get_untracked(),
+            sat,
+            value_float.get_untracked(),
+        ));
     };
     let on_value_float_change = move |value: f64| {
-        update_with_hsv_floats((hue_float(), sat_float(), value));
+        update_with_hsv_floats((
+            hue_float.get_untracked(),
+            sat_float.get_untracked(),
+            value,
+        ));
     };
 
     let update_with_hex_code = move |hex: &str| {
@@ -303,10 +315,6 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         color_space_info().units.1.map(Into::<String>::into)
     });
     let unit_2 = Signal::derive(cx, move || {
-        log!(
-            "set unit_2 to {:?}",
-            color_space_info().units.2.map(Into::<String>::into)
-        );
         color_space_info().units.2.map(Into::<String>::into)
     });
 
@@ -669,6 +677,8 @@ where
     let on_pointer_move = move |ev: &Event| {
         // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
         const PRIMARY_BUTTON: u16 = 1;
+
+        leptos_reactive::SpecialNonReactiveZone::enter();
 
         // log!("moved {:?}", cx.id());
 
