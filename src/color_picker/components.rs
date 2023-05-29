@@ -303,6 +303,10 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         color_space_info().units.1.map(Into::<String>::into)
     });
     let unit_2 = Signal::derive(cx, move || {
+        log!(
+            "set unit_2 to {:?}",
+            color_space_info().units.2.map(Into::<String>::into)
+        );
         color_space_info().units.2.map(Into::<String>::into)
     });
 
@@ -350,6 +354,8 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let phantom_bool = PhantomData::<bool>;
 
     view! { cx,
+        <div>{label_2}</div>
+        <div>{unit_2}</div>
         <div
             class="color-picker"
         >

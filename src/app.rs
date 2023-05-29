@@ -4,7 +4,6 @@ use crate::{components::*, routes::*, toasts::*};
 use leptos::{html::*, *};
 use leptos_meta::*;
 use leptos_router::*;
-use web_sys::*;
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
@@ -127,10 +126,6 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
     });
     let current_offset = move || current_bounds().0;
     let current_height = move || current_bounds().1;
-
-    create_effect(cx, move |_| {
-        let pathname = location.pathname.get();
-    });
 
     let generate_routes = || {
         // let s = {
