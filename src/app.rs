@@ -35,10 +35,6 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         <div class="hidden" inner_html=icons_svg />
 
-        // <Test>
-        //     <input />
-        // </Test>
-
         // content for this welcome page
         <Router>
             <ToastsContainer />
@@ -82,7 +78,6 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
     for _ in 0..(paths.len()) {
         node_refs.push(create_node_ref::<Li>(cx));
     }
-    // let node_refs = store_value(cx, node_refs);
 
     let routes = store_value(
         cx,
@@ -103,8 +98,6 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
             routes
                 .iter()
                 .take_while(move |(path, _, _)| {
-                    // log!("{:?} != {:?}", path, &selected_path);
-
                     let should_stop = should_stop_next;
 
                     should_stop_next = path != &selected_path; // this is so cursed...
@@ -127,60 +120,7 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
     let current_offset = move || current_bounds().0;
     let current_height = move || current_bounds().1;
 
-    // create_effect(cx, move |_| {
-    //     let pathname = location.pathname.get();
-    // });
-
     let generate_routes = || {
-        // let s = {
-        //     leptos::Fragment::lazy(|| {
-        //         vec![
-        //             {
-        //                 ::leptos::HtmlElement::from_chunks(
-        //                     cx,
-        //                     leptos::leptos_dom::html::Li::default(),
-        //                     [leptos::leptos_dom::html::StringOrView::String(
-        //                         format!(
-        //                             "<li id=\"_{}\"></li>",
-        //                             leptos::leptos_dom::HydrationCtx::peek()
-        //                         )
-        //                         .into(),
-        //                     )],
-        //                 )
-        //             }
-        //             .into_view(cx),
-        //             {
-        //                 ::leptos::HtmlElement::from_chunks(
-        //                     cx,
-        //                     leptos::leptos_dom::html::Li::default(),
-        //                     [leptos::leptos_dom::html::StringOrView::String(
-        //                         format!(
-        //                             "<li id=\"_{}\"></li>",
-        //                             leptos::leptos_dom::HydrationCtx::peek()
-        //                         )
-        //                         .into(),
-        //                     )],
-        //                 )
-        //             }
-        //             .into_view(cx),
-        //             {
-        //                 ::leptos::HtmlElement::from_chunks(
-        //                     cx,
-        //                     leptos::leptos_dom::html::Li::default(),
-        //                     [leptos::leptos_dom::html::StringOrView::String(
-        //                         format!(
-        //                             "<li id=\"_{}\"></li>",
-        //                             leptos::leptos_dom::HydrationCtx::peek()
-        //                         )
-        //                         .into(),
-        //                     )],
-        //                 )
-        //             }
-        //             .into_view(cx),
-        //         ]
-        //     })
-        //     .with_view_marker("-0")
-        // };
         Fragment::new(
             routes
                 .get_value()
@@ -211,19 +151,6 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
         >
             <nav>
                 {generate_routes()}
-                // <For
-                //     each=move|| routes
-                //     key=move|(path, _, _)| path
-                //     view=move|cx, (path, name, _ref)| view! { cx,
-                //         <li _ref=_ref>
-                //             <RouteLink route_path=path>{name}</RouteLink>
-                //         </li>
-                //     }
-                // />
-
-                // <li><RouteLink route_path="/color-picker">"Color Picker"</RouteLink></li>
-                // <li><RouteLink route_path="/base-converter">"Base Converter"</RouteLink></li>
-                // <li><RouteLink route_path="/time-zones">"Time Zone Converter"</RouteLink></li>
             </nav>
         </aside>
     }
