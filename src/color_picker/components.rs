@@ -64,10 +64,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     //     }
     // };
 
-    let on_color_space_change = move |color_space| {
-        log!("changed color space to {:?}", color_space);
-        set_color_space(color_space);
-    };
+    let on_color_space_change = set_color_space;
 
     let (force_update_inputs, set_force_update_inputs) =
         create_signal(cx, false);
