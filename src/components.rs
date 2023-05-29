@@ -281,6 +281,7 @@ pub fn RadioGroup<T, F, W>(
     /// means that the elements have *also* been mounted...)
     #[prop(optional)]
     with_set_value: Option<W>,
+    // value: RwSignal<T>,
 ) -> impl IntoView
 where
     T: Copy + Hash + 'static + Eq + ToString,

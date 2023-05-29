@@ -64,7 +64,10 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     //     }
     // };
 
-    let on_color_space_change = set_color_space;
+    let on_color_space_change = move |color_space| {
+        log!("changed color space to {:?}", color_space);
+        set_color_space(color_space);
+    };
 
     let (force_update_inputs, set_force_update_inputs) =
         create_signal(cx, false);
@@ -314,13 +317,17 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     });
 
     let unit_0 = Signal::derive(cx, move || {
-        color_space_info().units.0.map(Into::<String>::into)
+        color_space_info().units.0.map(str::to_owned)
     });
     let unit_1 = Signal::derive(cx, move || {
-        color_space_info().units.1.map(Into::<String>::into)
+        color_space_info().units.1.map(str::to_owned)
     });
     let unit_2 = Signal::derive(cx, move || {
-        color_space_info().units.2.map(Into::<String>::into)
+        // log!(
+        //     "unit_2 = {:?}",
+        //     color_space_info().units.2.map(str::to_owned)
+        // );
+        color_space_info().units.2.map(str::to_owned)
     });
 
     let components_copy_string = Signal::derive(cx, move || {

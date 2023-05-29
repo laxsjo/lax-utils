@@ -197,6 +197,7 @@ where
         };
         // log!("set value");
         set_value(value);
+        on_change(value);
     };
 
     view! { cx,
