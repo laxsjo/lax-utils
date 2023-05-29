@@ -158,16 +158,18 @@ pub fn LabeledFloatInput(
 ) -> impl IntoView
 where
 {
+    let prefix = move || prefix().unwrap_or("".to_string());
+    let postfix = move || postfix().unwrap_or("".to_string());
     view! { cx,
         <div class="labeled-input">
             <span class="prefix">
                 {prefix}
             </span>
-            <span class="input">
-                {children(cx)}
-            </span>
             <span class="postfix">
                 {postfix}
+            </span>
+            <span class="input">
+                {children(cx)}
             </span>
         </div>
     }
