@@ -44,66 +44,103 @@ pub fn provide_toast(cx: Scope) {
 pub fn ToastsContainer(cx: Scope) -> impl IntoView {
     let new_toast = use_toast(cx);
 
-    let next_index = store_value(cx, 0);
+    // let next_index = store_value(cx, 0);
 
-    let displayed_toasts = create_rw_signal::<Vec<(usize, String)>>(cx, vec![]);
+    // let displayed_toasts = create_rw_signal::<Vec<(usize, String)>>(cx,
+    // vec![]);
 
-    let timeout_handle: Option<TimeoutHandle> = None;
+    let (toast, set_toast) = create_signal(cx, None);
+
+    let timeout_handle = store_value::<Option<TimeoutHandle>>(cx, None);
 
     create_effect(cx, move |last| {
         let toast = new_toast();
+
         if last.is_none() {
             return;
         }
 
-        let index = next_index();
+        if let Some(handle) = timeout_handle() {
+            handle.clear();
+        }
 
-        displayed_toasts.update(move |toasts| {
-            toasts.push((index, toast));
-        });
+        set_toast(Some(toast));
 
-        next_index.update_value(|i| *i += 1);
-
-        set_timeout(
+        if let Ok(handle) = set_timeout_with_handle(
             move || {
-                displayed_toasts.update(move |toasts| {
-                    if let Some(index) =
-                        toasts.iter().position(|(handle, _)| *handle == index)
-                    {
-                        toasts.remove(index);
-                    }
-                })
+                set_toast(None);
             },
-            Duration::from_secs_f64(
-                TOAST_DURATION_SECONDS + TOAST_FADE_OUT_SECONDS,
-            ),
-        );
+            Duration::from_secs_f64(TOAST_DURATION_SECONDS),
+        ) {
+            timeout_handle.set_value(Some(handle));
+        }
+
+        // let index = next_index();
+
+        // displayed_toasts.update(move |toasts| {
+        //     toasts.push((index, toast));
+        // });
+
+        // next_index.update_value(|i| *i += 1);
+
+        // set_timeout(
+        //     move || {
+        //         displayed_toasts.update(move |toasts| {
+        //             if let Some(index) =
+        //                 toasts.iter().position(|(handle, _)| *handle ==
+        // index)             {
+        //                 toasts.remove(index);
+        //             }
+        //         })
+        //     },
+        //     Duration::from_secs_f64(
+        //         TOAST_DURATION_SECONDS + TOAST_FADE_OUT_SECONDS,
+        //     ),
+        // );
     });
+
+    let toast_view = move |cx| {
+        toast().map(move |toast| {
+            view! { cx,
+                <Toast
+                    message=toast
+                />
+            }
+        })
+    };
 
     view! { cx,
         <div
             class="toasts"
             style=("--duration-out", format!("{}s", TOAST_FADE_OUT_SECONDS))
         >
-            <For
-                each=displayed_toasts
-                key=|(handle, _)| *handle
-                view=move |cx, (_, message)| view! { cx,
-                    <Toast
-                        message=message
-                        duration=Duration::from_secs_f64(TOAST_DURATION_SECONDS)
-                    />
-                }
+            <AnimatedReplacement
+                view=toast_view
+                animation_type=AnimationType::Animation
             />
+            // <For
+            //     each=displayed_toasts
+            //     key=|(handle, _)| *handle
+            //     view=move |cx, (_, message)| view! { cx,
+            //         <Toast
+            //             message=message
+            //             duration=Duration::from_secs_f64(TOAST_DURATION_SECONDS)
+            //         />
+            //     }
+            // />
         </div>
     }
 }
 
 #[component]
-pub fn Toast(cx: Scope, message: String, duration: Duration) -> impl IntoView {
+pub fn Toast(
+    cx: Scope,
+    message: String,
+    #[prop(optional)] duration: Option<Duration>,
+) -> impl IntoView {
     let (active, set_active) = create_signal(cx, true);
 
-    if is_browser() {
+    if let Some(duration) = duration && is_browser() {
         set_timeout(
             move || {
                 set_active(false);

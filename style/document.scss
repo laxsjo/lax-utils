@@ -168,6 +168,13 @@ footer {
 	}
 }
 
+@keyframes fade-out {
+	100% {
+		opacity: 0;
+		// background-color: lightblue;
+	}
+}
+
 .toasts {
 	pointer-events: none;
 
@@ -191,6 +198,13 @@ footer {
 	transform: translateX(-50%);
 	// left: calc(-1 * var(--padding));
 
+	.animated-replacement {
+		&,
+		& > div {
+			display: contents;
+		}
+	}
+
 	.toast {
 		cursor: default;
 
@@ -203,6 +217,9 @@ footer {
 		max-width: 100vw;
 		padding: 0.6rem 0.8rem;
 		margin-inline: auto;
+
+		position: absolute;
+		bottom: 0;
 
 		font-size: 1.15rem;
 
@@ -222,6 +239,12 @@ footer {
 
 		&.active {
 			opacity: 1;
+		}
+	}
+
+	.transition-out {
+		.toast {
+			animation: var(--duration-out) ease-in-out forwards fade-out;
 		}
 	}
 }
