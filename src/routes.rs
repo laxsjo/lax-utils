@@ -1,6 +1,7 @@
 use crate::color_picker::components::*;
 use crate::*;
 use leptos::*;
+use leptos_meta::*;
 
 /// Renders the home page of your application.
 #[component]
@@ -18,6 +19,8 @@ pub fn RouteHome(cx: Scope) -> impl IntoView {
 #[component]
 pub fn RouteColorPicker(cx: Scope) -> impl IntoView {
     view! { cx,
+        <Title text="Color Picker | lax-utils"/>
+
         <h1>"Color Picker"</h1>
         <ColorPicker/>
     }
