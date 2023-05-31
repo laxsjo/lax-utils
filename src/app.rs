@@ -42,7 +42,7 @@ pub fn App(cx: Scope) -> impl IntoView {
             <main>
                 <Routes>
                     <Route path="/" view=|cx| view! { cx, <RouteHome/> }/>
-                    <Route path="/about" view=|cx| view! { cx, <RouteComingSoon/> }/>
+                    <Route path="/about" view=|cx| view! { cx, <RouteAbout/> }/>
                     <Route path="/color-picker" view=|cx| view! { cx, <RouteColorPicker/> }/>
                     <Route path="/color-picker/test" view=|cx| view! { cx, <RouteComingSoon/> }/>
                     <Route path="/base-converter" view=|cx| view! { cx, <RouteComingSoon/> }/>
