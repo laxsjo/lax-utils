@@ -240,6 +240,10 @@
 
 	.options {
 		grid-area: opt;
+
+		.normalised-inputs {
+			display: none;
+		}
 	}
 
 	@container (max-width: 38rem) {
@@ -273,7 +277,7 @@
 		}
 	}
 
-	@container (max-width: 36.25rem) {
+	@container (max-width: 30rem) {
 		grid:
 			"map map" auto
 			"inp inp" auto
@@ -289,24 +293,55 @@
 			place-items: stretch;
 
 			.labeled-input input {
-				font-size: 1rem;
+				// font-size: 1rem;
 			}
 
 			.integers,
 			.floats {
-				display: flex;
-				flex-flow: row wrap;
+				display: grid;
+				grid:
+					". . .    ." auto
+					". . .    ." auto
+					". . copy ." auto
+					/ calc((100% - 70cqw) / 2 - 0.4rem) 1fr auto calc((
+								100% - 70cqw
+							) / 2 - 0.4rem);
 				gap: 0.4rem;
-				justify-content: stretch;
+				justify-content: start;
 
 				.labeled-input {
-					flex-grow: 1;
+					grid-column: 2;
+					justify-self: stretch;
+
+					// input {
+					// 	max-width: 6ch;
+					// }
 				}
+
+				.copy-button {
+					grid-area: copy;
+				}
+			}
+		}
+
+		&:not(.normalised) {
+			.controls .floats {
+				display: none;
+			}
+		}
+
+		&.normalised {
+			.controls .integers {
+				display: none;
 			}
 		}
 
 		.options {
 			justify-self: start;
+
+			.normalised-inputs {
+				display: block;
+			}
 		}
 	}
 }

@@ -27,6 +27,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
 
     let precise_inputs = create_rw_signal(cx, false);
+    let normalised_inputs = create_rw_signal(cx, false);
 
     let (color, set_color) = create_signal(
         cx,
@@ -374,6 +375,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     view! { cx,
         <div
             class="color-picker"
+            class:normalised=normalised_inputs
         >
             <div class="map">
                 <SatValueSurface
@@ -548,6 +550,20 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                         key="s_precise_inputs"
                         _type=phantom_bool
                         value=precise_inputs
+                    />
+                </label>
+                <label class="normalised-inputs">
+                    "Normalised Inputs"
+                    <StoredInput
+                        input=view! { cx,
+                            <input
+                                type="checkbox"
+                                // on:input=on_precise_input_change
+                            />
+                        }
+                        key="s_normalised_inputs"
+                        _type=phantom_bool
+                        value=normalised_inputs
                     />
                 </label>
             </div>
