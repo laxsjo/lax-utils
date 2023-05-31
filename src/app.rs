@@ -50,7 +50,20 @@ pub fn App(cx: Scope) -> impl IntoView {
                 </Routes>
             </main>
             <footer>
-                <A href="/about">"About"</A>
+                <ul class="links">
+                    <li>
+                        <Icon icon_id="help"/>
+                        <A href="/about">"About"</A>
+                    </li>
+                    <li>
+                        <Icon icon_id="code"/>
+                        <A href="https://github.com/laxsjo/lax-utils">"Repository"</A>
+                    </li>
+                </ul>
+                <div class="right">
+                    "Made with ❤️ by "
+                    <A href="https://github.com/laxsjo">"Rasmus Söderhielm"</A>
+                </div>
             </footer>
         </Router>
     }

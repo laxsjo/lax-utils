@@ -154,7 +154,40 @@ main {
 }
 
 footer {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	gap: 20vw;
+
+	padding: 1rem;
+
 	grid-area: footer;
+
+	background-color: var(--bg-secondary);
+
+	.links {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+
+		padding: 0;
+		margin: 0;
+
+		li {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 0.4rem;
+
+			list-style: none;
+		}
+	}
+
+	@media (max-width: 26rem) {
+		flex-direction: column;
+		gap: 2rem;
+	}
 }
 
 @keyframes slide-up {
