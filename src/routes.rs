@@ -16,14 +16,6 @@ pub fn RouteHome(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn RouteOther(cx: Scope) -> impl IntoView {
-    view! { cx,
-        <h1>"Welcome to the other page"</h1>
-        <MultiplyWidget label={"hi".to_owned()}/>
-    }
-}
-
-#[component]
 pub fn RouteColorPicker(cx: Scope) -> impl IntoView {
     view! { cx,
         <h1>"Color Picker"</h1>
