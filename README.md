@@ -16,7 +16,9 @@ but been disappointed in the lack of good polished options online.
 
 This project started as a school project (and still is ;) ) during spring 2023 at Arena Academy.
 
-## Local Setup
+You can find the website at [lax-utils.app](lax-utils.app).
+
+## How do I run this? (Local Setup)
 
 This section explains how to create a local dev server.
 I've tested this on windows, but the steps should theoretically work on any os.
@@ -44,7 +46,8 @@ cargo install cargo-leptos
 ```
 
 Then cd into the parent-folder where you want the folder containing your local copy of the project.
-Then clone the project.
+Then clone the project. (Ignore this step if you've downloaded the project
+through other means.)
 
 ```powershell
 git clone https://github.com/laxsjo/lax-utils.git
@@ -58,7 +61,7 @@ cargo leptos watch
 ```
 
 If the build fails, you may need to install wasm a second time. That solved the
-issue for me, I have no why though ¯\\\_(ツ)\_/¯.
+issue for me, I have no idea why though ¯\\\_(ツ)\_/¯.
 
 ```powershell
 rustup target add wasm32-unknown-unknown
