@@ -16,7 +16,9 @@ but been disappointed in the lack of good polished options online.
 
 This project started as a school project (and still is ;) ) during spring 2023 at Arena Academy.
 
-You can find the website at [lax-utils.app](lax-utils.app).
+You can find the website at [lax-utils.app](lax-utils.app) (it seems that the
+wasm is currently broken on the live website for some reason :/. It still works
+if you clone it and build and run it locally though).
 
 ## How do I run this? (Local Setup)
 
