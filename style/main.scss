@@ -1,133 +1,143 @@
-@use "fonts.scss";
-@use "theme.scss";
-@use "components.scss";
-@use "document.scss";
+@layer base, document, components;
 
-* {
-	box-sizing: border-box;
+@layer base {
+	@import "fonts.scss";
+	@import "theme.scss";
+}
+@layer document {
+	@import "document.scss";
+}
+@layer components {
+	@import "components.scss";
 }
 
-:root {
-	color-scheme: dark;
-}
-
-body {
-	min-height: 100vh;
-	margin: 0;
-	padding: 0;
-
-	font-family: "Quicksand", sans-serif;
-	text-align: start;
-
-	color: var(--fg-primary);
-	accent-color: var(--accent);
-
-	background-color: var(--bg-primary);
-}
-
-:link {
-	color: var(--fg-link);
-
-	&:visited {
-		color: var(--fg-link-visited);
+@layer base {
+	* {
+		box-sizing: border-box;
 	}
 
-	&:hover,
-	&:focus-visible {
-		color: var(--fg-link-hover);
-	}
-}
-
-:focus-visible {
-	outline: 2px solid var(--fg-focus);
-}
-
-input {
-	font-family: "Overpass Mono", monospace;
-	// font-family: "Chivo Mono", monospace;
-	font-variant-ligatures: none;
-
-	color: var(--fg-primary);
-
-	border: none;
-
-	background-color: var(--bg-input);
-
-	transition: background-color ease 0.2s;
-
-	&:hover,
-	&:focus-visible {
-		background-color: var(--bg-input-hover);
+	:root {
+		color-scheme: dark;
 	}
 
-	&:active {
-		background-color: var(--bg-input-active);
-	}
-
-	&[type="checkbox"] {
-		--height: 1.5em;
-		--bg: var(--bg-input);
-		--bg-hover: var(--bg-input-hover);
-		--bg-active: var(--bg-input-active);
-		// --ease-in: cubic-bezier(0.36, 0, 0.66, -0.56);
-		--ease-out: cubic-bezier(0.34, 1.56, 0.64, 1);
-
-		appearance: none;
-
-		display: inline-flex;
-		flex-direction: row;
-		align-items: center;
-
-		position: relative;
-
-		width: calc(var(--height) * 2);
-		height: var(--height);
+	body {
+		min-height: 100vh;
 		margin: 0;
-		margin-inline: 0.4em;
+		padding: 0;
 
-		border-radius: 100em;
+		font-family: "Quicksand", sans-serif;
+		text-align: start;
 
-		background-color: var(--bg);
+		color: var(--fg-primary);
+		accent-color: var(--accent);
+
+		background-color: var(--bg-primary);
+	}
+
+	:link {
+		color: var(--fg-link);
+
+		&:visited {
+			color: var(--fg-link-visited);
+		}
 
 		&:hover,
 		&:focus-visible {
-			background-color: var(--bg-hover);
+			color: var(--fg-link-hover);
+		}
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--fg-focus);
+	}
+
+	input {
+		font-family: "Overpass Mono", monospace;
+		// font-family: "Chivo Mono", monospace;
+		font-variant-ligatures: none;
+
+		color: var(--fg-primary);
+
+		border: none;
+
+		background-color: var(--bg-input);
+
+		transition: background-color ease 0.2s;
+
+		&:hover,
+		&:focus-visible {
+			background-color: var(--bg-input-hover);
 		}
 
 		&:active {
-			background-color: var(--bg-active);
+			background-color: var(--bg-input-active);
 		}
 
-		&:checked {
-			--bg: var(--bg-btn-primary);
-			--bg-hover: var(--bg-btn-primary-hover);
-			--bg-active: var(--bg-btn-primary-active);
+		&[type="checkbox"] {
+			--height: 1.5em;
+			--bg: var(--bg-input);
+			--bg-hover: var(--bg-input-hover);
+			--bg-active: var(--bg-input-active);
+			// --ease-in: cubic-bezier(0.36, 0, 0.66, -0.56);
+			--ease-out: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+			appearance: none;
+
+			display: inline-flex;
+			flex-direction: row;
+			align-items: center;
+
+			position: relative;
+
+			width: calc(var(--height) * 2);
+			height: var(--height);
+			margin: 0;
+			margin-inline: 0.4em;
+
+			border-radius: 100em;
+
+			background-color: var(--bg);
+
+			&:hover,
+			&:focus-visible {
+				background-color: var(--bg-hover);
+			}
+
+			&:active {
+				background-color: var(--bg-active);
+			}
+
+			&:checked {
+				--bg: var(--bg-btn-primary);
+				--bg-hover: var(--bg-btn-primary-hover);
+				--bg-active: var(--bg-btn-primary-active);
+
+				&::after {
+					transform: translateX(var(--height));
+				}
+			}
 
 			&::after {
-				transform: translateX(var(--height));
+				--margin: 0.15em;
+				--button-width: calc(var(--height) - var(--margin) * 2);
+
+				content: "";
+
+				display: block;
+
+				// position: absolute;
+				// left: 0;
+
+				width: var(--button-width);
+				height: var(--button-width);
+				margin-left: var(--margin);
+
+				border-radius: 100%;
+
+				background-color: var(--fg-primary);
+
+				transition: transform var(--ease-out) 0.2s;
 			}
-		}
-
-		&::after {
-			--margin: 0.15em;
-			--button-width: calc(var(--height) - var(--margin) * 2);
-
-			content: "";
-
-			display: block;
-
-			// position: absolute;
-			// left: 0;
-
-			width: var(--button-width);
-			height: var(--button-width);
-			margin-left: var(--margin);
-
-			border-radius: 100%;
-
-			background-color: var(--fg-primary);
-
-			transition: transform var(--ease-out) 0.2s;
 		}
 	}
 }
