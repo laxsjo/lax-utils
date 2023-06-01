@@ -72,6 +72,28 @@ where
         }
     }
 
+    let set_input_value = move |value: &T| {
+        leptos_reactive::SpecialNonReactiveZone::enter();
+        let Some(input) = input_ref.get() else {
+            error!("Couldn't find input element!");
+            return;
+        };
+
+        let type_ = input.type_();
+        if &type_ == "checkbox" || &type_ == "radio" {
+            let value: &dyn Any = value;
+
+            let Some(checked) = value.downcast_ref::<bool>() else {
+                // this is ugly...
+                panic!("stored input with type other than bool used for an input of type checkbox or radio");
+            };
+
+            input.set_checked(*checked);
+        } else {
+            input.set_value(&value.to_string());
+        }
+    };
+
     let listener = EventListener::new(&input, "change", move |ev| {
         leptos_reactive::SpecialNonReactiveZone::enter();
         let Some(input) = input_ref.get() else {
@@ -124,15 +146,15 @@ where
 
         update_storage(key, value.clone());
 
-        let Some(input) = input_ref.get() else {
-            return;
-        };
-        input.set_value(&value.to_string());
+        set_input_value(&value);
+
+        // let Some(input) = input_ref.get() else {
+        //     return;
+        // };
+        // input.set_value(&value.to_string());
     });
 
     input.on_mount(move |input| {
-        let type_ = input.type_();
-
         let Some(value_local) = (match local_storage_value::<T>(key) {
             Some(value) => Some(value),
             None => value.map(|value| value.get_untracked())
@@ -140,18 +162,7 @@ where
             return;
         };
 
-        if &type_ == "checkbox" || &type_ == "radio" {
-            let value_local: &dyn Any = &value_local;
-
-            let Some(checked) = value_local.downcast_ref::<bool>() else {
-                // this is ugly...
-                panic!("stored input with type other than bool used for an input of type checkbox or radio");
-            };
-
-            input.set_checked(*checked);
-        } else {
-            input.set_value(&value_local.to_string());
-        }
+        set_input_value(&value_local);
 
         if let Some(value) = value {
             value.set(value_local);
