@@ -153,7 +153,7 @@ pub fn Toast(
             class="toast"
             class:active=active
         >
-        <Icon icon_id="check_circle"/>
+        <Icon icon_id="check-circle"/>
         {message}
         </div>
     }

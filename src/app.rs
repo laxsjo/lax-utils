@@ -15,7 +15,7 @@ pub fn App(cx: Scope) -> impl IntoView {
     provide_toast(cx);
 
     // This is very cursed
-    let icons_svg = include_str!("../assets/material-icons-defs.svg");
+    let icons_svg = include_str!("../assets/icon-symbol-defs.svg");
 
     view! {
         cx,
@@ -52,11 +52,11 @@ pub fn App(cx: Scope) -> impl IntoView {
             <footer>
                 <ul class="links">
                     <li>
-                        <Icon icon_id="help"/>
+                        <Icon icon_id="help-circle"/>
                         <A href="/about">"About"</A>
                     </li>
                     <li>
-                        <Icon icon_id="code"/>
+                        <Icon icon_id="github"/>
                         <a
                             href="https://github.com/laxsjo/lax-utils"
                             target="_blank"

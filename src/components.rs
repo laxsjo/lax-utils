@@ -117,22 +117,23 @@ where
                     view=generate_item
                 />
             </select>
-            <Icon icon_id="expand_more"/>
+            <Icon icon_id="chevron-down"/>
         </div>
     }
 }
 
 /// Display an svg icon.
 ///
-/// You can browse the available icons here: https://fonts.google.com/icons
-/// The names you specify should be separated by underscores.
-/// E.g. `border_color`
+/// ~~You can browse the available icons here: https://fonts.google.com/icons~~
+/// You can browse the available icons here: https://feathericons.com/?query=git
+/// The names you specify should be separated by dashes.
+/// E.g. `arrow-left`
 ///
 /// # Maintenance Note
 /// The icons were generated using
 /// [icomoon.io](https://icomoon.io/app/#/select), and exported as a single
 /// svg symbol file called `symbol-defs.svg` on the page, which was then renamed
-/// to `material-icons-defs.svg` and placed in the `assets/` folder.
+/// to `icon-symbol-defs.svg` and placed in the `assets/` folder.
 #[component]
 pub fn Icon(
     cx: Scope,
@@ -259,7 +260,7 @@ pub fn CopyButton(
             on:click=on_click
         >
             {children.map(|children| children(cx))}
-            <Icon icon_id="content_copy" />
+            <Icon icon_id="copy" />
         </button>
     }
 }
