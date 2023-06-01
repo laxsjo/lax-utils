@@ -63,9 +63,10 @@ pub fn RouteAbout(cx: Scope) -> impl IntoView {
         </p>
         <p>
             "You could also "
-            <a href="https://github.com/laxsjo/lax-utils/issues">
-                "open an issue on github"
-            </a>
+            <a
+                href="https://github.com/laxsjo/lax-utils/issues"
+                target="_blank"
+            >"open an issue on github"</a>
             ", or even create a pull request if you're feeling adventurous."
         </p>
 
@@ -76,11 +77,17 @@ pub fn RouteAbout(cx: Scope) -> impl IntoView {
         </p>
         <p>
             "It was created by me, Rasmus Söderhielm. You can find "
-            <A href="https://github.com/laxsjo">"my github here"</A>
+            <a
+                href="https://github.com/laxsjo"
+                target="_blank"
+            >"my github here"</a>
             "."
         </p>
         <p>
-            <A href="https://github.com/laxsjo/lax-utils">"The website repository"</A>
+            <a
+                href="https://github.com/laxsjo/lax-utils"
+                target="_blank"
+            >"The website repository"</a>
         </p>
 
     }

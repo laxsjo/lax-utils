@@ -57,12 +57,20 @@ pub fn App(cx: Scope) -> impl IntoView {
                     </li>
                     <li>
                         <Icon icon_id="code"/>
-                        <A href="https://github.com/laxsjo/lax-utils">"Repository"</A>
+                        <a
+                            href="https://github.com/laxsjo/lax-utils"
+                            target="_blank"
+                        >
+                            "Repository"
+                        </a>
                     </li>
                 </ul>
                 <div class="right">
                     "Made with ❤️ by "
-                    <A href="https://github.com/laxsjo">"Rasmus Söderhielm"</A>
+                    <a
+                        href="https://github.com/laxsjo"
+                        target="_blank"
+                    >"Rasmus Söderhielm"</a>
                 </div>
             </footer>
         </Router>
