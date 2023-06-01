@@ -135,8 +135,20 @@ body {
 			background-color: var(--accent);
 
 			transform: translateY(var(--y-offset));
-			transition: transform cubic-bezier(0.76, 0, 0.24, 1) 0.3s; // easeInOutQuart
-			transition-property: transform, height;
+			transition: none cubic-bezier(0.76, 0, 0.24, 1) 0.3s; // easeInOutQuart
+			transition-property: opacity;
+		}
+
+		&.transition-pos {
+			&::before {
+				transition-property: transform, height, opacity;
+			}
+		}
+
+		&[data-marker-hidden] {
+			&::before {
+				opacity: 0;
+			}
 		}
 	}
 }

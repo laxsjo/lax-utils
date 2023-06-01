@@ -111,43 +111,51 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
 
     let location = use_location(cx);
 
-    let current_bounds = create_memo(cx, move |prev_value| {
+    let marker_hidden = create_memo(cx, move |_| {
         let selected_path_owned = location.pathname.get();
         let selected_path = selected_path_owned.as_str();
 
-        if routes.with_value(move |routes| {
-            routes
-                .iter()
-                .all(move |(path, _, _)| *path != selected_path)
-        }) {
-            let prev_height = prev_value.map_or(0, move |(_, height)| *height);
-            return (-prev_height, prev_height);
-        }
-
-        let mut should_continue_next = true;
         routes.with_value(move |routes| {
             routes
                 .iter()
-                .take_while(move |(path, _, _)| {
-                    let should_continue = should_continue_next;
-
-                    should_continue_next = *path != selected_path; // this is so cursed...
-
-                    should_continue
-                })
-                .fold(
-                    (0, 0),
-                    |(total_height, previous_height), (_, _, _ref)| {
-                        let Some(element) = _ref.get() else {
-                            return (total_height, 0);
-                        };
-                        let height = element.offset_height();
-                        // log!("got height {}", height);
-                        (total_height + previous_height, height)
-                    },
-                )
+                .all(move |(path, _, _)| *path != selected_path)
         })
     });
+
+    let current_bounds =
+        create_memo(cx, move |prev_value: Option<&(i32, i32)>| {
+            let selected_path_owned = location.pathname.get();
+            let selected_path = selected_path_owned.as_str();
+
+            if marker_hidden() {
+                let prev_value = prev_value.map_or((0, 0), move |value| *value);
+                return prev_value;
+            }
+
+            let mut should_continue_next = true;
+            routes.with_value(move |routes| {
+                routes
+                    .iter()
+                    .take_while(move |(path, _, _)| {
+                        let should_continue = should_continue_next;
+
+                        should_continue_next = *path != selected_path; // this is so cursed...
+
+                        should_continue
+                    })
+                    .fold(
+                        (0, 0),
+                        |(total_height, previous_height), (_, _, _ref)| {
+                            let Some(element) = _ref.get() else {
+                            return (total_height, 0);
+                        };
+                            let height = element.offset_height();
+                            // log!("got height {}", height);
+                            (total_height + previous_height, height)
+                        },
+                    )
+            })
+        });
     let current_offset = move || current_bounds().0;
     let current_height = move || current_bounds().1;
 
@@ -173,12 +181,26 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
         )
     };
 
+    let (transition_pos, set_transition_pos) = create_signal(cx, true);
+    create_effect(cx, move |_| {
+        if marker_hidden() {
+            set_transition_pos(false);
+        }
+    });
+
+    let on_transition_start = move |_| {
+        set_transition_pos(!marker_hidden());
+    };
+
     view! { cx,
         <aside
             class="side-nav"
             data-js-enabled=js_enabled
             style=("--y-offset", move || format!("{}px", current_offset()))
             style=("--height", move || format!("{}px", current_height()))
+            data-marker-hidden=marker_hidden
+            class=("transition-pos", transition_pos)
+            on:transitionstart=on_transition_start
         >
             <nav>
                 {generate_routes()}
