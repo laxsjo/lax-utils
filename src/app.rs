@@ -111,19 +111,29 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
 
     let location = use_location(cx);
 
-    let current_bounds = create_memo(cx, move |_| {
-        let selected_path = location.pathname.get();
+    let current_bounds = create_memo(cx, move |prev_value| {
+        let selected_path_owned = location.pathname.get();
+        let selected_path = selected_path_owned.as_str();
 
-        let mut should_stop_next = true;
+        if routes.with_value(move |routes| {
+            routes
+                .iter()
+                .all(move |(path, _, _)| *path != selected_path)
+        }) {
+            let prev_height = prev_value.map_or(0, move |(_, height)| *height);
+            return (-prev_height, prev_height);
+        }
+
+        let mut should_continue_next = true;
         routes.with_value(move |routes| {
             routes
                 .iter()
                 .take_while(move |(path, _, _)| {
-                    let should_stop = should_stop_next;
+                    let should_continue = should_continue_next;
 
-                    should_stop_next = path != &selected_path; // this is so cursed...
+                    should_continue_next = *path != selected_path; // this is so cursed...
 
-                    should_stop
+                    should_continue
                 })
                 .fold(
                     (0, 0),
