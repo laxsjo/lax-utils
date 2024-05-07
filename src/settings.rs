@@ -74,7 +74,7 @@ where
     }
 
     let set_input_value = move |value: &T| {
-        leptos_reactive::SpecialNonReactiveZone::enter();
+        // leptos_reactive::SpecialNonReactiveZone::enter();
         let Some(input) = input_ref.get() else {
             error!("Couldn't find input element!");
             return;
@@ -96,7 +96,7 @@ where
     };
 
     let listener = EventListener::new(&input, "change", move |ev| {
-        leptos_reactive::SpecialNonReactiveZone::enter();
+        // leptos_reactive::SpecialNonReactiveZone::enter();
         let Some(input) = input_ref.get() else {
             error!("Couldn't find input element!");
             return;

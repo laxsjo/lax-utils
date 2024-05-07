@@ -694,7 +694,7 @@ where
         // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
         const PRIMARY_BUTTON: u16 = 1;
 
-        leptos_reactive::SpecialNonReactiveZone::enter();
+        // leptos_reactive::SpecialNonReactiveZone::enter();
 
         // log!("moved {:?}", cx.id());
 
