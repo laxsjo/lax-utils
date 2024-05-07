@@ -5,8 +5,8 @@ use leptos_router::*;
 
 /// Renders the home page of your application.
 #[component]
-pub fn RouteHome(cx: Scope) -> impl IntoView {
-    view! { cx,
+pub fn RouteHome() -> impl IntoView {
+    view! {
         <h1>"Welcome to lax-utils!"</h1>
         <p>
             "This websites host a collection of small utility programs. The
@@ -17,8 +17,8 @@ pub fn RouteHome(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn RouteColorPicker(cx: Scope) -> impl IntoView {
-    view! { cx,
+pub fn RouteColorPicker() -> impl IntoView {
+    view! {
         <Title text="Color Picker | lax-utils"/>
 
         <h1>"Color Picker"</h1>
@@ -27,8 +27,8 @@ pub fn RouteColorPicker(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn RouteComingSoon(cx: Scope) -> impl IntoView {
-    view! { cx,
+pub fn RouteComingSoon() -> impl IntoView {
+    view! {
         <h1>"Coming (probably not so) soon!"</h1>
         <p>"Yea it might be a while before this get's added..."</p>
         <p>":)"</p>
@@ -36,8 +36,8 @@ pub fn RouteComingSoon(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn RouteAbout(cx: Scope) -> impl IntoView {
-    view! { cx,
+pub fn RouteAbout() -> impl IntoView {
+    view! {
         <h1>"About"</h1>
         <p>
             "Lax-utils is a collection of small utility programs. The uniting

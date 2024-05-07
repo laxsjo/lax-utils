@@ -1,25 +1,23 @@
 use std::time::Duration;
 
 use crate::{components::*, routes::*, toasts::*};
-use leptos::{html::*, *};
+use leptos::{component, html::*, *};
 use leptos_meta::*;
 use leptos_router::*;
 
 #[component]
-pub fn App(cx: Scope) -> impl IntoView {
+pub fn App() -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     leptos_reactive::SpecialNonReactiveZone::enter(); // doesn't seem to work :(
 
-    provide_meta_context(cx);
+    provide_meta_context();
 
-    provide_toast(cx);
+    provide_toast();
 
     // This is very cursed
     let icons_svg = include_str!("../assets/icon-symbol-defs.svg");
 
     view! {
-        cx,
-
         // injects a stylesheet into the document <head>
         // id=leptos means cargo-leptos will hot-reload this stylesheet
         <Stylesheet id="leptos" href="/pkg/lax-utils.css"/>
@@ -41,12 +39,12 @@ pub fn App(cx: Scope) -> impl IntoView {
             <SideNav />
             <main>
                 <Routes>
-                    <Route path="/" view=|cx| view! { cx, <RouteHome/> }/>
-                    <Route path="/about" view=|cx| view! { cx, <RouteAbout/> }/>
-                    <Route path="/color-picker" view=|cx| view! { cx, <RouteColorPicker/> }/>
-                    <Route path="/color-picker/test" view=|cx| view! { cx, <RouteComingSoon/> }/>
-                    <Route path="/base-converter" view=|cx| view! { cx, <RouteComingSoon/> }/>
-                    <Route path="/time-zones" view=|cx| view! { cx, <RouteComingSoon/> }/>
+                    <Route path="/" view=|| view! {  <RouteHome/> }/>
+                    <Route path="/about" view=|| view! {  <RouteAbout/> }/>
+                    <Route path="/color-picker" view=|| view! {  <RouteColorPicker/> }/>
+                    <Route path="/color-picker/test" view=|| view! {  <RouteComingSoon/> }/>
+                    <Route path="/base-converter" view=|| view! {  <RouteComingSoon/> }/>
+                    <Route path="/time-zones" view=|| view! {  <RouteComingSoon/> }/>
                 </Routes>
             </main>
             <footer>
@@ -78,9 +76,9 @@ pub fn App(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn SideNav(cx: Scope) -> impl IntoView {
-    let (js_enabled, set_js_enabled) = create_signal(cx, false);
-    create_effect(cx, move |_| {
+pub fn SideNav() -> impl IntoView {
+    let (js_enabled, set_js_enabled) = create_signal(false);
+    create_effect(move |_| {
         set_interval(
             move || {
                 set_js_enabled(true);
@@ -97,11 +95,10 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
     ];
     let mut node_refs = vec![];
     for _ in 0..(paths.len()) {
-        node_refs.push(create_node_ref::<Li>(cx));
+        node_refs.push(create_node_ref::<Li>());
     }
 
     let routes = store_value(
-        cx,
         paths
             .into_iter()
             .zip(node_refs)
@@ -109,9 +106,9 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
             .collect::<Vec<_>>(),
     );
 
-    let location = use_location(cx);
+    let location = use_location();
 
-    let marker_hidden = create_memo(cx, move |_| {
+    let marker_hidden = create_memo(move |_| {
         let selected_path_owned = location.pathname.get();
         let selected_path = selected_path_owned.as_str();
 
@@ -122,40 +119,39 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
         })
     });
 
-    let current_bounds =
-        create_memo(cx, move |prev_value: Option<&(i32, i32)>| {
-            let selected_path_owned = location.pathname.get();
-            let selected_path = selected_path_owned.as_str();
+    let current_bounds = create_memo(move |prev_value: Option<&(i32, i32)>| {
+        let selected_path_owned = location.pathname.get();
+        let selected_path = selected_path_owned.as_str();
 
-            if marker_hidden() {
-                let prev_value = prev_value.map_or((0, 0), move |value| *value);
-                return prev_value;
-            }
+        if marker_hidden() {
+            let prev_value = prev_value.map_or((0, 0), move |value| *value);
+            return prev_value;
+        }
 
-            let mut should_continue_next = true;
-            routes.with_value(move |routes| {
-                routes
-                    .iter()
-                    .take_while(move |(path, _, _)| {
-                        let should_continue = should_continue_next;
+        let mut should_continue_next = true;
+        routes.with_value(move |routes| {
+            routes
+                .iter()
+                .take_while(move |(path, _, _)| {
+                    let should_continue = should_continue_next;
 
-                        should_continue_next = *path != selected_path; // this is so cursed...
+                    should_continue_next = *path != selected_path; // this is so cursed...
 
-                        should_continue
-                    })
-                    .fold(
-                        (0, 0),
-                        |(total_height, previous_height), (_, _, _ref)| {
-                            let Some(element) = _ref.get() else {
+                    should_continue
+                })
+                .fold(
+                    (0, 0),
+                    |(total_height, previous_height), (_, _, _ref)| {
+                        let Some(element) = _ref.get() else {
                             return (total_height, 0);
                         };
-                            let height = element.offset_height();
-                            // log!("got height {}", height);
-                            (total_height + previous_height, height)
-                        },
-                    )
-            })
-        });
+                        let height = element.offset_height();
+                        // log!("got height {}", height);
+                        (total_height + previous_height, height)
+                    },
+                )
+        })
+    });
     let current_offset = move || current_bounds().0;
     let current_height = move || current_bounds().1;
 
@@ -168,21 +164,21 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
                     let path = *path;
                     let name = *name;
                     let _ref = *_ref;
-                    view! { cx,
+                    view! {
                         <li
                             _ref=_ref
                         >
                             <RouteLink route_path=path>{name}</RouteLink>
                         </li>
                     }
-                    .into_view(cx)
+                    .into_view()
                 })
                 .collect::<Vec<View>>(),
         )
     };
 
-    let (transition_pos, set_transition_pos) = create_signal(cx, true);
-    create_effect(cx, move |_| {
+    let (transition_pos, set_transition_pos) = create_signal(true);
+    create_effect(move |_| {
         if marker_hidden() {
             set_transition_pos(false);
         }
@@ -192,7 +188,7 @@ pub fn SideNav(cx: Scope) -> impl IntoView {
         set_transition_pos(!marker_hidden());
     };
 
-    view! { cx,
+    view! {
         <aside
             class="side-nav"
             data-js-enabled=js_enabled

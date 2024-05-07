@@ -1,6 +1,8 @@
 use crate::{components::*, string_utils::StringUtils};
 use gloo_events::EventListener;
-use leptos::{html::*, leptos_dom::is_browser, window, HtmlElement, *};
+use leptos::{
+    html::*, leptos_dom::is_browser, logging::error, window, HtmlElement, *,
+};
 use std::{
     any::{Any, TypeId},
     // cell::RefCell,
@@ -46,7 +48,6 @@ where
 
 #[component]
 pub fn StoredInput<T>(
-    cx: Scope,
     input: HtmlElement<Input>,
     /// A unique key used to identify and store the setting in local storage.
     key: &'static str,
@@ -60,7 +61,7 @@ where
         return input;
     }
 
-    let input_ref = create_node_ref::<Input>(cx);
+    let input_ref = create_node_ref::<Input>();
     let input = input.node_ref(input_ref);
 
     fn update_storage<U: FromStr + ToString + 'static + Any>(
@@ -129,7 +130,7 @@ where
         };
         update_storage(key, value);
     });
-    store_value(cx, listener);
+    store_value(listener);
 
     if let Some(value) = value {
         if let Some(value_local) = local_storage_value::<T>(key) {
@@ -137,7 +138,7 @@ where
         };
     };
 
-    create_effect(cx, move |_| {
+    create_effect(move |_| {
         let Some(value) = value else {
             return;
         };
@@ -181,7 +182,6 @@ where
 #[allow(clippy::diverging_sub_expression, unreachable_code)]
 #[component]
 pub fn StoredRadioGroup<T, F>(
-    cx: Scope,
     #[prop(into)] title: MaybeSignal<String>,
     #[prop(into)] name: Signal<String>,
     #[prop(into)] options: MaybeSignal<Vec<(String, T)>>,
@@ -211,7 +211,7 @@ where
         on_change(value);
     };
 
-    view! { cx,
+    view! {
         <RadioGroup
             title=title
             name=name

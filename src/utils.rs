@@ -207,17 +207,14 @@ pub fn naturally_format_float(
 /// and is properly disposed of when the component is dropped.
 ///
 /// It uses a [gloo_events::EventListener] that is stored in the current scope
-/// using [store_value]
-pub fn create_managed_window_event_listener<S, F>(
-    cx: Scope,
-    event_type: S,
-    callback: F,
-) where
+/// using [store_value]cargo install trunkcargo install trunk
+pub fn create_managed_window_event_listener<S, F>(event_type: S, callback: F)
+where
     S: Into<Cow<'static, str>>,
     F: FnMut(&Event) + 'static,
 {
     if is_browser() {
-        store_value(cx, EventListener::new(&window(), event_type, callback));
+        store_value(EventListener::new(&window(), event_type, callback));
     }
 }
 

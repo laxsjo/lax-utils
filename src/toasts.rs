@@ -18,42 +18,42 @@ pub struct Toasts {
 }
 
 /// Add a new toast and return a handle to that
-pub fn add_toast(cx: Scope, message: String) {
+pub fn add_toast(message: String) {
     // TODO: this is bad as it uses the single global context.
-    let toast = use_context::<RwSignal<String>>(cx)
+    let toast = use_context::<RwSignal<String>>()
         .expect("toasts context to be provided");
 
     toast.set(message);
 }
 
-pub fn use_toast(cx: Scope) -> Signal<String> {
-    let toast = use_context::<RwSignal<String>>(cx)
+pub fn use_toast() -> Signal<String> {
+    let toast = use_context::<RwSignal<String>>()
         .expect("toasts context to be provided");
 
     toast.into()
 }
 
 /// Make sure that this is called **once** somewhere in the application.
-pub fn provide_toast(cx: Scope) {
-    let toast = create_rw_signal(cx, "".to_owned());
-    provide_context(cx, toast);
+pub fn provide_toast() {
+    let toast = create_rw_signal("".to_owned());
+    provide_context(toast);
 }
 
 /// Displays the currently active toasts.
 #[component]
-pub fn ToastsContainer(cx: Scope) -> impl IntoView {
-    let new_toast = use_toast(cx);
+pub fn ToastsContainer() -> impl IntoView {
+    let new_toast = use_toast();
 
-    // let next_index = store_value(cx, 0);
+    // let next_index = store_value( 0);
 
-    // let displayed_toasts = create_rw_signal::<Vec<(usize, String)>>(cx,
+    // let displayed_toasts = create_rw_signal::<Vec<(usize, String)>>(
     // vec![]);
 
-    let (toast, set_toast) = create_signal(cx, None);
+    let (toast, set_toast) = create_signal(None);
 
-    let timeout_handle = store_value::<Option<TimeoutHandle>>(cx, None);
+    let timeout_handle = store_value::<Option<TimeoutHandle>>(None);
 
-    create_effect(cx, move |last| {
+    create_effect(move |last| {
         let toast = new_toast();
 
         if last.is_none() {
@@ -99,9 +99,9 @@ pub fn ToastsContainer(cx: Scope) -> impl IntoView {
         // );
     });
 
-    let toast_view = move |cx| {
+    let toast_view = move || {
         toast().map(move |toast| {
-            view! { cx,
+            view! {
                 <Toast
                     message=toast
                 />
@@ -109,7 +109,7 @@ pub fn ToastsContainer(cx: Scope) -> impl IntoView {
         })
     };
 
-    view! { cx,
+    view! {
         <div
             class="toasts"
             style=("--duration-out", format!("{}s", TOAST_FADE_OUT_SECONDS))
@@ -121,7 +121,7 @@ pub fn ToastsContainer(cx: Scope) -> impl IntoView {
             // <For
             //     each=displayed_toasts
             //     key=|(handle, _)| *handle
-            //     view=move |cx, (_, message)| view! { cx,
+            //     view=move | (_, message)| view! {
             //         <Toast
             //             message=message
             //             duration=Duration::from_secs_f64(TOAST_DURATION_SECONDS)
@@ -134,11 +134,10 @@ pub fn ToastsContainer(cx: Scope) -> impl IntoView {
 
 #[component]
 pub fn Toast(
-    cx: Scope,
     message: String,
     #[prop(optional)] duration: Option<Duration>,
 ) -> impl IntoView {
-    let (active, set_active) = create_signal(cx, true);
+    let (active, set_active) = create_signal(true);
 
     if let Some(duration) = duration && is_browser() {
         set_timeout(
@@ -148,7 +147,7 @@ pub fn Toast(
             duration,
         )
     }
-    view! { cx,
+    view! {
         <div
             class="toast"
             class:active=active

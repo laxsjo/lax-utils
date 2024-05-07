@@ -7,15 +7,20 @@ use crate::{
     string_utils::*,
     utils::*,
 };
-use leptos::{ev::*, html::*, *};
+use leptos::{
+    ev::*,
+    html::*,
+    logging::{error, log},
+    *,
+};
 use wasm_bindgen::prelude::*;
 
 #[component]
-pub fn ColorPicker(cx: Scope) -> impl IntoView {
+pub fn ColorPicker() -> impl IntoView {
     const DECIMAL_PRECISION: usize = 2;
 
     // let (color_space_options_old, _) = create_signal(
-    //     cx,
+    //
     //     vec![ColorSpace::Rgb, ColorSpace::Hsl, ColorSpace::Hsv],
     // );
     let color_space_options = vec![
@@ -24,25 +29,22 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         ("HSV".to_owned(), ColorSpace::Hsv),
     ];
 
-    let (color_space, set_color_space) = create_signal(cx, ColorSpace::Rgb);
+    let (color_space, set_color_space) = create_signal(ColorSpace::Rgb);
 
-    let precise_inputs = create_rw_signal(cx, false);
-    let normalised_inputs = create_rw_signal(cx, false);
+    let precise_inputs = create_rw_signal(false);
+    let normalised_inputs = create_rw_signal(false);
 
-    let (color, set_color) = create_signal(
-        cx,
-        DynamicColor::from_floats((1., 1., 1.), color_space.get_untracked()),
-    );
+    let (color, set_color) = create_signal(DynamicColor::from_floats(
+        (1., 1., 1.),
+        color_space.get_untracked(),
+    ));
 
     let (color_hsv, set_color_hsv) =
-        create_signal(cx, color.get_untracked().to_color::<Hsv>());
+        create_signal(color.get_untracked().to_color::<Hsv>());
 
-    let (hex_code, set_hex_code) = create_signal(
-        cx,
-        color.get_untracked().to_color::<Rgb>().as_hex_code(),
-    );
-    let hex_code_hashtag =
-        Signal::derive(cx, move || format!("#{}", hex_code()));
+    let (hex_code, set_hex_code) =
+        create_signal(color.get_untracked().to_color::<Rgb>().as_hex_code());
+    let hex_code_hashtag = Signal::derive(move || format!("#{}", hex_code()));
 
     let set_color_sync_other = move |color: DynamicColor| {
         set_color(color);
@@ -50,12 +52,12 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         set_hex_code(color.to_color::<Rgb>().as_hex_code());
     };
 
-    // let hex_code = create_memo(cx, move |_| {
+    // let hex_code = create_memo( move |_| {
     //     let rgb = color().to_color::<Rgb>();
     //     rgb.as_hex_code()
     // });
 
-    create_effect(cx, move |_| {
+    create_effect(move |_| {
         set_color(color().set_color_space(color_space()));
     });
 
@@ -67,15 +69,14 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
     let on_color_space_change = set_color_space;
 
-    let (force_update_inputs, set_force_update_inputs) =
-        create_signal(cx, false);
+    let (force_update_inputs, set_force_update_inputs) = create_signal(false);
 
-    let component_0_ref = create_node_ref::<Input>(cx);
-    let component_1_ref = create_node_ref::<Input>(cx);
-    let component_2_ref = create_node_ref::<Input>(cx);
-    let float_component_0_ref = create_node_ref::<Input>(cx);
-    let float_component_1_ref = create_node_ref::<Input>(cx);
-    let float_component_2_ref = create_node_ref::<Input>(cx);
+    let component_0_ref = create_node_ref::<Input>();
+    let component_1_ref = create_node_ref::<Input>();
+    let component_2_ref = create_node_ref::<Input>();
+    let float_component_0_ref = create_node_ref::<Input>();
+    let float_component_1_ref = create_node_ref::<Input>();
+    let float_component_2_ref = create_node_ref::<Input>();
 
     let format_component = move || match precise_inputs.get() {
         true => |value: f64| -> _ { naturally_format_float(value, 0, 2) },
@@ -85,12 +86,12 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
     let format_float =
         |value: f64| -> _ { naturally_format_float(value, 1, 2) };
 
-    create_effect(cx, move |_| {
+    create_effect(move |_| {
         precise_inputs.track();
         set_force_update_inputs.set_untracked(true);
     });
 
-    create_effect(cx, move |_| {
+    create_effect(move |_| {
         let components = color().components();
         let floats = color().as_floats();
 
@@ -237,9 +238,9 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         set_color_sync_other(color().set_floats(floats));
     };
 
-    let hue_float = Signal::derive(cx, move || color_hsv().as_floats().0);
-    let sat_float = Signal::derive(cx, move || color_hsv().as_floats().1);
-    let value_float = Signal::derive(cx, move || color_hsv().as_floats().2);
+    let hue_float = Signal::derive(move || color_hsv().as_floats().0);
+    let sat_float = Signal::derive(move || color_hsv().as_floats().1);
+    let value_float = Signal::derive(move || color_hsv().as_floats().2);
 
     let update_with_hsv_floats = move |floats: (f64, f64, f64)| {
         set_color_hsv(Hsv::from_floats((floats.0, floats.1, floats.2)));
@@ -302,25 +303,20 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         update_with_hex_code(value_str);
     };
 
-    let color_space_info = create_memo(cx, move |_| color_space().info());
+    let color_space_info = create_memo(move |_| color_space().info());
 
-    let label_0 = Signal::derive(cx, move || {
-        Some(color_space_info().labels.0.to_owned())
-    });
-    let label_1 = Signal::derive(cx, move || {
-        Some(color_space_info().labels.1.to_owned())
-    });
-    let label_2 = Signal::derive(cx, move || {
-        Some(color_space_info().labels.2.to_owned())
-    });
+    let label_0 =
+        Signal::derive(move || Some(color_space_info().labels.0.to_owned()));
+    let label_1 =
+        Signal::derive(move || Some(color_space_info().labels.1.to_owned()));
+    let label_2 =
+        Signal::derive(move || Some(color_space_info().labels.2.to_owned()));
 
-    let unit_0 = Signal::derive(cx, move || {
-        color_space_info().units.0.map(str::to_owned)
-    });
-    let unit_1 = Signal::derive(cx, move || {
-        color_space_info().units.1.map(str::to_owned)
-    });
-    let unit_2 = Signal::derive(cx, move || {
+    let unit_0 =
+        Signal::derive(move || color_space_info().units.0.map(str::to_owned));
+    let unit_1 =
+        Signal::derive(move || color_space_info().units.1.map(str::to_owned));
+    let unit_2 = Signal::derive(move || {
         // log!(
         //     "unit_2 = {:?}",
         //     color_space_info().units.2.map(str::to_owned)
@@ -328,7 +324,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
         color_space_info().units.2.map(str::to_owned)
     });
 
-    let components_copy_string = Signal::derive(cx, move || {
+    let components_copy_string = Signal::derive(move || {
         let components = color().components();
         format!(
             "{}, {}, {}",
@@ -337,7 +333,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
             format_component()(components.2)
         )
     });
-    let floats_copy_string = Signal::derive(cx, move || {
+    let floats_copy_string = Signal::derive(move || {
         let floats = color().as_floats();
         format!(
             "{}, {}, {}",
@@ -366,13 +362,13 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
     // let id = unique_id();
 
-    // let select_id = Signal::derive(cx, move || {
+    // let select_id = Signal::derive( move || {
     //     Some(format!("color-picker-color-space_{}", id))
     // });
 
     let phantom_bool = PhantomData::<bool>;
 
-    view! { cx,
+    view! {
         <div
             class="color-picker"
             class:normalised=normalised_inputs
@@ -532,7 +528,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 <StoredRadioGroup
                     options=color_space_options
                     title="Color Space".to_owned()
-                    name=Signal::derive(cx, || "color-space".to_owned())
+                    name=Signal::derive( || "color-space".to_owned())
                     on_change=on_color_space_change
                     key="s_color_space"
                 />
@@ -541,7 +537,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 <label>
                     "Precise Inputs"
                     <StoredInput
-                        input=view! { cx,
+                        input=view! {
                             <input
                                 type="checkbox"
                                 // on:input=on_precise_input_change
@@ -555,7 +551,7 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
                 <label class="normalised-inputs">
                     "Normalised Inputs"
                     <StoredInput
-                        input=view! { cx,
+                        input=view! {
                             <input
                                 type="checkbox"
                                 // on:input=on_precise_input_change
@@ -573,7 +569,6 @@ pub fn ColorPicker(cx: Scope) -> impl IntoView {
 
 #[component]
 pub fn SatValueSurface<S, V>(
-    cx: Scope,
     #[prop(into)] sat: Signal<f64>,
     set_sat: S,
     #[prop(into)] value: Signal<f64>,
@@ -584,7 +579,7 @@ where
     S: Fn(f64) + Copy + 'static,
     V: Fn(f64) + Copy + 'static,
 {
-    let (dragging, set_dragging) = create_signal(cx, false);
+    let (dragging, set_dragging) = create_signal(false);
 
     let custom_properties = move || {
         format!(
@@ -595,7 +590,7 @@ where
         )
     };
 
-    let surface_ref = create_node_ref::<Div>(cx);
+    let surface_ref = create_node_ref::<Div>();
 
     let on_pointer_move_color = move |ev: &PointerEvent| {
         // source: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
@@ -646,9 +641,9 @@ where
         // );
     };
 
-    create_managed_window_event_listener(cx, "pointermove", on_pointer_move);
+    create_managed_window_event_listener("pointermove", on_pointer_move);
 
-    create_managed_window_event_listener(cx, "pointerup", move |_| {
+    create_managed_window_event_listener("pointerup", move |_| {
         set_dragging(false);
         // window().remove_event_listener_with_callback(
         //     "pointermove",
@@ -657,17 +652,17 @@ where
     });
 
     // store_value(
-    //     cx,
+    //
     //     EventListener::new(&window(), "pointermove", on_pointer_move),
     // );
     // store_value(
-    //     cx,
+    //
     //     EventListener::new(&window(), "pointerup", move |_: &Event| {
     //         set_dragging(false);
     //     }),
     // );
 
-    view! {cx,
+    view! {
         <div
             class="sat-value-surface"
             style=custom_properties
@@ -680,19 +675,15 @@ where
 }
 
 #[component]
-pub fn HueSlider<F>(
-    cx: Scope,
-    #[prop(into)] hue: Signal<f64>,
-    set_hue: F,
-) -> impl IntoView
+pub fn HueSlider<F>(#[prop(into)] hue: Signal<f64>, set_hue: F) -> impl IntoView
 where
     F: Fn(f64) + Copy + 'static,
 {
-    let (dragging, set_dragging) = create_signal(cx, false);
+    let (dragging, set_dragging) = create_signal(false);
 
     let custom_properties = move || format!("--hue: {}", hue());
 
-    let surface_ref = create_node_ref::<Div>(cx);
+    let surface_ref = create_node_ref::<Div>();
 
     let on_pointer_down = move |_: PointerEvent| {
         // log!("down");
@@ -747,20 +738,20 @@ where
     // listener.forget();
 
     // TODO: These event listeners are not destroyed on element cleanup.
-    create_managed_window_event_listener(cx, "pointerup", on_pointer_up);
-    create_managed_window_event_listener(cx, "pointermove", on_pointer_move);
+    create_managed_window_event_listener("pointerup", on_pointer_up);
+    create_managed_window_event_listener("pointermove", on_pointer_move);
 
-    // create_managed_window_event_listener(cx, "pointerup", move |_| {
+    // create_managed_window_event_listener( "pointerup", move |_| {
     //     log!("up");
     // });
 
-    // create_managed_event_listener(cx, );
+    // create_managed_event_listener( );
 
     // _ = window().focus();
 
     // if is_browser() {
     //     store_value(
-    //         cx,
+    //
     //         EventListener::new(&window(), "pointerup", move |_| {
     //             log!("up");
     //             set_dragging(false);
@@ -768,13 +759,13 @@ where
     //     );
     // }
     // store_value(
-    //     cx,
+    //
     //     EventListener::new(&window(), "pointermove", on_pointer_move),
     // );
 
     // window().event
 
-    view! {cx,
+    view! {
         <div
             class="hue-slider"
             on:pointerdown=on_pointer_down

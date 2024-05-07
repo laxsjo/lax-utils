@@ -1,29 +1,27 @@
 use crate::{toasts, utils::*};
 use gloo_events::EventListener;
-use leptos::{html::*, leptos_dom::helpers::*, window, *};
+use leptos::{html::*, leptos_dom::helpers::*, logging::error, window, *};
 use leptos_router::*;
 use std::{hash::*, time::Duration};
 
 #[component]
 pub fn RouteLink(
-    cx: Scope,
     route_path: &'static str,
     // #[prop(optional)] _ref: Option<NodeRef<A>>,
     // _ref: NodeRef<A>,
     children: Children,
 ) -> impl IntoView {
-    let location = use_location(cx);
+    let location = use_location();
 
     let is_open = move || location.pathname.get() == route_path;
 
-    view! {cx,
-        <a href=route_path class:active={is_open}>{children(cx)}</a>
+    view! {
+        <a href=route_path class:active={is_open}>{children()}</a>
     }
 }
 
 #[component]
 pub fn FancySelect<T, F>(
-    cx: Scope,
     #[prop(into)] items: Signal<Vec<T>>,
     #[prop(optional)] default_selected: Option<T>,
     on_select: F,
@@ -36,7 +34,7 @@ where
     T: Copy + Eq + Hash + UiDisplay + 'static,
     F: Fn(Option<T>) + 'static,
 {
-    let select_ref = create_node_ref::<Select>(cx);
+    let select_ref = create_node_ref::<Select>();
     let selected_index = match default_selected {
         Some(selected) => {
             items().iter().position(|x| *x == selected).unwrap_or(0)
@@ -73,7 +71,7 @@ where
     //     set_expanded(false);
     // };
 
-    select_ref.on_load(cx, move |select| {
+    select_ref.on_load(move |select| {
         // TODO: figure out what is changing the select value after loading
         set_timeout(
             move || {
@@ -83,12 +81,12 @@ where
         )
     });
 
-    let generate_item = move |cx, item: T| {
+    let generate_item = move |item: T| {
         let selected = match default_selected {
             Some(selected) => item == selected,
             None => false,
         };
-        view! { cx,
+        view! {
             <option
                 selected=selected
             >
@@ -97,7 +95,7 @@ where
         }
     };
 
-    view! { cx,
+    view! {
         <div
             class="fancy-select"
         >
@@ -114,7 +112,7 @@ where
                     key=|item: &T| {
                         *item
                     }
-                    view=generate_item
+                    children=generate_item
                 />
             </select>
             <Icon icon_id="chevron-down"/>
@@ -136,13 +134,12 @@ where
 /// to `icon-symbol-defs.svg` and placed in the `assets/` folder.
 #[component]
 pub fn Icon(
-    cx: Scope,
     /// The icon to display. Should be of the form `<icon_name>`
     icon_id: &'static str,
 ) -> impl IntoView {
     let use_element_str = format!("<use href=\"#icon-{}\"></use>", icon_id);
 
-    view! { cx,
+    view! {
         <svg
             class="icon"
             viewBox="0 0 24 24"
@@ -153,7 +150,6 @@ pub fn Icon(
 
 #[component]
 pub fn LabeledFloatInput(
-    cx: Scope,
     #[prop(into)] prefix: MaybeSignal<Option<String>>,
     #[prop(into)] postfix: MaybeSignal<Option<String>>,
     children: Children,
@@ -162,7 +158,7 @@ where
 {
     let prefix = move || prefix().unwrap_or("".to_string());
     let postfix = move || postfix().unwrap_or("".to_string());
-    view! { cx,
+    view! {
         <div class="labeled-input">
             <span class="prefix">
                 {prefix}
@@ -171,7 +167,7 @@ where
                 {postfix}
             </span>
             <span class="input">
-                {children(cx)}
+                {children()}
             </span>
         </div>
     }
@@ -179,16 +175,15 @@ where
 
 #[component]
 pub fn CopyableLabel(
-    cx: Scope,
     #[prop(into)] content: Signal<String>,
     children: Children,
 ) -> impl IntoView {
-    view! { cx,
+    view! {
         <CopyButton
             value=content
         >
             <span class="label">
-                {children(cx)}
+                {children()}
             </span>
         </CopyButton>
     }
@@ -196,7 +191,7 @@ pub fn CopyableLabel(
 
 // #[component]
 // pub fn CopyableInput(
-//     cx: Scope,
+//
 //     /// The value that will be copied into the clipboard. It is the callers
 //     /// responsibility to make sure that this signal is kept in sync with the
 //     /// value of the input!
@@ -204,9 +199,9 @@ pub fn CopyableLabel(
 //     content: Signal<String>,
 //     children: Box<dyn FnOnce(Scope) -> HtmlElement<Input>>,
 // ) -> impl IntoView {
-//     view! { cx,
+//     view! {
 //         <div class="copyable-input">
-//             {children(cx)}
+//             {children()}
 //             <Icon icon_id="content_copy" />
 //         </div>
 //     }
@@ -214,7 +209,6 @@ pub fn CopyableLabel(
 
 #[component]
 pub fn CopyButton(
-    cx: Scope,
     /// The value that will be copied into the clipboard.
     #[prop(into)]
     value: Signal<String>,
@@ -243,7 +237,7 @@ pub fn CopyButton(
 
     let on_click = move |_| {
         copy_to_clipboard();
-        toasts::add_toast(cx, format!("Copied '{}' to clipboard", value()));
+        toasts::add_toast(format!("Copied '{}' to clipboard", value()));
     };
 
     let style = format!(
@@ -251,7 +245,7 @@ pub fn CopyButton(
         DURATION_IN_SECONDS, DURATION_OUT_SECONDS
     );
 
-    view! { cx,
+    view! {
         <button
             class="copy-button"
             style=style
@@ -259,7 +253,7 @@ pub fn CopyButton(
             title=label
             on:click=on_click
         >
-            {children.map(|children| children(cx))}
+            {children.map(|children| children())}
             <Icon icon_id="copy" />
         </button>
     }
@@ -267,7 +261,6 @@ pub fn CopyButton(
 
 #[component]
 pub fn RadioGroup<T, F, W>(
-    cx: Scope,
     #[prop(into)] title: MaybeSignal<String>,
     #[prop(into)] name: Signal<String>,
     #[prop(into)] options: MaybeSignal<Vec<(String, T)>>,
@@ -290,10 +283,9 @@ where
     F: Fn(T) + 'static + Copy,
     W: Fn(Box<dyn Fn(T) + 'static>) + 'static + Copy,
 {
-    let any_changed = create_trigger(cx);
+    let any_changed = create_trigger();
 
-    let (current_value, set_current_value) =
-        create_signal::<Option<T>>(cx, None);
+    let (current_value, set_current_value) = create_signal::<Option<T>>(None);
 
     // log!("got set_value.is_none() {:?}", set_value.is_none());
     // if let Some(set_value) = set_value {
@@ -306,7 +298,7 @@ where
     //     log!("assigned set value callback");
     // }
 
-    create_effect(cx, move |_| {
+    create_effect(move |_| {
         if let Some(on_change) = on_change {
             let Some(value) = current_value() else {
                 return;
@@ -315,12 +307,12 @@ where
         }
     });
 
-    let create_input = move |cx, (label, this_value): (String, T)| {
-        let (checked, set_checked) = create_signal(cx, false);
-        let input = create_node_ref::<Input>(cx);
+    let create_input = move |(label, this_value): (String, T)| {
+        let (checked, set_checked) = create_signal(false);
+        let input = create_node_ref::<Input>();
         // let input
 
-        create_effect(cx, move |_| {
+        create_effect(move |_| {
             any_changed();
 
             let Some(input) = input.get() else {
@@ -334,11 +326,11 @@ where
             }
         });
 
-        create_effect(cx, move |_| {
+        create_effect(move |_| {
             set_checked(current_value() == Some(this_value));
         });
 
-        // create_effect(cx, move |_| {
+        // create_effect( move |_| {
 
         // })
 
@@ -365,7 +357,7 @@ where
             // }
         };
 
-        view! {cx,
+        view! {
             <label data-checked=checked>
                 <span>{label}</span>
                 <input
@@ -379,7 +371,7 @@ where
         }
     };
 
-    let fieldset_ref = create_node_ref::<Fieldset>(cx);
+    let fieldset_ref = create_node_ref::<Fieldset>();
 
     let on_load = move || {
         if let Some(with_set_value) = with_set_value {
@@ -389,13 +381,13 @@ where
         }
     };
 
-    create_effect(cx, move |_| {
+    create_effect(move |_| {
         if fieldset_ref.get().is_some() {
             on_load();
         };
     });
 
-    view! { cx,
+    view! {
         <fieldset
             class="radio-group"
             // on:load=on_load
@@ -406,7 +398,7 @@ where
                 <For
                     each=options
                     key=move|(_, value)| *value
-                    view=create_input
+                    children=create_input
                 />
             </div>
         </fieldset>
@@ -421,22 +413,21 @@ pub enum AnimationType {
 
 #[component]
 pub fn AnimatedReplacement<V, F>(
-    cx: Scope,
     view: F,
     animation_type: AnimationType,
 ) -> impl IntoView
 where
     V: IntoView,
-    F: Fn(Scope) -> Option<V> + 'static,
+    F: Fn() -> Option<V> + 'static,
 {
-    let container = create_node_ref::<Div>(cx);
+    let container = create_node_ref::<Div>();
 
-    let current_element_ref = create_node_ref::<Div>(cx);
+    let current_element_ref = create_node_ref::<Div>();
 
-    let pending_listener = store_value(cx, None);
-    let listener_function = store_value::<Option<Box<dyn Fn()>>>(cx, None);
+    let pending_listener = store_value(None);
+    let listener_function = store_value::<Option<Box<dyn Fn()>>>(None);
 
-    create_effect(cx, move |_| {
+    create_effect(move |_| {
         let Some(container) = container.get() else {
             return;
         };
@@ -484,19 +475,19 @@ where
             pending_listener.set_value(Some(listener));
         }
 
-        if let Some(view) = view(cx) {
-            let next_element = view! { cx,
+        if let Some(view) = view() {
+            let next_element = view! {
                 <div>
                     {view}
                 </div>
             }
             .node_ref(current_element_ref);
 
-            container.child(next_element);
+            let _ = container.child(next_element);
         }
     });
 
-    view! { cx,
+    view! {
         <div
             class="animated-replacement"
             _ref=container
