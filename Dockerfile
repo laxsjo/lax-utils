@@ -3,7 +3,7 @@ RUN cargo install cargo-chef
 RUN cargo install cargo-leptos
 # target wasm32-unknown-unknown
 RUN rustup target add wasm32-unknown-unknown
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get install nodejs
 RUN npm install -g sass
 
@@ -30,9 +30,9 @@ COPY --from=cacher /usr/local/cargo /usr/local/cargo
 ENV LEPTOS_STYLE_FILE "style/main.scss"
 # The browserlist https://browsersl.ist query used for optimizing the CSS.
 ENV LEPTOS_BROWSERQUERY "defaults"
-# cursed step that fixes outdated project dependency to wasm-bindgen 0.2.84
+# cursed step that fixes outdated project dependency to wasm-bindgen 0.2.92
 # this will probably break once cargo-leptos updates their dependency...
-RUN cargo update -p wasm-bindgen --precise 0.2.86
+RUN cargo update -p wasm-bindgen --precise 0.2.92
 # build the app
 RUN cargo leptos build --release
 
