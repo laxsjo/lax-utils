@@ -37,7 +37,7 @@ RUN cargo update -p wasm-bindgen --precise 0.2.92
 RUN cargo leptos build --release
 
 # use googles distroless as runtime image
-FROM gcr.io/distroless/cc-debian11
+FROM gcr.io/distroless/cc-debian12
 # copy app form builder
 COPY --from=builder /app/target/server/release/lax-utils /app/
 COPY --from=builder /app/target/site /app/site
